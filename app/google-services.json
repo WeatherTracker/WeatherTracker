@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "349558798002",
+    "project_id": "weathertracker-e5de2",
+    "storage_bucket": "weathertracker-e5de2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:349558798002:android:6eae64b8f0e06227647bab",
+        "android_client_info": {
+          "package_name": "com.example.weathertracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "349558798002-cdc1qijp15t7t1lf226s4q11v8ph8adr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANrtBOTGXBzAKVioDmveL-qw4k1_FWTu4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "349558798002-cdc1qijp15t7t1lf226s4q11v8ph8adr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

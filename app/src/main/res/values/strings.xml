@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">WeatherTracker</string>
+    <string name="account">帳號</string>
+    <string name="password">密碼</string>
+    <string name="register">註冊</string>
+    <string name="login">登入</string>
+    <string name="forget">忘記密碼?</string>
+    <string name="home">主頁面</string>
+    <string name="profile">個人資料</string>
+    <string name="FP_growth">搜尋/推薦</string>
+</resources>
