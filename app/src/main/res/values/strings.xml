@@ -8,4 +8,6 @@
     <string name="home">主頁面</string>
     <string name="profile">個人資料</string>
     <string name="FP_growth">搜尋/推薦</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
