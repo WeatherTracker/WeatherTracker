@@ -7,17 +7,21 @@
     tools:context=".Account.Login">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/et_account"
+        android:id="@+id/et_email"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:hint="@string/account"
+        app:endIconMode="clear_text"
+        app:startIconDrawable="@drawable/ic_baseline_email_24"
         app:layout_constraintTop_toBottomOf="@+id/imageView">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -29,7 +33,8 @@
         android:layout_margin="15dp"
         android:hint="@string/password"
         app:endIconMode="password_toggle"
-        app:layout_constraintTop_toBottomOf="@+id/et_account"
+        app:startIconDrawable="@drawable/ic_baseline_vpn_key_24"
+        app:layout_constraintTop_toBottomOf="@+id/et_email"
         tools:layout_editor_absoluteX="15dp">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -65,7 +70,7 @@
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
+        android:layout_margin="5dp"
         android:text="@string/forget"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,11 +81,19 @@
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
+        android:layout_marginStart="5dp"
         android:text="@string/register"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_forget" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_password" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
@@ -89,6 +102,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_password" />
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

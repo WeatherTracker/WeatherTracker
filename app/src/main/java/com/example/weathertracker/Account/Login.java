@@ -26,7 +26,7 @@ public class Login extends AppCompatActivity {
     private SignInButton signInButton;
     private String TAG = "GSO";
     private int RC_SIGN_IN = 200;
-    private Button btn_login,btn_forget, btn_signUp;
+    private Button btn_login, btn_forget, btn_signUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +39,7 @@ public class Login extends AppCompatActivity {
 
 
     }
+
     private void findID() {
         signInButton = findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_WIDE);
@@ -63,31 +64,33 @@ public class Login extends AppCompatActivity {
         btn_forget.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(Login.this, ForgetPassword.class);
+                startActivity(intent);
             }
         });
         btn_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(Login.this, SignUp.class);
+                startActivity(intent);
             }
         });
 
     }
 
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account != null) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
-
-//        updateUI(account);
-    }
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        account = GoogleSignIn.getLastSignedInAccount(this);
+//        if (account != null) {
+//            Intent intent = new Intent(this, MainActivity.class);
+//            startActivity(intent);
+//            finish();
+//        }
+//
+////        updateUI(account);
+//    }
 
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">WeatherTracker</string>
-    <string name="account">帳號</string>
+    <string name="account">信箱</string>
     <string name="password">密碼</string>
     <string name="register">註冊</string>
     <string name="login">登入</string>
@@ -8,4 +8,80 @@
     <string name="home">主頁面</string>
     <string name="profile">個人資料</string>
     <string name="FP_growth">搜尋/推薦</string>
+    <string name="signUpMsg">註冊 Weather Tracker</string>
+    <string name="forgetMsg">忘記密碼</string>
+    <string name="send_mail">取得信件</string>
+    <string name="name">姓名</string>
+    <string name="hobby">興趣</string>
+    <string name="AHP">排程偏好</string>
+    <string name="weather">天氣良好</string>
+    <string name="free_time">空閒時間</string>
+    <string name="free_time2">通常有空的時間</string>
+    <string name="keep_participants">保留來賓</string>
+    <string name="monday">(一)</string>
+    <string name="tuesday">(二)</string>
+    <string name="wednesday">(三)</string>
+    <string name="thursday">(四)</string>
+    <string name="friday">(五)</string>
+    <string name="saturday">(六)</string>
+    <string name="sunday">(日)</string>
+    <string name="morning">早上</string>
+    <string name="afternoon">下午</string>
+    <string name="night">晚上</string>
+    <string name="space" />
+
+    <string-array name="hobby_class">
+        <item>選擇活動類別</item>
+        <item>戶外活動類</item>
+        <item>運動類</item>
+        <item>藝文嗜好類</item>
+        <item>益智類</item>
+        <item>視聽類</item>
+        <item>休憩社交類</item>
+        <item>其它類</item>
+    </string-array>
+    <string-array name="hobbies_empty">
+    </string-array>
+    <string-array name="hobbies_outdoor_events">
+        <item>選擇興趣</item>
+        <item>健行</item>
+        <item>賞鳥</item>
+        <item>散步</item>
+        <item>旅遊</item>
+        <item>踏青</item>
+        <item>賽車</item>
+        <item>開車兜風</item>
+        <item>騎單車</item>
+    </string-array>
+    <string-array name="hobbies_sports">
+        <item>選擇興趣</item>
+        <item>釣魚</item>
+        <item>游泳</item>
+        <item>水上活動</item>
+        <item>拖曳傘</item>
+        <item>桌球</item>
+        <item>撞球</item>
+        <item>保齡球</item>
+        <item>羽球</item>
+        <item>網球</item>
+        <item>棒球</item>
+        <item>籃球</item>
+        <item>高爾夫球</item>
+        <item>排球</item>
+        <item>打拳</item>
+        <item>靜坐</item>
+        <item>有氧</item>
+        <item>健身</item>
+        <item>瑜珈</item>
+    </string-array>
+    <string-array name="hobbies_arts">
+    </string-array>
+    <string-array name="hobbies_puzzle">
+    </string-array>
+    <string-array name="hobbies_audiovisual">
+    </string-array>
+    <string-array name="hobbies_social">
+    </string-array>
+    <string-array name="hobbies_others">
+    </string-array>
 </resources>
