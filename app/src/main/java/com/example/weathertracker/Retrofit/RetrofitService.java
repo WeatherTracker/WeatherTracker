@@ -9,6 +9,8 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-public interface RetrofitManagerAPI {
-    
+public interface RetrofitService {
+    @FormUrlEncoded
+    @POST("send_mail")
+    Call<Ack> send_registeredMail(@Field("email") String email);
 }

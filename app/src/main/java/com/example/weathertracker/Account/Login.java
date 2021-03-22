@@ -2,6 +2,7 @@ package com.example.weathertracker.Account;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.royrodriguez.transitionbutton.TransitionButton;
 
 public class Login extends AppCompatActivity {
     private GoogleSignInOptions gso;
@@ -26,7 +28,8 @@ public class Login extends AppCompatActivity {
     private SignInButton signInButton;
     private String TAG = "GSO";
     private int RC_SIGN_IN = 200;
-    private Button btn_login, btn_forget, btn_signUp;
+    private Button btn_forget, btn_signUp;
+    private TransitionButton btn_login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +61,31 @@ public class Login extends AppCompatActivity {
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Start the loading animation when the user tap the button
+                btn_login.startAnimation();
 
+                // Do your networking task or background work here.
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean isSuccessful = true;
+
+                        // Choose a stop animation if your call was successful or not
+                        if (isSuccessful) {
+                            btn_login.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND, new TransitionButton.OnAnimationStopEndListener() {
+                                @Override
+                                public void onAnimationStopEnd() {
+                                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
+                        } else {
+                            btn_login.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
+                        }
+                    }
+                }, 1000);
             }
         });
         btn_forget.setOnClickListener(new View.OnClickListener() {

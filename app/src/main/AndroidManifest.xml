@@ -12,17 +12,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WeatherTracker">
         <activity android:name=".Account.ResetPassword" />
-        <activity android:name=".Account.Register" >
+        <activity android:name=".Account.Profile" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".Account.ForgetPassword" />
-        <activity android:name=".Account.SignUp" />
+        <activity android:name=".Account.SignUp">
+
+        </activity>
         <activity
             android:name=".Account.Login"
             android:screenOrientation="portrait">
+
         </activity>
         <activity android:name=".MainActivity">
 

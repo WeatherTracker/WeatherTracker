@@ -2,6 +2,7 @@
     <string name="app_name">WeatherTracker</string>
     <string name="account">信箱</string>
     <string name="password">密碼</string>
+    <string name="password_again">確認密碼</string>
     <string name="register">註冊</string>
     <string name="login">登入</string>
     <string name="forget">忘記密碼?</string>
@@ -31,6 +32,8 @@
     <string name="space" />
     <string name="hobby_class">活動類別</string>
     <string name="hobby_name">活動名稱</string>
+    <string name="confirm">確定</string>
+
     <string-array name="hobby_classes">
         <item>戶外活動類</item>
         <item>運動類</item>
