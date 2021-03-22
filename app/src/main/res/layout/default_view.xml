@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="2dp"
+    android:padding="2dp">
+    <androidx.cardview.widget.CardView
+        android:layout_width="45dp"
+        android:layout_height="40dp"
+        android:layout_margin="4dp"
+        app:cardBackgroundColor="@android:color/holo_blue_bright"
+        android:alpha="0.5"
+        app:cardCornerRadius="4dp">
+        <ImageView
+            android:id="@+id/cycle"
+            android:layout_gravity="right"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:src="@drawable/ic_baseline_brightness_1_24"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/text_view"
+            android:textColor="@color/black"
+            android:gravity="center"/>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>
