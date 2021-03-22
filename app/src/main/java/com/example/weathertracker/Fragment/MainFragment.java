@@ -75,7 +75,6 @@ public class MainFragment extends Fragment {
         customCalendar.setOnDateSelectedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(View view, Calendar selectedDate, Object desc) {
-
                 View[] month_days = customCalendar.getAllViews();
                 int date = 0; int month = 0;
                 Intent intent = new Intent(getActivity(), dateDetailActivity.class);
