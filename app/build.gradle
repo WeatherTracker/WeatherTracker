@@ -53,6 +53,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:21.0.1'
 // calendar
     implementation 'org.naishadhparmar.zcustomcalendar:zcustomcalendar:1.0.1'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     //retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.7.2'
     implementation 'com.squareup.retrofit2:converter-gson:2.7.2'

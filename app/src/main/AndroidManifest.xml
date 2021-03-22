@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WeatherTracker">
+        <activity android:name=".Fragment.dateDetailActivity"></activity>
         <activity android:name=".Account.ResetPassword" />
         <activity android:name=".Account.Profile" >
 
