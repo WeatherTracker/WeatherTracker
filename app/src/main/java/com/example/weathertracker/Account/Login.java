@@ -1,20 +1,35 @@
 package com.example.weathertracker.Account;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.weathertracker.MainActivity;
 import com.example.weathertracker.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInApi;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
+import com.royrodriguez.transitionbutton.TransitionButton;
 
 public class Login extends AppCompatActivity {
-    GoogleSignInOptions gso;
-    GoogleSignInClient mGoogleSignInClient;
-    GoogleSignInAccount account;
+    private GoogleSignInOptions gso;
+    private GoogleSignInClient mGoogleSignInClient;
+    private GoogleSignInAccount account;
+    private SignInButton signInButton;
+    private String TAG = "GSO";
+    private int RC_SIGN_IN = 200;
+    private Button btn_forget, btn_signUp;
+    private TransitionButton btn_login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +37,121 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        account = GoogleSignIn.getLastSignedInAccount(this);
+        findID();
+        setListener();
+
+
+    }
+
+    private void findID() {
+        signInButton = findViewById(R.id.sign_in_button);
+        signInButton.setSize(SignInButton.SIZE_WIDE);
+        btn_login = findViewById(R.id.btn_login);
+        btn_forget = findViewById(R.id.btn_forget);
+        btn_signUp = findViewById(R.id.btn_signUp);
+    }
+
+    private void setListener() {
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signIn();
+            }
+        });
+        btn_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start the loading animation when the user tap the button
+                btn_login.startAnimation();
+
+                // Do your networking task or background work here.
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean isSuccessful = true;
+
+                        // Choose a stop animation if your call was successful or not
+                        if (isSuccessful) {
+                            btn_login.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND, new TransitionButton.OnAnimationStopEndListener() {
+                                @Override
+                                public void onAnimationStopEnd() {
+                                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
+                        } else {
+                            btn_login.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
+                        }
+                    }
+                }, 1000);
+            }
+        });
+        btn_forget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Login.this, ForgetPassword.class);
+                startActivity(intent);
+            }
+        });
+        btn_signUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Login.this, SignUp.class);
+                startActivity(intent);
+            }
+        });
+
+    }
+
+
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        account = GoogleSignIn.getLastSignedInAccount(this);
+//        if (account != null) {
+//            Intent intent = new Intent(this, MainActivity.class);
+//            startActivity(intent);
+//            finish();
+//        }
+//
+////        updateUI(account);
+//    }
+
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+//            updateUI(null);
+            Toast.makeText(this, "登入失敗，請稍後再試", Toast.LENGTH_SHORT).show();
+        }
     }
 }
