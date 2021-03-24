@@ -7,6 +7,9 @@ import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -31,8 +34,11 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MainFragment extends Fragment {
-    CustomCalendar customCalendar;
+public class MainFragment extends Fragment implements AdapterView.OnItemSelectedListener{
+    private CustomCalendar customCalendar;
+    private Calendar calendar;
+    private Spinner spinner;
+    private LineChart lineChart;
     private long startClickTime = 0;
     private int pickDate=0;
     public MainFragment() {
@@ -46,9 +52,6 @@ public class MainFragment extends Fragment {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_main, container, false);
         customCalendar = root.findViewById(R.id.custom_calender);
-
-
-
 
         HashMap<Object, Property> descHahMap = new HashMap<>();
         Property defaultProperty = new Property();
@@ -67,9 +70,12 @@ public class MainFragment extends Fragment {
         customCalendar.setMapDescToProp(descHahMap);
 
         HashMap<Integer,Object> dateHashMap = new HashMap<>();
-        Calendar calendar = Calendar.getInstance();
+        calendar = Calendar.getInstance();
 
         dateHashMap.put(calendar.get(Calendar.DAY_OF_MONTH),"current");
+
+        spinner =root.findViewById(R.id.spinners_weatherDetail);
+        getDropdownList(Calendar.DATE);
 
 
         customCalendar.setOnDateSelectedListener(new OnDateSelectedListener() {
@@ -97,57 +103,32 @@ public class MainFragment extends Fragment {
                         }
                         pickDate =date;
                     }
+                    //dropdownlist
+                    getDropdownList(date);
                 }
             }
         });
 
         customCalendar.setDate(calendar, dateHashMap);
 
-
-
-
-
-
-
-        LineChart lineChart = root.findViewById(R.id.lineChart);
-
-        LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(),"");
-        ArrayList<ILineDataSet> iLineDataSets = new ArrayList<>();
-        iLineDataSets.add(lineDataSet);
-
-        LineData lineData = new LineData(iLineDataSets);
-        lineChart.setData(lineData);
-        lineChart.invalidate();
-
-        lineChart.setNoDataText("Data not Available");
-
-        //you can modify your line chart graph according to your requirement there are lots of method available in this library
-
-        //now customize line chart
-        Description description = lineChart.getDescription();
-        description.setText("美元(USD)");//顯示文字名稱
-        description.setTextSize(14);//字體大小
-        description.setTextColor(Color.BLUE);//字體顏色
-        description.setPosition(900, 80);
-
-
-
-        //設定沒資料時顯示的內容
-        lineChart.setNoDataText("暫時沒有數據");
-        lineChart.setNoDataTextColor(Color.BLUE);
-        lineDataSet.setColor(Color.BLUE);
-        lineDataSet.setCircleColor(Color.RED);
-        lineDataSet.setDrawCircles(true);
-        lineDataSet.setDrawCircleHole(true);
-        lineDataSet.setLineWidth(2);
-        lineDataSet.setCircleRadius(5);
-        lineDataSet.setCircleHoleRadius(2);
-        lineDataSet.setValueTextSize(10);
-        lineDataSet.setValueTextColor(Color.BLACK);
+        lineChart = root.findViewById(R.id.lineChart);
+        makeChart(calendar.get(Calendar.DAY_OF_MONTH),"溫度");
 
         return root;
     }
 
+    private void getDropdownList(int i) {
+        ArrayAdapter<CharSequence> adapter = null;
+        if((i-Calendar.DATE)<3&&(i-Calendar.DATE)>-1) {
+            adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_2, android.R.layout.simple_spinner_item);
+        }
+        if((i-Calendar.DATE)<8&&(i-Calendar.DATE)>2) {
+            adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_7, android.R.layout.simple_spinner_item);
+        }
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+    }
 
 
 
@@ -166,4 +147,55 @@ public class MainFragment extends Fragment {
         return  dataSet;
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        String text = adapterView.getItemAtPosition(i).toString();
+        Toast.makeText(adapterView.getContext(),text,Toast.LENGTH_SHORT).show();
+        makeChart(calendar.get(Calendar.DAY_OF_MONTH),text);
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
+
+
+
+    public void makeChart(int date,String s){
+        LineDataSet lineDataSet = null;
+        lineDataSet = new LineDataSet(lineChartDataSet(),s);
+        ArrayList<ILineDataSet> iLineDataSets = new ArrayList<>();
+        iLineDataSets.add(lineDataSet);
+
+        LineData lineData = new LineData(iLineDataSets);
+        lineChart.setData(lineData);
+        lineChart.invalidate();
+
+        lineChart.setNoDataText("Data not Available");
+
+        //you can modify your line chart graph according to your requirement there are lots of method available in this library
+
+        //now customize line chart
+        Description description = lineChart.getDescription();
+        description.setText(String.valueOf(date));//顯示文字名稱
+        description.setTextSize(14);//字體大小
+        description.setTextColor(Color.BLUE);//字體顏色
+        description.setPosition(900, 80);
+
+
+
+        //設定沒資料時顯示的內容
+        lineChart.setNoDataText("暫時沒有數據");
+        lineChart.setNoDataTextColor(Color.BLUE);
+        lineDataSet.setColor(Color.BLUE);
+        lineDataSet.setCircleColor(Color.RED);
+        lineDataSet.setDrawCircles(true);
+        lineDataSet.setDrawCircleHole(true);
+        lineDataSet.setLineWidth(2);
+        lineDataSet.setCircleRadius(5);
+        lineDataSet.setCircleHoleRadius(2);
+        lineDataSet.setValueTextSize(10);
+        lineDataSet.setValueTextColor(Color.BLACK);
+    }
 }
