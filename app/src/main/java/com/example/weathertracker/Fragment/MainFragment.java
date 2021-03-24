@@ -24,23 +24,25 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import org.naishadhparmar.zcustomcalendar.CustomCalendar;
 import org.naishadhparmar.zcustomcalendar.OnDateSelectedListener;
+import org.naishadhparmar.zcustomcalendar.OnNavigationButtonClickedListener;
 import org.naishadhparmar.zcustomcalendar.Property;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MainFragment extends Fragment implements AdapterView.OnItemSelectedListener{
+public class MainFragment extends Fragment implements AdapterView.OnItemSelectedListener , OnNavigationButtonClickedListener {
     private CustomCalendar customCalendar;
     private Calendar calendar;
     private Spinner spinner;
     private LineChart lineChart;
     private long startClickTime = 0;
-    private int pickDate=0;
+    private int pickDate=0, date = 0, month = 0;
     public MainFragment() {
         // Required empty public constructor
     }
@@ -82,14 +84,14 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
             @Override
             public void onDateSelected(View view, Calendar selectedDate, Object desc) {
                 View[] month_days = customCalendar.getAllViews();
-                int date = 0; int month = 0;
+
                 Intent intent = new Intent(getActivity(), dateDetailActivity.class);
                 date =selectedDate.get(Calendar.DATE);
                 month =(selectedDate.get(Calendar.MONTH)+1);
                 intent.putExtra("DATE",date);
                 intent.putExtra("MONTH",month);
 
-                if (SystemClock.uptimeMillis() - startClickTime < 300) {//判断两次点击时间差
+                if (SystemClock.uptimeMillis() - startClickTime < 300 && pickDate==date) {//判断两次点击时间差
                     Toast.makeText(getActivity(), "双击事件", Toast.LENGTH_SHORT).show();
                     startActivity(intent);
                 } else {
@@ -100,11 +102,13 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
                         if(pickDate!=0) {
                             temp_view = month_days[pickDate-1];
                             temp_view.setBackgroundResource(R.drawable.date_picknull);
+                            //todo:
+                           // getDropdownList(date);
                         }
                         pickDate =date;
                     }
                     //dropdownlist
-                    getDropdownList(date);
+
                 }
             }
         });
@@ -112,17 +116,28 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
         customCalendar.setDate(calendar, dateHashMap);
 
         lineChart = root.findViewById(R.id.lineChart);
-        makeChart(calendar.get(Calendar.DAY_OF_MONTH),"溫度");
+
+
+        customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.PREVIOUS,(OnNavigationButtonClickedListener) this);
+        customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.NEXT, (OnNavigationButtonClickedListener) this);
+        customCalendar.setDate(calendar, dateHashMap);
+
+
+
+
 
         return root;
     }
 
+
+
+
     private void getDropdownList(int i) {
         ArrayAdapter<CharSequence> adapter = null;
-        if((i-Calendar.DATE)<3&&(i-Calendar.DATE)>-1) {
+        if(i-calendar.get(Calendar.DAY_OF_MONTH)<3&&i-calendar.get(Calendar.DAY_OF_MONTH)>-1) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_2, android.R.layout.simple_spinner_item);
         }
-        if((i-Calendar.DATE)<8&&(i-Calendar.DATE)>2) {
+        if((i-calendar.get(Calendar.DAY_OF_MONTH))<8&&(i-calendar.get(Calendar.DAY_OF_MONTH))>2) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_7, android.R.layout.simple_spinner_item);
         }
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -158,13 +173,13 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
+        makeChart(date  ,"溫度");
     }
 
 
 
     public void makeChart(int date,String s){
-        LineDataSet lineDataSet = null;
-        lineDataSet = new LineDataSet(lineChartDataSet(),s);
+        LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(),s);
         ArrayList<ILineDataSet> iLineDataSets = new ArrayList<>();
         iLineDataSets.add(lineDataSet);
 
@@ -183,12 +198,10 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
         description.setTextColor(Color.BLUE);//字體顏色
         description.setPosition(900, 80);
 
-
-
         //設定沒資料時顯示的內容
         lineChart.setNoDataText("暫時沒有數據");
         lineChart.setNoDataTextColor(Color.BLUE);
-        lineDataSet.setColor(Color.BLUE);
+        lineDataSet.setColor(Color.RED);
         lineDataSet.setCircleColor(Color.RED);
         lineDataSet.setDrawCircles(true);
         lineDataSet.setDrawCircleHole(true);
@@ -197,5 +210,63 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
         lineDataSet.setCircleHoleRadius(2);
         lineDataSet.setValueTextSize(10);
         lineDataSet.setValueTextColor(Color.BLACK);
+    }
+
+
+    public Map<Integer, Object>[] onNavigationButtonClicked(int whichButton, Calendar newMonth) {
+        Map<Integer, Object>[] arr = new Map[2];
+        switch(newMonth.get(Calendar.MONTH)) {
+            case Calendar.JANUARY:
+                arr[0] = new HashMap<>();
+                break;
+            case Calendar.FEBRUARY:
+                arr[0] = new HashMap<>(); //This is the map linking a date to its description
+//                for(int i=1;i<=31;i++){
+//                    if(a[2][i]==1)arr[0].put(i,"absent");
+//                }
+                for(int i=201;i<=231;i++){
+                    String j =String.valueOf(i);
+                }
+
+                arr[1] = null; //Optional: This is the map linking a date to its tag.
+                break;
+            case Calendar.MARCH:
+                arr[0] = new HashMap<>();
+                break;
+            case Calendar.APRIL:
+                arr[0] = new HashMap<>();
+                break;
+            case Calendar.MAY:
+                arr[0] = new HashMap<>();
+                break;
+            case Calendar.JUNE:
+
+                arr[0] = new HashMap<>();
+                arr[0].put(5, "presnet");
+                arr[0].put(10, "presnet");
+                arr[0].put(19, "presnet");
+                break;
+
+            case Calendar.JULY:
+                arr[0] = new HashMap<>();
+                break;
+            case Calendar.AUGUST:
+                arr[0] = new HashMap<>();
+                break;
+            case Calendar.SEPTEMBER:
+                arr[0] = new HashMap<>();
+                break;
+            case Calendar.OCTOBER:
+                arr[0] = new HashMap<>();
+                break;
+                case Calendar.NOVEMBER:
+                arr[0] = new HashMap<>();
+                break;
+            case Calendar.DECEMBER:
+                arr[0] = new HashMap<>();
+                break;
+
+        }
+        return arr;
     }
 }
