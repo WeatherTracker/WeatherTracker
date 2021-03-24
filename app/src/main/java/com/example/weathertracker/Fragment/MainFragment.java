@@ -43,6 +43,8 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
     private LineChart lineChart;
     private long startClickTime = 0;
     private int pickDate=0, date = 0, month = 0;
+
+    ArrayAdapter<CharSequence> adapter = null;
     public MainFragment() {
         // Required empty public constructor
     }
@@ -79,6 +81,9 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
         spinner =root.findViewById(R.id.spinners_weatherDetail);
         getDropdownList(Calendar.DATE);
 
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
 
         customCalendar.setOnDateSelectedListener(new OnDateSelectedListener() {
             @Override
@@ -103,7 +108,7 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
                             temp_view = month_days[pickDate-1];
                             temp_view.setBackgroundResource(R.drawable.date_picknull);
                             //todo:
-                           // getDropdownList(date);
+                            getDropdownList(date);
                         }
                         pickDate =date;
                     }
@@ -133,16 +138,12 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
 
 
     private void getDropdownList(int i) {
-        ArrayAdapter<CharSequence> adapter = null;
-        if(i-calendar.get(Calendar.DAY_OF_MONTH)<3&&i-calendar.get(Calendar.DAY_OF_MONTH)>-1) {
+        if((i-Calendar.DATE)<3&&(i-Calendar.DATE)>-1) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_2, android.R.layout.simple_spinner_item);
         }
-        if((i-calendar.get(Calendar.DAY_OF_MONTH))<8&&(i-calendar.get(Calendar.DAY_OF_MONTH))>2) {
+        if((i-Calendar.DATE)<8&&(i-Calendar.DATE)>2) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_7, android.R.layout.simple_spinner_item);
         }
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
     }
 
 
