@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">WeatherTracker</string>
+    <string name="maps_api_key">AIzaSyCuPuvYk6tylLQbUpZxYuZqc-dxJaLNH7c</string>
     <string name="account">信箱</string>
     <string name="password">密碼</string>
+    <string name="password_again">確認密碼</string>
     <string name="register">註冊</string>
     <string name="login">登入</string>
     <string name="forget">忘記密碼?</string>
@@ -31,6 +33,8 @@
     <string name="space" />
     <string name="hobby_class">活動類別</string>
     <string name="hobby_name">活動名稱</string>
+    <string name="confirm">確定</string>
+
     <string-array name="hobby_classes">
         <item>戶外活動類</item>
         <item>運動類</item>
@@ -41,116 +45,142 @@
         <item>其它類</item>
     </string-array>
     <string-array name="hobbies_outdoor_events">
-<!--        野外活動項-->
+        <!--        野外活動項-->
         <item>健行</item>
         <item>賞鳥</item>
         <item>散步</item>
         <item>旅遊</item>
-<!--        車輛休閒項-->
+        <!--        車輛休閒項-->
         <item>賽車</item>
         <item>開車兜風</item>
         <item>騎單車</item>
     </string-array>
     <string-array name="hobbies_sports">
-<!--        魚釣項-->
+        <!--        魚釣項-->
         <item>釣魚</item>
-<!--        戲水項-->
+        <!--        戲水項-->
         <item>游泳</item>
         <item>水上活動</item>
-<!--        空中活動項-->
+        <!--        空中活動項-->
         <item>拖曳傘</item>
-<!--        室內球賽項-->
+        <!--        室內球賽項-->
         <item>桌球</item>
         <item>撞球</item>
         <item>保齡球</item>
-<!--        室外球賽項-->
+        <!--        室外球賽項-->
         <item>羽球</item>
         <item>網球</item>
         <item>棒球</item>
         <item>籃球</item>
         <item>高爾夫球</item>
         <item>排球</item>
-<!--        養身健身項-->
+        <!--        養身健身項-->
         <item>打拳</item>
         <item>靜坐</item>
         <item>有氧</item>
         <item>健身</item>
         <item>瑜珈</item>
-<!--        登山項-->
+        <!--        登山項-->
         <item>登山</item>
         <item>健行</item>
 
-<!--        跑步項-->
+        <!--        跑步項-->
         <item>慢跑</item>
         <item>跑步</item>
     </string-array>
     <string-array name="hobbies_arts">
-<!--        樂器項-->
+        <!--        樂器項-->
         <item>彈奏樂器</item>
-<!--        舞蹈項-->
+        <!--        舞蹈項-->
         <item>舞蹈</item>
-<!--        攝影項-->
+        <!--        攝影項-->
         <item>攝影</item>
-<!--        中國書畫項-->
+        <!--        中國書畫項-->
         <item>書法</item>
-<!--        藝文欣賞項-->
+        <!--        藝文欣賞項-->
         <item>藝文展覽</item>
         <item>表演欣賞</item>
-<!--        手工藝項-->
+        <!--        手工藝項-->
         <item>手工藝</item>
-<!--        閱讀項-->
+        <!--        閱讀項-->
         <item>閱讀</item>
-<!--        園藝項-->
+        <!--        園藝項-->
         <item>園藝</item>
     </string-array>
     <string-array name="hobbies_puzzle">
-<!--        電腦網路項-->
+        <!--        電腦網路項-->
         <item>上網</item>
         <item>電競</item>
-<!--        動腦遊戲項-->
+        <!--        動腦遊戲項-->
         <item>桌遊</item>
         <item>益智遊戲</item>
         <item>密室逃脫</item>
-<!--        博戲項-->
+        <!--        博戲項-->
         <item>博弈</item>
     </string-array>
     <string-array name="hobbies_audiovisual">
-<!--        視項-->
+        <!--        視項-->
         <item>電視</item>
         <item>錄影帶</item>
         <item>電影</item>
-<!--        聽項-->
+        <!--        聽項-->
         <item>KTV</item>
         <item>聽音樂</item>
     </string-array>
     <string-array name="hobbies_social">
-<!--        美容塑身項-->
+        <!--        美容塑身項-->
         <item>泡湯</item>
         <item>SPA</item>
         <item>按摩</item>
-<!--        休閒中心項-->
+        <!--        休閒中心項-->
         <item>遊樂園</item>
         <item>娛樂中心</item>
-<!--        逛街購物項-->
+        <!--        逛街購物項-->
         <item>逛街購物</item>
-<!--        飲食項-->
+        <!--        飲食項-->
         <item>下午茶</item>
-<!--        聚會活動項-->
+        <!--        聚會活動項-->
         <item>聚餐</item>
-<!--        宗教活動項-->
+        <!--        宗教活動項-->
         <item>禮拜</item>
-<!--        團體活動項-->
+        <!--        團體活動項-->
         <item>團康</item>
     </string-array>
     <string-array name="hobbies_others">
-<!--        居家項-->
+        <!--        居家項-->
         <item>親子活動</item>
         <item>打掃</item>
         <item>睡覺</item>
         <item>做家事</item>
-<!--        其他項-->
+        <!--        其他項-->
         <item>其他</item>
     </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="day_2">
+        <item>溫度</item>
+        <item>濕度</item>
+        <item>風速</item>
+        <item>降雨機率</item>
+        <item>紫外線</item>
+        <item>AQI</item>
+    </string-array>
+
+    <string-array name="day_7">
+        <item>溫度</item>
+        <item>濕度</item>
+        <item>風速</item>
+        <item>降雨機率</item>
+        <item>紫外線</item>
+    </string-array>
+
+    <string-array name="day_history">
+        <item>溫度</item>
+        <item>濕度</item>
+        <item>風速</item>
+        <item>紫外線</item>
+    </string-array>
+
+
 </resources>
