@@ -42,7 +42,7 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
     private Spinner spinner;
     private LineChart lineChart;
     private long startClickTime = 0;
-    private int pickDate=0, date = 0, month = 0;
+    private int pickDate=0, date = 0, month = 0,today=0;
 
     ArrayAdapter<CharSequence> adapter = null;
     public MainFragment() {
@@ -77,12 +77,12 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
         calendar = Calendar.getInstance();
 
         dateHashMap.put(calendar.get(Calendar.DAY_OF_MONTH),"current");
+        today=calendar.get(Calendar.DAY_OF_MONTH);
 
+        pickDate=calendar.get(Calendar.DAY_OF_MONTH);
         spinner =root.findViewById(R.id.spinners_weatherDetail);
-        getDropdownList(Calendar.DATE);
+        getDropdownList(calendar.get(Calendar.DAY_OF_MONTH));
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
         customCalendar.setOnDateSelectedListener(new OnDateSelectedListener() {
@@ -138,12 +138,18 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
 
 
     private void getDropdownList(int i) {
-        if((i-Calendar.DATE)<3&&(i-Calendar.DATE)>-1) {
+        int date=i-today;
+        System.out.println(i+"+"+today+"+"+date);
+        if(date>=0&&date<=3) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_2, android.R.layout.simple_spinner_item);
         }
-        if((i-Calendar.DATE)<8&&(i-Calendar.DATE)>2) {
+        if(date>2&&date<=7) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_7, android.R.layout.simple_spinner_item);
         }
+        if(date<0) {
+            adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_history, android.R.layout.simple_spinner_item);
+        }
+        spinner.setAdapter(adapter);
     }
 
 
