@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -42,7 +41,7 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
     private Spinner spinner;
     private LineChart lineChart;
     private long startClickTime = 0;
-    private int pickDate=0, date = 0, month = 0,today=0;
+    private int pickDate=0, date = 0, month = 0,today=0,today_month=0;
 
     ArrayAdapter<CharSequence> adapter = null;
     public MainFragment() {
@@ -78,10 +77,12 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
 
         dateHashMap.put(calendar.get(Calendar.DAY_OF_MONTH),"current");
         today=calendar.get(Calendar.DAY_OF_MONTH);
-
-        pickDate=calendar.get(Calendar.DAY_OF_MONTH);
+        today_month=calendar.get(Calendar.MONTH);
+        date=today;
+        month=today_month+1;
+//        pickDate=today;
         spinner =root.findViewById(R.id.spinners_weatherDetail);
-        getDropdownList(calendar.get(Calendar.DAY_OF_MONTH));
+        getDropdownList(today,today_month);
 
         spinner.setOnItemSelectedListener(this);
 
@@ -97,7 +98,6 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
                 intent.putExtra("MONTH",month);
 
                 if (SystemClock.uptimeMillis() - startClickTime < 300 && pickDate==date) {//判断两次点击时间差
-                    Toast.makeText(getActivity(), "双击事件", Toast.LENGTH_SHORT).show();
                     startActivity(intent);
                 } else {
                     startClickTime = SystemClock.uptimeMillis();
@@ -108,7 +108,7 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
                             temp_view = month_days[pickDate-1];
                             temp_view.setBackgroundResource(R.drawable.date_picknull);
                             //todo:
-                            getDropdownList(date);
+                            getDropdownList(date,month);
                         }
                         pickDate =date;
                     }
@@ -137,7 +137,7 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
 
 
 
-    private void getDropdownList(int i) {
+    private void getDropdownList(int i,int j) {
         int date=i-today;
         System.out.println(i+"+"+today+"+"+date);
         if(date>=0&&date<=3) {
@@ -172,20 +172,20 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         String text = adapterView.getItemAtPosition(i).toString();
-        Toast.makeText(adapterView.getContext(),text,Toast.LENGTH_SHORT).show();
-        makeChart(calendar.get(Calendar.DAY_OF_MONTH),text);
+        //Toast.makeText(adapterView.getContext(),text,Toast.LENGTH_SHORT).show();
+        makeChart(date,month,text);
 
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
-        makeChart(date  ,"溫度");
+        makeChart(today,today_month,"溫度");
     }
 
 
 
-    public void makeChart(int date,String s){
+    public void makeChart(int date,int month,String s){
         LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(),s);
         ArrayList<ILineDataSet> iLineDataSets = new ArrayList<>();
         iLineDataSets.add(lineDataSet);
@@ -200,7 +200,7 @@ public class MainFragment extends Fragment implements AdapterView.OnItemSelected
 
         //now customize line chart
         Description description = lineChart.getDescription();
-        description.setText(String.valueOf(date));//顯示文字名稱
+        description.setText(String.valueOf(month*100+date));//顯示文字名稱
         description.setTextSize(14);//字體大小
         description.setTextColor(Color.BLUE);//字體顏色
         description.setPosition(900, 80);
