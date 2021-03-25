@@ -157,4 +157,30 @@
     </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="day_2">
+        <item>溫度</item>
+        <item>濕度</item>
+        <item>風速</item>
+        <item>降雨機率</item>
+        <item>紫外線</item>
+        <item>AQI</item>
+    </string-array>
+
+    <string-array name="day_7">
+        <item>溫度</item>
+        <item>濕度</item>
+        <item>風速</item>
+        <item>降雨機率</item>
+        <item>紫外線</item>
+    </string-array>
+
+    <string-array name="day_history">
+        <item>溫度</item>
+        <item>濕度</item>
+        <item>風速</item>
+        <item>紫外線</item>
+    </string-array>
+
+
 </resources>
