@@ -20,7 +20,7 @@ public class RetrofitManager {
 
         // 設置baseUrl即要連的網站，addConverterFactory用Gson作為資料處理Converter
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://b39bd9c7d1d9.ngrok.io/")
+                .baseUrl("https://11f6340d4b0e.ngrok.io/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -31,7 +31,7 @@ public class RetrofitManager {
         return retrofitManager;
     }
 
-    public RetrofitService getAPI() {
+    public RetrofitService getService() {
         return retrofitService;
     }
 }
