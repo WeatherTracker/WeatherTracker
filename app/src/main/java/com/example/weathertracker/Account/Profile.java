@@ -12,7 +12,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.weathertracker.R;
-import com.example.weathertracker.Retrofit.User;
+import com.example.weathertracker.Retrofit.RetrofitManager;
+import com.example.weathertracker.Retrofit.RetrofitService;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -39,6 +40,7 @@ public class Profile extends AppCompatActivity {
     private HashMap<String, Integer> id_map = new HashMap<>();
     private Slider weather_VS_reasonable, reasonable_VS_keepParticipants, keepParticipants_VS_weather;
     private FloatingActionButton fab;
+    private RetrofitService retrofitService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,7 @@ public class Profile extends AppCompatActivity {
             public void onClick(View v) {
                 if (AHP_count() != null) {
 //                    CALL API
+                    retrofitService = RetrofitManager.getInstance().getService();
                 } else {
                     new SweetAlertDialog(Profile.this, SweetAlertDialog.WARNING_TYPE)
                             .setTitleText("Oops...")
