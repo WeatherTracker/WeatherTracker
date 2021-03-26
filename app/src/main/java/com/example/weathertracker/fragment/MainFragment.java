@@ -1,4 +1,4 @@
-package com.example.weathertracker.Fragment;
+package com.example.weathertracker.fragment;
 
 import android.content.Intent;
 import android.graphics.Color;

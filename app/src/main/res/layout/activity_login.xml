@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Account.Login">
+    tools:context=".account.LoginActivity">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/et_email"
+        android:id="@+id/etEmail"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,14 +26,14 @@
 
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/et_password"
+        android:id="@+id/etPassword"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:hint="@string/password"
         app:endIconMode="password_toggle"
-        app:layout_constraintTop_toBottomOf="@+id/et_email"
+        app:layout_constraintTop_toBottomOf="@+id/etEmail"
         app:startIconDrawable="@drawable/ic_baseline_vpn_key_24"
         tools:layout_editor_absoluteX="15dp">
 
@@ -58,7 +58,7 @@
 
 
     <com.royrodriguez.transitionbutton.TransitionButton
-        android:id="@+id/btn_login"
+        android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
@@ -69,12 +69,12 @@
         app:layout_constraintBottom_toTopOf="@+id/view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_password" />
+        app:layout_constraintTop_toBottomOf="@+id/etPassword" />
 
 
 
     <Button
-        android:id="@+id/btn_signUp"
+        android:id="@+id/btnSignUp"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -82,17 +82,17 @@
         android:text="@string/register"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_password" />
+        app:layout_constraintTop_toBottomOf="@+id/etPassword" />
 
     <Button
-        android:id="@+id/btn_forget"
+        android:id="@+id/btnForget"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/forget"
         android:textSize="12sp"
-        app:layout_constraintStart_toEndOf="@+id/btn_signUp"
-        app:layout_constraintTop_toBottomOf="@+id/et_password" />
+        app:layout_constraintStart_toEndOf="@+id/btnSignUp"
+        app:layout_constraintTop_toBottomOf="@+id/etPassword" />
 
 
     <View
@@ -101,10 +101,10 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_password" />
+        app:layout_constraintTop_toBottomOf="@+id/etPassword" />
 
     <com.google.android.gms.common.SignInButton
-        android:id="@+id/sign_in_button"
+        android:id="@+id/btnSignIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -1,10 +1,4 @@
-package com.example.weathertracker.Retrofit;
-
-import android.content.Context;
-import android.content.res.Resources;
-
-import com.bumptech.glide.load.engine.Resource;
-import com.example.weathertracker.R;
+package com.example.weathertracker.retrofit;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

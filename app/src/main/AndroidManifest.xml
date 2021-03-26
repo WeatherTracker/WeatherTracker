@@ -19,20 +19,23 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/maps_api_key" />
 
-        <activity android:name=".Event.NewEvent" />
-        <activity android:name=".Fragment.dateDetailActivity" />
-        <activity android:name=".Account.ResetPassword" />
-        <activity android:name=".Account.Profile" />
-        <activity android:name=".Account.ForgetPassword" />
-        <activity android:name=".Account.SignUp" />
-        <activity
-            android:name=".Account.Login"
-            android:screenOrientation="portrait">
+        <activity android:name=".event.NewEventActivity">
+
+        </activity>
+        <activity android:name=".fragment.dateDetailActivity" />
+        <activity android:name=".account.ResetPasswordActivity" />
+        <activity android:name=".account.ProfileActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".account.ForgetPasswordActivity" />
+        <activity android:name=".account.SignUpActivity" />
+        <activity
+            android:name=".account.LoginActivity"
+            android:screenOrientation="portrait">
+
         </activity>
         <activity android:name=".MainActivity">
 
@@ -47,7 +50,7 @@
         </activity>
 
         <service
-            android:name=".FCM.MyFirebaseMessagingService"
+            android:name=".fcm.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
