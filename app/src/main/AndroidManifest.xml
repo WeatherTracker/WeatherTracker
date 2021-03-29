@@ -11,10 +11,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WeatherTracker">
+        <activity android:name=".event.CheckAndEditActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-        <!--              The API key for Google Maps-based APIs. -->
+            android:value="@integer/google_play_services_version" /> <!-- The API key for Google Maps-based APIs. -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/maps_api_key" />
@@ -24,19 +31,14 @@
         </activity>
         <activity android:name=".fragment.dateDetailActivity" />
         <activity android:name=".account.ResetPasswordActivity" />
-        <activity android:name=".account.ProfileActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <activity android:name=".account.ProfileActivity" >
+
         </activity>
         <activity android:name=".account.ForgetPasswordActivity" />
         <activity android:name=".account.SignUpActivity" />
         <activity
             android:name=".account.LoginActivity"
-            android:screenOrientation="portrait">
-
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity android:name=".MainActivity">
 
             <!-- <intent-filter> -->

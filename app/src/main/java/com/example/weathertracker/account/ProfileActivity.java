@@ -12,13 +12,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.weathertracker.R;
+import com.example.weathertracker.retrofit.Ack;
 import com.example.weathertracker.retrofit.RetrofitManager;
 import com.example.weathertracker.retrofit.RetrofitService;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.slider.Slider;
-
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.apache.commons.math3.linear.EigenDecomposition;
 import org.apache.commons.math3.linear.MatrixUtils;
@@ -27,13 +28,17 @@ import org.apache.commons.math3.linear.RealMatrix;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProfileActivity extends AppCompatActivity {
     private ScrollView scrollView;
-    private String selected;
+    private String selected, userId;
     private ChipGroup chipGroup;
     private ArrayAdapter<CharSequence> hobbyClassAdapter, hobbiesAdapter;
     private Set<String> chipSet = new HashSet<>();
@@ -41,13 +46,18 @@ public class ProfileActivity extends AppCompatActivity {
     private HashMap<String, Integer> idMap = new HashMap<>();
     private Slider weatherVsReasonable, reasonableVsKeepParticipants, keepParticipantsVsWeather;
     private FloatingActionButton fab;
-    private RetrofitService retrofitService;
+    private TextInputEditText etUserName;
+    private List<Double> AHPPreference;
+    private List<Integer> freeTime;//todo:確認型態
+    private List<String> hobbies;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
+        userId = getSharedPreferences("sharedPreferences", MODE_PRIVATE).getString("userId", "");
         idMap.put("戶外活動類", R.array.hobbies_outdoor_events);
         idMap.put("運動類", R.array.hobbies_sports);
         idMap.put("藝文嗜好類", R.array.hobbies_arts);
@@ -61,6 +71,7 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     private void findId() {
+        etUserName = findViewById(R.id.etNameLayout);
         scrollView = findViewById(R.id.scrollView);
         chipGroup = findViewById(R.id.chipGroup);
         etHobbies = findViewById(R.id.etHobbies);
@@ -76,8 +87,29 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (AHP_count() != null) {
-//                    CALL API
-                    retrofitService = RetrofitManager.getInstance().getService();
+                    RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+                    hobbies = new ArrayList<>(chipSet);
+                    Call<Ack> call = retrofitService.editProfile(userId, etUserName.getText().toString(), AHPPreference, freeTime, hobbies);
+                    call.enqueue(new Callback<Ack>() {
+                        @Override
+                        public void onResponse(Call<Ack> call, Response<Ack> response) {
+                            if (!response.isSuccessful()) {
+                                Toast.makeText(ProfileActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Ack ack = response.body();
+                                if (ack.getCode() == 200) {
+                                    Toast.makeText(ProfileActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//去信箱收信
+                                } else {
+                                    Toast.makeText(ProfileActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Ack> call, Throwable t) {
+                            Toast.makeText(ProfileActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 } else {
                     new SweetAlertDialog(ProfileActivity.this, SweetAlertDialog.WARNING_TYPE)
                             .setTitleText("Oops...")
@@ -115,6 +147,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
+
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -164,12 +197,12 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    private Boolean AHP_check(double eigen_max) {
-        double CI = (eigen_max - 3) / 2;
+    private Boolean AHP_check(double eigenMax) {
+        double CI = (eigenMax - 3) / 2;
         return CI / 0.52 < 0.1;
     }
 
-    private ArrayList<Double> AHP_count() {
+    private List<Double> AHP_count() {
         float value_1 = weatherVsReasonable.getValue();
         float value_2 = reasonableVsKeepParticipants.getValue();
         float value_3 = keepParticipantsVsWeather.getValue();
@@ -228,12 +261,11 @@ public class ProfileActivity extends AppCompatActivity {
             for (double i : vector) {
                 sum += Math.abs(i);
             }
-            ArrayList<Double> arrayList = new ArrayList<>();
             for (double i : vector) {
-                arrayList.add(Math.abs(i) / sum);
+                AHPPreference.add(Math.abs(i) / sum);
             }
-            Toast.makeText(ProfileActivity.this, arrayList.toString(), Toast.LENGTH_SHORT).show();
-            return arrayList;
+            Toast.makeText(ProfileActivity.this, AHPPreference.toString(), Toast.LENGTH_SHORT).show();
+            return AHPPreference;
         } else {
             return null;
         }

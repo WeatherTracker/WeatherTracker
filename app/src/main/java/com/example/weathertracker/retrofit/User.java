@@ -1,14 +1,15 @@
 package com.example.weathertracker.retrofit;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class User {
     private String userId, FCMToken, userName;
-    private ArrayList<String> currentEvents, pastEvents, hobbies;
-    private ArrayList<Double> AHPPreference;
-    private ArrayList<Integer> freeTime;
+    private List<String> currentEvents, pastEvents, hobbies;
+    private List<Double> AHPPreference;
+    private List<Integer> freeTime;
 
-    public User(String FCMToken, String userName, ArrayList<String> hobbies, ArrayList<Double> AHPPreference, ArrayList<Integer> freeTime) {
+    public User(String FCMToken, String userName, List<String> hobbies, List<Double> AHPPreference, List<Integer> freeTime) {
         this.FCMToken = FCMToken;
         this.userName = userName;
         this.hobbies = hobbies;
@@ -28,23 +29,23 @@ public class User {
         return userName;
     }
 
-    public ArrayList<String> getCurrentEvents() {
+    public List<String> getCurrentEvents() {
         return currentEvents;
     }
 
-    public ArrayList<String> getPastEvents() {
+    public List<String> getPastEvents() {
         return pastEvents;
     }
 
-    public ArrayList<String> getHobbies() {
+    public List<String> getHobbies() {
         return hobbies;
     }
 
-    public ArrayList<Double> getAHPPreference() {
+    public List<Double> getAHPPreference() {
         return AHPPreference;
     }
 
-    public ArrayList<Integer> getFreeTime() {
+    public List<Integer> getFreeTime() {
         return freeTime;
     }
 }

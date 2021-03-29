@@ -8,12 +8,24 @@
     tools:context=".event.NewEventActivity">
 
     <ImageButton
+        android:id="@+id/btnEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:visibility="gone"
+        android:background="@color/float_transparent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_edit_24" />
+
+    <ImageButton
         android:id="@+id/btnDone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:background="@color/float_transparent"
-        app:layout_constraintEnd_toEndOf="@+id/etEventName"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_done_all_24" />
 
@@ -41,7 +53,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnDone" />
+        app:layout_constraintTop_toBottomOf="@+id/btnBack" />
 
     <TextView
         android:id="@+id/tvDate"
@@ -60,7 +72,6 @@
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/tvDate"
         app:layout_constraintTop_toBottomOf="@+id/etEventName" />
-
     <ToggleButton
         android:id="@+id/isPublic"
         android:layout_width="wrap_content"
@@ -69,15 +80,14 @@
         android:textOn="公開"
         app:layout_constraintEnd_toStartOf="@+id/isOutDoor"
         app:layout_constraintTop_toBottomOf="@+id/etEventName" />
-
     <ToggleButton
         android:id="@+id/isOutDoor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="15dp"
-        android:checked="true"
         android:textOff="室內"
         android:textOn="室外"
+        android:checked="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etEventName" />
 
@@ -215,4 +225,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
