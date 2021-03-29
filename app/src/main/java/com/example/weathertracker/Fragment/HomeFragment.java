@@ -26,8 +26,11 @@ import org.naishadhparmar.zcustomcalendar.OnDateSelectedListener;
 import org.naishadhparmar.zcustomcalendar.OnNavigationButtonClickedListener;
 import org.naishadhparmar.zcustomcalendar.Property;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +44,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private Spinner spinner;
     private LineChart lineChart;
     private long startClickTime = 0;
-    private int pickDate=0, date = 0, month = 0,today=0,today_month=0;
+    private int pickDate=0, date = 0, month = 0,year = 0,today=0,today_month=0,today_year=0;
 
     ArrayAdapter<CharSequence> adapter = null;
     public HomeFragment() {
@@ -84,12 +87,17 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
         dateHashMap.put(calendar.get(Calendar.DAY_OF_MONTH),"current");
         today=calendar.get(Calendar.DAY_OF_MONTH);
-        today_month=calendar.get(Calendar.MONTH);
+        today_month=calendar.get(Calendar.MONTH)+1;
+        today_year=calendar.get(Calendar.YEAR);
         date=today;
         month=today_month+1;
 //        pickDate=today;
         spinner =root.findViewById(R.id.spinners_weatherDetail);
-        getDropdownList(today,today_month);
+        try {
+            getDropdownList(today,today_month,today_year);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         spinner.setOnItemSelectedListener(this);
 
@@ -101,6 +109,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 Intent intent = new Intent(getActivity(), dateDetailActivity.class);
                 date =selectedDate.get(Calendar.DATE);
                 month =(selectedDate.get(Calendar.MONTH)+1);
+                year =selectedDate.get(Calendar.YEAR);
                 intent.putExtra("DATE",date);
                 intent.putExtra("MONTH",month);
 
@@ -115,7 +124,11 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                             temp_view = month_days[pickDate-1];
                             temp_view.setBackgroundResource(R.drawable.date_picknull);
                             //todo:
-                            getDropdownList(date,month);
+                            try {
+                                getDropdownList(date,month,year);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
                         }
                         pickDate =date;
                     }
@@ -144,16 +157,21 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
 
 
-    private void getDropdownList(int i,int j) {
-        int date=i-today;
-        System.out.println(i+"+"+today+"+"+date);
-        if(date>=0&&date<=3) {
+    private void getDropdownList(int i,int j,int h) throws ParseException {
+        System.out.println("pickday "+ h+j+i + "today"+today_year+today_month+today);
+        //        System.out.println(i+"+"+today+"+"+date);
+        SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        Date beginDate= format.parse(h+"-"+j+"-"+i);
+        Date endDate= format.parse(today_year+"-"+today_month+"-"+today);
+        long day=(beginDate.getTime()-endDate.getTime())/(24*60*60*1000);
+        System.out.println("相隔的天數="+day);
+        if(day>=0&&day<=3) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_2, android.R.layout.simple_spinner_item);
         }
-        if(date>2&&date<=7) {
+        if(day>2&&day<=7) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_7, android.R.layout.simple_spinner_item);
         }
-        if(date<0) {
+        if(day<0) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_history, android.R.layout.simple_spinner_item);
         }
         spinner.setAdapter(adapter);
@@ -210,7 +228,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         description.setText(String.valueOf(month*100+date));//顯示文字名稱
         description.setTextSize(14);//字體大小
         description.setTextColor(Color.BLUE);//字體顏色
-        description.setPosition(900, 80);
+        description.setPosition(900, 100);
 
         //設定沒資料時顯示的內容
         lineChart.setNoDataText("暫時沒有數據");
