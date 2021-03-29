@@ -1,4 +1,4 @@
-package com.example.weathertracker.Retrofit;
+package com.example.weathertracker.retrofit;
 
 import retrofit2.Call;
 import retrofit2.http.Field;

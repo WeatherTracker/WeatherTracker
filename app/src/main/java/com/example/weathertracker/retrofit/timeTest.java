@@ -1,4 +1,4 @@
-package com.example.weathertracker.Retrofit;
+package com.example.weathertracker.retrofit;
 
 import java.text.DateFormat;
 import java.text.ParseException;

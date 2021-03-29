@@ -1,4 +1,4 @@
-package com.example.weathertracker.Event;
+package com.example.weathertracker.event;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -20,8 +20,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.weathertracker.R;
-import com.example.weathertracker.Retrofit.RetrofitManager;
-import com.example.weathertracker.Retrofit.RetrofitService;
+import com.example.weathertracker.retrofit.RetrofitManager;
+import com.example.weathertracker.retrofit.RetrofitService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -39,20 +39,20 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-public class NewEvent extends AppCompatActivity implements OnMapReadyCallback {
+public class NewEventActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private ImageButton btn_close, btn_done, btn_addPlace, btn_removePlace;
-    private TextView tv_place_describe, tv_date, tv_time;
-    private EditText et_event_name, et_host_remark;
+    private ImageButton btnClose, btnDone, btnAddPlace, btnRemovePlace;
+    private TextView tvPlaceDescribe, tvDate, tvTime;
+    private EditText etEventName, etHostRemark;
     private SupportMapFragment mapFragment;
     private double latitude, longitude;
     private DatePickerDialog datePickerDialog;
     private TimePickerDialog timePickerDialog;
     private GoogleMap mMap;
     private SimpleDateFormat dateFormatter, timeFormatter;
-    private HashMap<String, Integer> id_map = new HashMap<>();
-    private AutoCompleteTextView et_hobbies, et_hobby_class;
-    private ArrayAdapter<CharSequence> hobby_class_adapter, hobbies_adapter;
+    private HashMap<String, Integer> idMap = new HashMap<>();
+    private AutoCompleteTextView etHobbies, etHobbyClass;
+    private ArrayAdapter<CharSequence> hobbyClassAdapter, hobbiesAdapter;
     private String staticTag;
     private int YEAR, MONTH, DAY;
 
@@ -67,59 +67,59 @@ public class NewEvent extends AppCompatActivity implements OnMapReadyCallback {
         MONTH = now.get(Calendar.MONTH);
         DAY = now.get(Calendar.DAY_OF_MONTH);
 
-        id_map.put("戶外活動類", R.array.hobbies_outdoor_events);
-        id_map.put("運動類", R.array.hobbies_sports);
-        id_map.put("藝文嗜好類", R.array.hobbies_arts);
-        id_map.put("益智類", R.array.hobbies_puzzle);
-        id_map.put("視聽類", R.array.hobbies_audiovisual);
-        id_map.put("休憩社交類", R.array.hobbies_social);
-        id_map.put("其它類", R.array.hobbies_others);
+        idMap.put("戶外活動類", R.array.hobbies_outdoor_events);
+        idMap.put("運動類", R.array.hobbies_sports);
+        idMap.put("藝文嗜好類", R.array.hobbies_arts);
+        idMap.put("益智類", R.array.hobbies_puzzle);
+        idMap.put("視聽類", R.array.hobbies_audiovisual);
+        idMap.put("休憩社交類", R.array.hobbies_social);
+        idMap.put("其它類", R.array.hobbies_others);
 
-        find_id();
-        set_listener();
+        findId();
+        setListener();
 
-        tv_date.setText(dateFormatter.format(now.getTime()));
-        tv_time.setText(timeFormatter.format(now.getTime()));
+        tvDate.setText(dateFormatter.format(now.getTime()));
+        tvTime.setText(timeFormatter.format(now.getTime()));
         Places.initialize(getApplicationContext(), getString(R.string.maps_api_key));
         mapFragment.getMapAsync(this);
         mapFragment.getView().setVisibility(View.GONE);
     }
 
-    private void find_id() {
-        btn_close = findViewById(R.id.btn_close);
-        btn_done = findViewById(R.id.btn_done);
-        btn_addPlace = findViewById(R.id.btn_addPlace);
-        btn_removePlace = findViewById(R.id.btn_removePlace);
-        et_event_name = findViewById(R.id.et_event_name);
-        tv_date = findViewById(R.id.tv_date);
-        tv_time = findViewById(R.id.tv_time);
-        et_host_remark = findViewById(R.id.et_host_remark);
-        tv_place_describe = findViewById(R.id.tv_place_describe);
-        et_hobbies = findViewById(R.id.et_hobbies);
-        et_hobby_class = findViewById(R.id.et_hobby_class);
+    private void findId() {
+        btnClose = findViewById(R.id.btnClose);
+        btnDone = findViewById(R.id.btnDone);
+        btnAddPlace = findViewById(R.id.btnAddPlace);
+        btnRemovePlace = findViewById(R.id.btnRemovePlace);
+        etEventName = findViewById(R.id.etEventName);
+        tvDate = findViewById(R.id.tvDate);
+        tvTime = findViewById(R.id.tvTime);
+        etHostRemark = findViewById(R.id.etHostRemark);
+        tvPlaceDescribe = findViewById(R.id.tvPlaceDescribe);
+        etHobbies = findViewById(R.id.etHobbies);
+        etHobbyClass = findViewById(R.id.etHobbyClass);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapView);
     }
 
-    private void set_listener() {
-        btn_addPlace.setOnClickListener(new View.OnClickListener() {
+    private void setListener() {
+        btnAddPlace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 List<Place.Field> fieldList = Arrays.asList(Place.Field.ADDRESS, Place.Field.LAT_LNG, Place.Field.NAME);
-                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fieldList).build(NewEvent.this);
+                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fieldList).build(NewEventActivity.this);
                 startActivityForResult(intent, 200);
             }
         });
-        btn_removePlace.setOnClickListener(new View.OnClickListener() {
+        btnRemovePlace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mapFragment.getView().setVisibility(View.GONE);
-                btn_addPlace.setVisibility(View.VISIBLE);
-                btn_removePlace.setVisibility(View.INVISIBLE);
-                tv_place_describe.setText("");
+                btnAddPlace.setVisibility(View.VISIBLE);
+                btnRemovePlace.setVisibility(View.INVISIBLE);
+                tvPlaceDescribe.setText("");
             }
         });
-        btn_done.setOnClickListener(new View.OnClickListener() {
+        btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RetrofitService retrofitService = RetrofitManager.getInstance().getService();
@@ -127,20 +127,20 @@ public class NewEvent extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
-        btn_close.setOnClickListener(new View.OnClickListener() {
+        btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //todo:
             }
         });
-        tv_date.setOnClickListener(new View.OnClickListener() {
+        tvDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 datePickerDialog.show();
             }
         });
 
-        tv_time.setOnClickListener(new View.OnClickListener() {
+        tvTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 timePickerDialog.show();
@@ -150,7 +150,7 @@ public class NewEvent extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 String s = year + "-" + (month + 1) + "-" + dayOfMonth;
-                tv_date.setText(s);
+                tvDate.setText(s);
             }
         }, YEAR, MONTH, DAY);
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
@@ -158,12 +158,12 @@ public class NewEvent extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 String s = hourOfDay + ":" + String.format("%02d", minute);
-                tv_time.setText(s);
+                tvTime.setText(s);
             }
         }, 12, 0, false);
-        hobby_class_adapter = ArrayAdapter.createFromResource(this, R.array.hobby_classes, R.layout.list_item);
-        et_hobby_class.setAdapter(hobby_class_adapter);
-        et_hobby_class.addTextChangedListener(new TextWatcher() {
+        hobbyClassAdapter = ArrayAdapter.createFromResource(this, R.array.hobby_classes, R.layout.list_item);
+        etHobbyClass.setAdapter(hobbyClassAdapter);
+        etHobbyClass.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -172,9 +172,9 @@ public class NewEvent extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s != null) {
-                    hobbies_adapter = ArrayAdapter.createFromResource(NewEvent.this, id_map.get(s.toString()), android.R.layout.simple_spinner_dropdown_item);
-                    et_hobbies.setText("");
-                    et_hobbies.setAdapter(hobbies_adapter);
+                    hobbiesAdapter = ArrayAdapter.createFromResource(NewEventActivity.this, idMap.get(s.toString()), android.R.layout.simple_spinner_dropdown_item);
+                    etHobbies.setText("");
+                    etHobbies.setAdapter(hobbiesAdapter);
                 }
             }
 
@@ -184,7 +184,7 @@ public class NewEvent extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
-        et_hobbies.addTextChangedListener(new TextWatcher() {
+        etHobbies.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -214,15 +214,15 @@ public class NewEvent extends AppCompatActivity implements OnMapReadyCallback {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 200 && resultCode == RESULT_OK) {
             mapFragment.getView().setVisibility(View.VISIBLE);
-            btn_addPlace.setVisibility(View.INVISIBLE);
-            btn_removePlace.setVisibility(View.VISIBLE);
+            btnAddPlace.setVisibility(View.INVISIBLE);
+            btnRemovePlace.setVisibility(View.VISIBLE);
             Place place = Autocomplete.getPlaceFromIntent(data);
             mMap.clear();
             mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15));
-            tv_place_describe.setText(place.getAddress());
+            tvPlaceDescribe.setText(place.getAddress());
         } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-            Toast.makeText(NewEvent.this, "fuck", Toast.LENGTH_SHORT).show();
+            Toast.makeText(NewEventActivity.this, "fuck", Toast.LENGTH_SHORT).show();
         }
     }
 }
