@@ -1,4 +1,4 @@
-package com.example.weathertracker.Fragment;
+package com.example.weathertracker.fragment;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -60,27 +60,32 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
         customCalendar = root.findViewById(R.id.custom_calender);
 
-        HashMap<Object, Property> descHahMap = new HashMap<>();
+        HashMap<Object, Property> descHashMap = new HashMap<>();
         Property defaultProperty = new Property();
         defaultProperty.layoutResource = R.layout.default_view;
         defaultProperty.dateTextViewResource = R.id.text_view;
-        descHahMap.put("default",defaultProperty);
-        Property currentPorperty = new Property();
-        currentPorperty.layoutResource = R.layout.current_view;
-        currentPorperty.dateTextViewResource = R.id.text_view;
-        descHahMap.put("current",currentPorperty);
-        Property absentPorperty = new Property();
-        absentPorperty.layoutResource = R.layout.absent_view;
-        absentPorperty.dateTextViewResource = R.id.text_view;
-        descHahMap.put("absent",absentPorperty);
+        descHashMap.put("default",defaultProperty);
+        Property currentProperty = new Property();
+        currentProperty.layoutResource = R.layout.current_view;
+        currentProperty.dateTextViewResource = R.id.text_view;
+        descHashMap.put("current",currentProperty);
+        Property absentProperty = new Property();
+        absentProperty.layoutResource = R.layout.absent_view;
+        absentProperty.dateTextViewResource = R.id.text_view;
+        descHashMap.put("absent",absentProperty);
 
         //todo:unavailable???
-        Property unavailablePorperty = new Property();
-        absentPorperty.layoutResource = R.layout.disable_view;
-        absentPorperty.dateTextViewResource = R.id.text_view;
-        descHahMap.put("unavailable",unavailablePorperty);
+        Property disableProperty = new Property();
+        disableProperty.layoutResource = R.layout.disable_view;
+        disableProperty.dateTextViewResource = R.id.text_view;
+        descHashMap.put("disabled", disableProperty);
 
-        customCalendar.setMapDescToProp(descHahMap);
+        Property unavailableProperty = new Property();
+        absentProperty.layoutResource = R.layout.disable_view;
+        absentProperty.dateTextViewResource = R.id.text_view;
+        descHashMap.put("unavailable",unavailableProperty);
+
+        customCalendar.setMapDescToProp(descHashMap);
 
         HashMap<Integer,Object> dateHashMap = new HashMap<>();
         calendar = Calendar.getInstance();

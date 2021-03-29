@@ -5,9 +5,9 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.weathertracker.Fragment.MainFragment;
-import com.example.weathertracker.Fragment.ProfileFragment;
-import com.example.weathertracker.Fragment.RecommendFragment;
+import com.example.weathertracker.fragment.MainFragment;
+import com.example.weathertracker.fragment.ProfileFragment;
+import com.example.weathertracker.fragment.RecommendFragment;
 import com.shrikanthravi.customnavigationdrawer2.widget.SNavigationDrawer;
 
 import java.util.ArrayList;
