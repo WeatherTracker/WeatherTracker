@@ -68,7 +68,7 @@ public class SignUpActivity extends AppCompatActivity {
                     if (password1.length() >= 8) {
                         if (password1.equals(password2)) {
                             retrofitService = RetrofitManager.getInstance().getService();
-                            Call<Ack> call = retrofitService.send_registeredMail(email_text, password1, FCMToken);
+                            Call<Ack> call = retrofitService.signUp(email_text, password1, FCMToken);
                             call.enqueue(new Callback<Ack>() {
                                 @Override
                                 public void onResponse(Call<Ack> call, Response<Ack> response) {
