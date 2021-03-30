@@ -1,4 +1,4 @@
-package com.example.weathertracker.Account;
+package com.example.weathertracker.account;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,13 +12,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.weathertracker.R;
-import com.example.weathertracker.Retrofit.RetrofitManager;
-import com.example.weathertracker.Retrofit.RetrofitService;
+import com.example.weathertracker.retrofit.Ack;
+import com.example.weathertracker.retrofit.RetrofitManager;
+import com.example.weathertracker.retrofit.RetrofitService;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.slider.Slider;
-
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.apache.commons.math3.linear.EigenDecomposition;
 import org.apache.commons.math3.linear.MatrixUtils;
@@ -27,59 +28,90 @@ import org.apache.commons.math3.linear.RealMatrix;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class Profile extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity {
     private ScrollView scrollView;
-    private String selected;
+    private String selected, userId;
     private ChipGroup chipGroup;
-    private ArrayAdapter<CharSequence> hobby_class_adapter, hobbies_adapter;
-    private Set<String> chip_set = new HashSet<>();
-    private AutoCompleteTextView et_hobbies, et_hobby_class;
-    private HashMap<String, Integer> id_map = new HashMap<>();
-    private Slider weather_VS_reasonable, reasonable_VS_keepParticipants, keepParticipants_VS_weather;
+    private ArrayAdapter<CharSequence> hobbyClassAdapter, hobbiesAdapter;
+    private Set<String> chipSet = new HashSet<>();
+    private AutoCompleteTextView etHobbies, etHobbyClass;
+    private HashMap<String, Integer> idMap = new HashMap<>();
+    private Slider weatherVsReasonable, reasonableVsKeepParticipants, keepParticipantsVsWeather;
     private FloatingActionButton fab;
-    private RetrofitService retrofitService;
+    private TextInputEditText etUserName;
+    private List<Double> AHPPreference;
+    private List<Integer> freeTime;//todo:確認型態
+    private List<String> hobbies;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
-        id_map.put("戶外活動類", R.array.hobbies_outdoor_events);
-        id_map.put("運動類", R.array.hobbies_sports);
-        id_map.put("藝文嗜好類", R.array.hobbies_arts);
-        id_map.put("益智類", R.array.hobbies_puzzle);
-        id_map.put("視聽類", R.array.hobbies_audiovisual);
-        id_map.put("休憩社交類", R.array.hobbies_social);
-        id_map.put("其它類", R.array.hobbies_others);
-        find_id();
-        set_listener();
+        userId = getSharedPreferences("sharedPreferences", MODE_PRIVATE).getString("userId", "");
+        idMap.put("戶外活動類", R.array.hobbies_outdoor_events);
+        idMap.put("運動類", R.array.hobbies_sports);
+        idMap.put("藝文嗜好類", R.array.hobbies_arts);
+        idMap.put("益智類", R.array.hobbies_puzzle);
+        idMap.put("視聽類", R.array.hobbies_audiovisual);
+        idMap.put("休憩社交類", R.array.hobbies_social);
+        idMap.put("其它類", R.array.hobbies_others);
+        findId();
+        setListener();
     }
 
 
-    private void find_id() {
-        scrollView = findViewById(R.id.scroll_view);
-        chipGroup = findViewById(R.id.chip_group);
-        et_hobbies = findViewById(R.id.et_hobbies);
-        et_hobby_class = findViewById(R.id.et_hobby_class);
-        weather_VS_reasonable = findViewById(R.id.weather_VS_reasonable);
-        reasonable_VS_keepParticipants = findViewById(R.id.reasonable_VS_keepParticipants);
-        keepParticipants_VS_weather = findViewById(R.id.keepParticipants_VS_weather);
-        fab = findViewById(R.id.floating_action_button);
+    private void findId() {
+        etUserName = findViewById(R.id.etNameLayout);
+        scrollView = findViewById(R.id.scrollView);
+        chipGroup = findViewById(R.id.chipGroup);
+        etHobbies = findViewById(R.id.etHobbies);
+        etHobbyClass = findViewById(R.id.etHobbyClass);
+        weatherVsReasonable = findViewById(R.id.weatherVsReasonable);
+        reasonableVsKeepParticipants = findViewById(R.id.reasonableVsKeepParticipants);
+        keepParticipantsVsWeather = findViewById(R.id.keepParticipantsVsWeather);
+        fab = findViewById(R.id.floatingActionButton);
     }
 
-    private void set_listener() {
+    private void setListener() {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (AHP_count() != null) {
-//                    CALL API
-                    retrofitService = RetrofitManager.getInstance().getService();
+                    RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+                    hobbies = new ArrayList<>(chipSet);
+                    Call<Ack> call = retrofitService.editProfile(userId, etUserName.getText().toString(), AHPPreference, freeTime, hobbies);
+                    call.enqueue(new Callback<Ack>() {
+                        @Override
+                        public void onResponse(Call<Ack> call, Response<Ack> response) {
+                            if (!response.isSuccessful()) {
+                                Toast.makeText(ProfileActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Ack ack = response.body();
+                                if (ack.getCode() == 200) {
+                                    Toast.makeText(ProfileActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//去信箱收信
+                                } else {
+                                    Toast.makeText(ProfileActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Ack> call, Throwable t) {
+                            Toast.makeText(ProfileActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 } else {
-                    new SweetAlertDialog(Profile.this, SweetAlertDialog.WARNING_TYPE)
+                    new SweetAlertDialog(ProfileActivity.this, SweetAlertDialog.WARNING_TYPE)
                             .setTitleText("Oops...")
                             .setContentText("排程偏好存在矛盾，請重新設定")
                             .show();
@@ -87,9 +119,9 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        hobby_class_adapter = ArrayAdapter.createFromResource(this, R.array.hobby_classes, R.layout.list_item);
-        et_hobby_class.setAdapter(hobby_class_adapter);
-        et_hobby_class.addTextChangedListener(new TextWatcher() {
+        hobbyClassAdapter = ArrayAdapter.createFromResource(this, R.array.hobby_classes, R.layout.list_item);
+        etHobbyClass.setAdapter(hobbyClassAdapter);
+        etHobbyClass.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -98,9 +130,9 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s != null) {
-                    hobbies_adapter = ArrayAdapter.createFromResource(Profile.this, id_map.get(s.toString()), android.R.layout.simple_spinner_dropdown_item);
-                    et_hobbies.setText("");
-                    et_hobbies.setAdapter(hobbies_adapter);
+                    hobbiesAdapter = ArrayAdapter.createFromResource(ProfileActivity.this, idMap.get(s.toString()), android.R.layout.simple_spinner_dropdown_item);
+                    etHobbies.setText("");
+                    etHobbies.setAdapter(hobbiesAdapter);
                 }
             }
 
@@ -110,19 +142,20 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        et_hobbies.addTextChangedListener(new TextWatcher() {
+        etHobbies.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s != null && !s.toString().equals("")) {
                     selected = s.toString();
-                    if (!chip_set.contains(selected)) {
-                        chip_set.add(selected);
-                        Chip chip = new Chip(Profile.this);
+                    if (!chipSet.contains(selected)) {
+                        chipSet.add(selected);
+                        Chip chip = new Chip(ProfileActivity.this);
                         chip.setText(selected);
                         chip.setChipBackgroundColorResource(R.color.black);
                         chip.setCloseIconVisible(true);
@@ -131,13 +164,13 @@ public class Profile extends AppCompatActivity {
                         chip.setOnCloseIconClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                chip_set.remove(((Chip) v).getText());
+                                chipSet.remove(((Chip) v).getText());
                                 chipGroup.removeView(v);
                             }
                         });
                         chipGroup.addView(chip);
                     } else {
-                        new SweetAlertDialog(Profile.this, SweetAlertDialog.WARNING_TYPE)
+                        new SweetAlertDialog(ProfileActivity.this, SweetAlertDialog.WARNING_TYPE)
                                 .setTitleText("Oops...")
                                 .setContentText("看起來你很喜歡這個興趣呢!喜歡到選了兩次")
                                 .show();
@@ -164,15 +197,15 @@ public class Profile extends AppCompatActivity {
         });
     }
 
-    private Boolean AHP_check(double eigen_max) {
-        double CI = (eigen_max - 3) / 2;
+    private Boolean AHP_check(double eigenMax) {
+        double CI = (eigenMax - 3) / 2;
         return CI / 0.52 < 0.1;
     }
 
-    private ArrayList<Double> AHP_count() {
-        float value_1 = weather_VS_reasonable.getValue();
-        float value_2 = reasonable_VS_keepParticipants.getValue();
-        float value_3 = keepParticipants_VS_weather.getValue();
+    private List<Double> AHP_count() {
+        float value_1 = weatherVsReasonable.getValue();
+        float value_2 = reasonableVsKeepParticipants.getValue();
+        float value_3 = keepParticipantsVsWeather.getValue();
         int dimension = 3;
         double[][] testArray = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
         if (value_1 == 0) {
@@ -228,12 +261,11 @@ public class Profile extends AppCompatActivity {
             for (double i : vector) {
                 sum += Math.abs(i);
             }
-            ArrayList<Double> arrayList = new ArrayList<>();
             for (double i : vector) {
-                arrayList.add(Math.abs(i) / sum);
+                AHPPreference.add(Math.abs(i) / sum);
             }
-            Toast.makeText(Profile.this, arrayList.toString(), Toast.LENGTH_SHORT).show();
-            return arrayList;
+            Toast.makeText(ProfileActivity.this, AHPPreference.toString(), Toast.LENGTH_SHORT).show();
+            return AHPPreference;
         } else {
             return null;
         }

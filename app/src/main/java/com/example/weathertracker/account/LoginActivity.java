@@ -1,4 +1,4 @@
-package com.example.weathertracker.Account;
+package com.example.weathertracker.account;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,15 +21,15 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.royrodriguez.transitionbutton.TransitionButton;
 
-public class Login extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
     private GoogleSignInOptions gso;
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInAccount account;
     private SignInButton signInButton;
     private String TAG = "GSO";
     private int RC_SIGN_IN = 200;
-    private Button btn_forget, btn_signUp;
-    private TransitionButton btn_login;
+    private Button btnForget, btnSignUp;
+    private TransitionButton btnLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +44,11 @@ public class Login extends AppCompatActivity {
     }
 
     private void findID() {
-        signInButton = findViewById(R.id.sign_in_button);
+        signInButton = findViewById(R.id.btnSignIn);
         signInButton.setSize(SignInButton.SIZE_WIDE);
-        btn_login = findViewById(R.id.btn_login);
-        btn_forget = findViewById(R.id.btn_forget);
-        btn_signUp = findViewById(R.id.btn_signUp);
+        btnLogin = findViewById(R.id.btnLogin);
+        btnForget = findViewById(R.id.btnForget);
+        btnSignUp = findViewById(R.id.btnSignUp);
     }
 
     private void setListener() {
@@ -58,11 +58,11 @@ public class Login extends AppCompatActivity {
                 signIn();
             }
         });
-        btn_login.setOnClickListener(new View.OnClickListener() {
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Start the loading animation when the user tap the button
-                btn_login.startAnimation();
+                btnLogin.startAnimation();
 
                 // Do your networking task or background work here.
                 final Handler handler = new Handler();
@@ -73,7 +73,7 @@ public class Login extends AppCompatActivity {
 
                         // Choose a stop animation if your call was successful or not
                         if (isSuccessful) {
-                            btn_login.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND, new TransitionButton.OnAnimationStopEndListener() {
+                            btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND, new TransitionButton.OnAnimationStopEndListener() {
                                 @Override
                                 public void onAnimationStopEnd() {
                                     Intent intent = new Intent(getBaseContext(), MainActivity.class);
@@ -82,23 +82,23 @@ public class Login extends AppCompatActivity {
                                 }
                             });
                         } else {
-                            btn_login.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
+                            btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
                         }
                     }
                 }, 1000);
             }
         });
-        btn_forget.setOnClickListener(new View.OnClickListener() {
+        btnForget.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Login.this, ForgetPassword.class);
+                Intent intent = new Intent(LoginActivity.this, ForgetPasswordActivity.class);
                 startActivity(intent);
             }
         });
-        btn_signUp.setOnClickListener(new View.OnClickListener() {
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Login.this, SignUp.class);
+                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
                 startActivity(intent);
             }
         });

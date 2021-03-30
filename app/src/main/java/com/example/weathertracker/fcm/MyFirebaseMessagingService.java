@@ -1,4 +1,4 @@
-package com.example.weathertracker.FCM;
+package com.example.weathertracker.fcm;
 
 
 import android.app.NotificationChannel;

@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Account.Profile">
+    tools:context=".account.ProfileActivity">
 
     <ScrollView
-        android:id="@+id/scroll_view"
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -17,7 +17,7 @@
             android:layout_margin="15dp">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/et_name"
+                android:id="@+id/etNameLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -29,6 +29,7 @@
                 app:startIconDrawable="@drawable/ic_baseline_account_circle_24">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etUserName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
@@ -54,7 +55,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.slider.Slider
-                    android:id="@+id/weather_VS_reasonable"
+                    android:id="@+id/weatherVsReasonable"
                     android:layout_width="279dp"
                     android:layout_height="33dp"
                     android:stepSize="1.0"
@@ -71,7 +72,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
-                    android:text="@string/free_time"
+                    android:text="@string/freeTime"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -93,12 +94,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
-                    android:text="@string/free_time"
+                    android:text="@string/freeTime"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.slider.Slider
-                    android:id="@+id/reasonable_VS_keepParticipants"
+                    android:id="@+id/reasonableVsKeepParticipants"
                     android:layout_width="279dp"
                     android:layout_height="33dp"
                     android:stepSize="1.0"
@@ -127,7 +128,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/two">
@@ -142,7 +142,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.slider.Slider
-                    android:id="@+id/keepParticipants_VS_weather"
+                    android:id="@+id/keepParticipantsVsWeather"
                     android:layout_width="279dp"
                     android:layout_height="33dp"
                     android:stepSize="1.0"
@@ -174,13 +174,13 @@
                 android:text="@string/AHP"
                 android:textSize="24sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_name" />
+                app:layout_constraintTop_toBottomOf="@+id/etNameLayout" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/four"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@+id/chip_group"
+                app:layout_constraintBottom_toTopOf="@+id/chipGroup"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textView9">
 
@@ -421,15 +421,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tableLayout" />
 
-            <!--        <Button-->
-            <!--            android:id="@+id/hobbys"-->
-            <!--            android:layout_width="wrap_content"-->
-            <!--            android:layout_height="wrap_content"-->
-            <!--            android:text="foo"-->
-            <!--            app:layout_constraintEnd_toEndOf="parent"-->
-            <!--            app:layout_constraintStart_toEndOf="@+id/textView9"-->
-            <!--            app:layout_constraintTop_toBottomOf="@+id/tableLayout" />-->
-
             <LinearLayout
                 android:id="@+id/spinners"
                 android:layout_width="match_parent"
@@ -438,7 +429,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView9">
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/hobby_class"
+                    android:id="@+id/hobbyClass"
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -447,7 +438,7 @@
                     android:hint="@string/hobby_class">
 
                     <AutoCompleteTextView
-                        android:id="@+id/et_hobby_class"
+                        android:id="@+id/etHobbyClass"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="none" />
@@ -464,7 +455,7 @@
                     android:hint="@string/hobby_name">
 
                     <AutoCompleteTextView
-                        android:id="@+id/et_hobbies"
+                        android:id="@+id/etHobbies"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="none" />
@@ -475,7 +466,7 @@
 
 
             <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chip_group"
+                android:id="@+id/chipGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="@+id/four"
@@ -487,7 +478,7 @@
     </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floating_action_button"
+        android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

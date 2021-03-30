@@ -1,4 +1,4 @@
-package com.example.weathertracker.Retrofit;
+package com.example.weathertracker.retrofit;
 
 public class Ack {
     private int code;
