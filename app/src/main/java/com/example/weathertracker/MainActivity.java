@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import com.example.weathertracker.fragment.MainFragment;
 import com.example.weathertracker.fragment.ProfileFragment;
 import com.example.weathertracker.fragment.RecommendFragment;
+import com.shrikanthravi.customnavigationdrawer2.data.MenuItem;
 import com.shrikanthravi.customnavigationdrawer2.widget.SNavigationDrawer;
 
 import java.util.ArrayList;
@@ -25,9 +26,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         sNavigationDrawer  = findViewById(R.id.nagivation_drawer);
         List<com.shrikanthravi.customnavigationdrawer2.data.MenuItem> menuItems = new ArrayList<>();
-        menuItems.add(new com.shrikanthravi.customnavigationdrawer2.data.MenuItem("Main",R.drawable.giwawa));
-        menuItems.add(new com.shrikanthravi.customnavigationdrawer2.data.MenuItem("Profile",R.drawable.giwawa));
-        menuItems.add(new com.shrikanthravi.customnavigationdrawer2.data.MenuItem("recommend",R.drawable.giwawa));
+        menuItems.add(new MenuItem("Main",R.drawable.giwawa));
+        menuItems.add(new MenuItem("Profile",R.drawable.giwawa));
+        menuItems.add(new MenuItem("recommend",R.drawable.giwawa));
         sNavigationDrawer.setMenuItemList(menuItems);
         sNavigationDrawer.setAppbarTitleTV("main");
 
