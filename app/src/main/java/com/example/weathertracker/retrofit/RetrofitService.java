@@ -50,12 +50,14 @@ public interface RetrofitService {
                                      @Query("day") String day);
 
     @GET("getChart")
-    Call<List<XYPlot>> getChart(@Query("gps") List<Double> gps,
-                                @Query("day") String day);
+    Call<chartList> getChart(@Query("latitude") Double latitude,
+                                   @Query("longitude") Double longitude,
+                                   @Query("day") String day);
 
     //todo:
     @GET("getWeatherIcon")
-    Call<Ack> getWeatherIcon(@Query("gps") List<Double> gps);
+    Call<Ack> getWeatherIcon(@Query("latitude") Double latitude,
+                             @Query("longitude") Double longitude);
 
     @FormUrlEncoded
     @POST("newEvent")

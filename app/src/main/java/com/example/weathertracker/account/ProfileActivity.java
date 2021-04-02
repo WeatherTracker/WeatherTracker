@@ -71,7 +71,7 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     private void findId() {
-        etUserName = findViewById(R.id.etNameLayout);
+        etUserName = findViewById(R.id.etUserName);
         scrollView = findViewById(R.id.scrollView);
         chipGroup = findViewById(R.id.chipGroup);
         etHobbies = findViewById(R.id.etHobbies);
