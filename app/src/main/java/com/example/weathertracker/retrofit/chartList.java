@@ -10,7 +10,7 @@ public class chartList {
     private List<XYPlot> AQI;
     private List<XYPlot> POP;
 
-    public class XYPlot {
+    public  class XYPlot {
         private String time;
         private Double value;
 
