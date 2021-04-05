@@ -10,10 +10,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
 import com.example.weathertracker.R;
+import com.example.weathertracker.retrofit.RetrofitManager;
+import com.example.weathertracker.retrofit.RetrofitService;
+import com.example.weathertracker.retrofit.chartList;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.Entry;
@@ -35,6 +39,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -45,6 +53,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private LineChart lineChart;
     private long startClickTime = 0;
     private int pickDate=0, date = 0, month = 0,year = 0,today=0,today_month=0,today_year=0;
+    private String nowTime=null;
 
     ArrayAdapter<CharSequence> adapter = null;
     public HomeFragment() {
@@ -57,8 +66,15 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-
         customCalendar = root.findViewById(R.id.custom_calender);
+        Calendar calendar = Calendar.getInstance();
+        today=calendar.get(Calendar.DAY_OF_MONTH);
+        today_month=calendar.get(Calendar.MONTH)+1;
+        today_year=calendar.get(Calendar.YEAR);
+
+        nowTime = getNowTime();
+        System.out.println(nowTime);//yyyy/MM/dd hh:mm:ss
+        getData(nowTime);
 
         HashMap<Object, Property> descHashMap = new HashMap<>();
         Property defaultProperty = new Property();
@@ -91,9 +107,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         calendar = Calendar.getInstance();
 
         dateHashMap.put(calendar.get(Calendar.DAY_OF_MONTH),"current");
-        today=calendar.get(Calendar.DAY_OF_MONTH);
-        today_month=calendar.get(Calendar.MONTH)+1;
-        today_year=calendar.get(Calendar.YEAR);
         date=today;
         month=today_month+1;
 //        pickDate=today;
@@ -142,34 +155,27 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 }
             }
         });
-
         customCalendar.setDate(calendar, dateHashMap);
-
         lineChart = root.findViewById(R.id.lineChart);
-
-
         customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.PREVIOUS,(OnNavigationButtonClickedListener) this);
         customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.NEXT, (OnNavigationButtonClickedListener) this);
         customCalendar.setDate(calendar, dateHashMap);
-
-
-
-
-
         return root;
     }
 
-
-
-
     private void getDropdownList(int i,int j,int h) throws ParseException {
+        String I = null,J = null;
+        if(i<10) I = "0" + i; else I = String.valueOf(i);
+        if(j<10) J = "0" + j; else J = String.valueOf(j);
         System.out.println("pickday "+ h+j+i + "today"+today_year+today_month+today);
-        //        System.out.println(i+"+"+today+"+"+date);
+        String pickDay = h+"/"+J+"/"+I+" 00:00:00";
+        System.out.println(pickDay);
         SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
         Date beginDate= format.parse(h+"-"+j+"-"+i);
         Date endDate= format.parse(today_year+"-"+today_month+"-"+today);
         long day=(beginDate.getTime()-endDate.getTime())/(24*60*60*1000);
         System.out.println("相隔的天數="+day);
+        getData(pickDay);
         if(day>=0&&day<=3) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_2, android.R.layout.simple_spinner_item);
         }
@@ -199,7 +205,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         return  dataSet;
     }
 
-    @Override
+    @Override//drodownlistSelect
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         String text = adapterView.getItemAtPosition(i).toString();
         //Toast.makeText(adapterView.getContext(),text,Toast.LENGTH_SHORT).show();
@@ -207,14 +213,13 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     }
 
-    @Override
+    @Override//預設
     public void onNothingSelected(AdapterView<?> adapterView) {
-
         makeChart(today,today_month,"溫度");
     }
 
 
-
+    //折線圖
     public void makeChart(int date,int month,String s){
         LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(),s);
         ArrayList<ILineDataSet> iLineDataSets = new ArrayList<>();
@@ -249,7 +254,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         lineDataSet.setValueTextColor(Color.BLACK);
     }
 
-
+    //換月
     public Map<Integer, Object>[] onNavigationButtonClicked(int whichButton, Calendar newMonth) {
         Map<Integer, Object>[] arr = new Map[2];
         switch(newMonth.get(Calendar.MONTH)) {
@@ -305,5 +310,34 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
         }
         return arr;
+    }
+
+    public String getNowTime(){
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        Date date = new Date();
+        String strDate = sdFormat.format(date);
+        return strDate;
+    }
+
+    private void getData(String pickDay) {
+        RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+        Call<chartList> call = retrofitService.getChart(120.716073,22.074033,"2021-04-03%2023:59:59.628556");
+        call.enqueue(new Callback<chartList>() {
+            @Override
+            public void onResponse(Call<chartList> call, Response<chartList> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    chartList data = response.body();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<chartList> call, Throwable t) {
+
+            }
+        });
+
     }
 }

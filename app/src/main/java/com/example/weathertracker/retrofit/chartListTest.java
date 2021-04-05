@@ -11,7 +11,7 @@ public class chartListTest {
     private List<XYPlot> POP;
     private String city,area, siteName;
 
-    public class XYPlot {
+    public  class XYPlot {
         private String time;
         private Double value;
 
