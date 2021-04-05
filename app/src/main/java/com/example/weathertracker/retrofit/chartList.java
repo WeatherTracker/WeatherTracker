@@ -9,8 +9,9 @@ public class chartList {
     private List<XYPlot> UV;
     private List<XYPlot> AQI;
     private List<XYPlot> POP;
+    private String city,area, siteName;
 
-    public class XYPlot {
+    public  class XYPlot {
         private String time;
         private Double value;
 

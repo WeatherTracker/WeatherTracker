@@ -51,8 +51,8 @@ public interface RetrofitService {
 
     @GET("getChart")
     Call<chartList> getChart(@Query("latitude") Double latitude,
-                                   @Query("longitude") Double longitude,
-                                   @Query("day") String day);
+                             @Query("longitude") Double longitude,
+                             @Query("day") String day);
 
     //todo:
     @GET("getWeatherIcon")
