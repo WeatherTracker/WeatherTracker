@@ -2,13 +2,14 @@ package com.example.weathertracker.retrofit;
 
 import java.util.List;
 
-public class chartList {
+public class chartListTest {
     private List<XYPlot> temperature;
     private List<XYPlot> humidity;
     private List<XYPlot> windSpeed;
     private List<XYPlot> UV;
     private List<XYPlot> AQI;
     private List<XYPlot> POP;
+    private String city,area, siteName;
 
     public class XYPlot {
         private String time;
