@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId "com.example.weathertracker"
         minSdkVersion 24
-        targetSdkVersion 30
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         multiDexEnabled true

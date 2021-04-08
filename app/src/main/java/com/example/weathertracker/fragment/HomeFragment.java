@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private long startClickTime = 0;
     private int pickDate=0, date = 0, month = 0,year = 0,today=0,today_month=0,today_year=0;
     private String nowTime=null;
+    private chartList data;
 
     ArrayAdapter<CharSequence> adapter = null;
     public HomeFragment() {
@@ -168,7 +170,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         if(i<10) I = "0" + i; else I = String.valueOf(i);
         if(j<10) J = "0" + j; else J = String.valueOf(j);
         System.out.println("pickday "+ h+j+i + "today"+today_year+today_month+today);
-        String pickDay = h+"/"+J+"/"+I+" 00:00:00";
+        String pickDay = h+"-"+J+"-"+I+"%2000:00:00";
         System.out.println(pickDay);
         SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
         Date beginDate= format.parse(h+"-"+j+"-"+i);
@@ -190,20 +192,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
 
 
-    private List<Entry> lineChartDataSet() {
-        ArrayList<Entry> dataSet = new ArrayList<Entry>();
 
-        dataSet.add(new Entry(0,40));
-        dataSet.add(new Entry(1,10));
-        dataSet.add(new Entry(2,15));
-        dataSet.add(new Entry(3,12));
-        dataSet.add(new Entry(4,20));
-        dataSet.add(new Entry(5,50));
-        dataSet.add(new Entry(6,23));
-        dataSet.add(new Entry(7,34));
-        dataSet.add(new Entry(8,12));
-        return  dataSet;
-    }
 
     @Override//drodownlistSelect
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -221,7 +210,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     //折線圖
     public void makeChart(int date,int month,String s){
-        LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(),s);
+        LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(s),s);
         ArrayList<ILineDataSet> iLineDataSets = new ArrayList<>();
         iLineDataSets.add(lineDataSet);
 
@@ -269,7 +258,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 for(int i=201;i<=231;i++){
                     String j =String.valueOf(i);
                 }
-
                 arr[1] = null; //Optional: This is the map linking a date to its tag.
                 break;
             case Calendar.MARCH:
@@ -313,7 +301,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     }
 
     public String getNowTime(){
-        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd%20hh:mm:ss");
         Date date = new Date();
         String strDate = sdFormat.format(date);
         return strDate;
@@ -321,7 +309,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     private void getData(String pickDay) {
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-        Call<chartList> call = retrofitService.getChart(120.716073,22.074033,"2021-04-03%2023:59:59.628556");
+        Call<chartList> call = retrofitService.getChart(22.1505447,121.7735869,"2021-04-08 23:59:59.628556");
         call.enqueue(new Callback<chartList>() {
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {
@@ -329,7 +317,9 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                     Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    chartList data = response.body();
+                     data = response.body();
+                     System.out.println(data);
+                    Log.i("1234",data.toString());
                 }
             }
 
@@ -338,6 +328,47 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
             }
         });
+    }
 
+    private List<Entry> lineChartDataSet(String s) {
+        ArrayList<Entry> dataSet = new ArrayList<Entry>();
+        int x; Double y;
+        if(s.equals("溫度")) {
+            for (int i = 0; i < data.getTemperature().size(); i++) {
+                y = data.getTemperature().get(i).getValue();
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        }
+        else if(s.equals("AQI")) {
+            for (int i = 0; i < data.getAQI().size(); i++) {
+                y = data.getAQI().get(i).getValue();
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        }
+        else if(s.equals("紫外線")) {
+            for (int i = 0; i < data.getUV().size(); i++) {
+                y = data.getUV().get(i).getValue();
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        }
+        else if(s.equals("風速")) {
+            for (int i = 0; i < data.getWindSpeed().size(); i++) {
+                y = data.getWindSpeed().get(i).getValue();
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        }
+        else if(s.equals("濕度")) {
+            for (int i = 0; i < data.getHumidity().size(); i++) {
+                y = data.getHumidity().get(i).getValue();
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        }
+        else if(s.equals("降雨機率")) {
+            for (int i = 0; i < data.getPOP().size(); i++) {
+                y = data.getPOP().get(i).getValue();
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        }
+        return  dataSet;
     }
 }
