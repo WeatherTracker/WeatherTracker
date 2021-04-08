@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +38,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -75,7 +75,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         today_year=calendar.get(Calendar.YEAR);
 
         nowTime = getNowTime();
-        System.out.println(nowTime);//yyyy/MM/dd hh:mm:ss
+        System.out.println("nnnn"+nowTime);//yyyy/MM/dd hh:mm:ss
         getData(nowTime);
 
         HashMap<Object, Property> descHashMap = new HashMap<>();
@@ -145,6 +145,9 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                             temp_view.setBackgroundResource(R.drawable.date_picknull);
                             //todo:
                             try {
+                                String pickDay = year+"-"+month+"-"+date+" 00:00:00.000000";
+                                if(today_year==year&&today_month==month&&today==date)getData(nowTime);
+                                else getData(pickDay);
                                 getDropdownList(date,month,year);
                             } catch (ParseException e) {
                                 e.printStackTrace();
@@ -169,15 +172,13 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         String I = null,J = null;
         if(i<10) I = "0" + i; else I = String.valueOf(i);
         if(j<10) J = "0" + j; else J = String.valueOf(j);
-        System.out.println("pickday "+ h+j+i + "today"+today_year+today_month+today);
-        String pickDay = h+"-"+J+"-"+I+"%2000:00:00";
-        System.out.println(pickDay);
+        //System.out.println("pickday "+ h+j+i + "today"+today_year+today_month+today);
+        //System.out.println(pickDay);
         SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
         Date beginDate= format.parse(h+"-"+j+"-"+i);
         Date endDate= format.parse(today_year+"-"+today_month+"-"+today);
         long day=(beginDate.getTime()-endDate.getTime())/(24*60*60*1000);
-        System.out.println("相隔的天數="+day);
-        getData(pickDay);
+        //System.out.println("相隔的天數="+day);
         if(day>=0&&day<=3) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_2, android.R.layout.simple_spinner_item);
         }
@@ -198,8 +199,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         String text = adapterView.getItemAtPosition(i).toString();
         //Toast.makeText(adapterView.getContext(),text,Toast.LENGTH_SHORT).show();
-        makeChart(date,month,text);
-
+        makeChart(date,month-1,text);
     }
 
     @Override//預設
@@ -241,6 +241,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         lineDataSet.setCircleHoleRadius(2);
         lineDataSet.setValueTextSize(10);
         lineDataSet.setValueTextColor(Color.BLACK);
+        System.out.println("okokok2");
     }
 
     //換月
@@ -301,7 +302,8 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     }
 
     public String getNowTime(){
-        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd%20hh:mm:ss");
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS000");
+        sdFormat.setTimeZone(TimeZone.getTimeZone("GMT+20:00"));
         Date date = new Date();
         String strDate = sdFormat.format(date);
         return strDate;
@@ -309,7 +311,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     private void getData(String pickDay) {
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-        Call<chartList> call = retrofitService.getChart(22.1505447,121.7735869,"2021-04-08 23:59:59.628556");
+        Call<chartList> call = retrofitService.getChart(22.1505447,121.7735869,pickDay);
         call.enqueue(new Callback<chartList>() {
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {
@@ -318,8 +320,11 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 }
                 else{
                      data = response.body();
-                     System.out.println(data);
-                    Log.i("1234",data.toString());
+                    System.out.println("OKOKOKOKOKOKpickday"+pickDay);
+
+                    makeChart(date,month-1,"溫度");
+                     //System.out.println(data);
+                   // Log.i("1234",data.toString());
                 }
             }
 
