@@ -3,15 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#67ffae"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <org.naishadhparmar.zcustomcalendar.CustomCalendar
         android:id="@+id/custom_calender"
         android:padding="15dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        app:day_of_week_length="3"
+        app:month_year_format="full_month__with_year"/>
 
     <Spinner
         android:id="@+id/spinners_weatherDetail"

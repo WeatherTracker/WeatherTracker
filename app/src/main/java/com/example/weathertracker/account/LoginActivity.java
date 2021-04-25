@@ -12,6 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.weathertracker.MainActivity;
 import com.example.weathertracker.R;
+import com.example.weathertracker.retrofit.Ack;
+import com.example.weathertracker.retrofit.RetrofitManager;
+import com.example.weathertracker.retrofit.RetrofitService;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -21,6 +24,13 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.royrodriguez.transitionbutton.TransitionButton;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class LoginActivity extends AppCompatActivity {
     private GoogleSignInOptions gso;
     private GoogleSignInClient mGoogleSignInClient;
@@ -28,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     private SignInButton signInButton;
     private String TAG = "GSO";
     private int RC_SIGN_IN = 200;
-    private Button btnForget, btnSignUp;
+    private Button btnForget, btnSignUp,testBtn ;
     private TransitionButton btnLogin;
 
     @Override
@@ -49,9 +59,41 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         btnForget = findViewById(R.id.btnForget);
         btnSignUp = findViewById(R.id.btnSignUp);
+        testBtn = findViewById(R.id.button);
     }
 
     private void setListener() {
+        testBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+                Map<String, String> map = new HashMap<>();
+                map.put("Authorization","");
+                Call<Ack> call = retrofitService.activeAccount(map);
+                call.enqueue(new Callback<Ack>() {
+                    @Override
+                    public void onResponse(Call<Ack> call, Response<Ack> response) {
+                        if (!response.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Ack ack = response.body();
+                            if (ack.getCode() == 200) {
+                                Toast.makeText(LoginActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//去信箱收信
+                            } else {
+                                Toast.makeText(LoginActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Ack> call, Throwable t) {
+                        Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+            }
+        });
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

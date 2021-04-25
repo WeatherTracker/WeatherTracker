@@ -1,6 +1,7 @@
 package com.example.weathertracker.retrofit;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -8,6 +9,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.HeaderMap;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Query;
@@ -23,6 +25,9 @@ public interface RetrofitService {
     Call<Ack> signUp(@Field("email") String email,
                      @Field("password") String password,
                      @Field("FCMToken") String FCMToken);
+
+    @POST("getTest")
+    Call<Ack> activeAccount(@HeaderMap Map<String, String> headers);
 
     @FormUrlEncoded
     @POST("sendResetMail")
@@ -62,7 +67,7 @@ public interface RetrofitService {
     @FormUrlEncoded
     @POST("newEvent")
     Call<Ack> newEvent(@Field("userId") String userId,
-                       @Body Event e);
+                       @Field("event") Event e);
 
     @FormUrlEncoded
     @DELETE("deleteEvent")

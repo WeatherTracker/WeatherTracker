@@ -21,7 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.weathertracker.R;
-import com.example.weathertracker.account.SignUpActivity;
 import com.example.weathertracker.retrofit.Ack;
 import com.example.weathertracker.retrofit.Event;
 import com.example.weathertracker.retrofit.RetrofitManager;
@@ -50,12 +49,12 @@ import retrofit2.Response;
 public class NewEventActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private ImageButton btnBack, btnDone, btnAddPlace, btnRemovePlace;
-    private TextView tvPlaceDescribe, tvDate, tvTime;
+    private TextView tvPlaceDescribe, tvStartDate, tvStartTime,tvEndDate,tvEndTime;
     private EditText etEventName, etHostRemark;
     private SupportMapFragment mapFragment;
     private double latitude, longitude;
-    private DatePickerDialog datePickerDialog;
-    private TimePickerDialog timePickerDialog;
+    private DatePickerDialog datePickerDialog,datePickerDialog2;
+    private TimePickerDialog timePickerDialog,timePickerDialog2;
     private GoogleMap mMap;
     private final HashMap<String, Integer> idMap = new HashMap<>();
     private AutoCompleteTextView etHobbies, etHobbyClass;
@@ -89,8 +88,10 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
         setListener();
 
         //todo:改成點擊時間
-        tvDate.setText(dateFormatter.format(now.getTime()));
-        tvTime.setText(timeFormatter.format(now.getTime()));
+        tvStartDate.setText(dateFormatter.format(now.getTime()));
+        tvStartTime.setText(timeFormatter.format(now.getTime()));
+        tvEndDate.setText(dateFormatter.format(now.getTime()));
+        tvEndTime.setText(timeFormatter.format(now.getTime()));
 
         Places.initialize(getApplicationContext(), getString(R.string.maps_api_key));
         mapFragment.getMapAsync(this);
@@ -103,8 +104,10 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
         btnAddPlace = findViewById(R.id.btnAddPlace);
         btnRemovePlace = findViewById(R.id.btnRemovePlace);
         etEventName = findViewById(R.id.etEventName);
-        tvDate = findViewById(R.id.tvDate);
-        tvTime = findViewById(R.id.tvTime);
+        tvStartDate = findViewById(R.id.tvStartDate);
+        tvStartTime = findViewById(R.id.tvStartTime);
+        tvEndDate = findViewById(R.id.tvEndDate);
+        tvEndTime = findViewById(R.id.tvEndTime);
         etHostRemark = findViewById(R.id.etHostRemark);
         tvPlaceDescribe = findViewById(R.id.tvPlaceDescribe);
         etHobbies = findViewById(R.id.etHobbies);
@@ -137,7 +140,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Event e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvDate.getText().toString() + " " + tvTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
+                Event e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(),tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
                 RetrofitService retrofitService = RetrofitManager.getInstance().getService();
                 Call<Ack> call = retrofitService.newEvent(userId, e);
                 call.enqueue(new Callback<Ack>() {
@@ -170,32 +173,60 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                 //todo:
             }
         });
-        tvDate.setOnClickListener(new View.OnClickListener() {
+        tvStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 datePickerDialog.show();
             }
         });
 
-        tvTime.setOnClickListener(new View.OnClickListener() {
+        tvStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 timePickerDialog.show();
             }
         });
+        tvEndDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerDialog2.show();
+            }
+        });
+
+        tvEndTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timePickerDialog2.show();
+            }
+        });
         datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String s = year + "-" + (month + 1) + "-" + dayOfMonth;
-                tvDate.setText(s);
+                String s = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d",dayOfMonth);
+                tvStartDate.setText(s);
             }
         }, year, month, day);
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                String s = hourOfDay + ":" + String.format("%02d", minute);
-                tvTime.setText(s);
+                String s = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute);
+                tvStartTime.setText(s);
+            }
+        }, 12, 0, false);
+        datePickerDialog2 = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                String s = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d",dayOfMonth);
+                tvEndDate.setText(s);
+            }
+        }, year, month, day);
+        datePickerDialog2.getDatePicker().setMinDate(System.currentTimeMillis());
+        timePickerDialog2 = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                String s = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute);
+                tvEndTime.setText(s);
             }
         }, 12, 0, false);
         hobbyClassAdapter = ArrayAdapter.createFromResource(this, R.array.hobby_classes, R.layout.list_item);
@@ -260,9 +291,9 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
             mMap.clear();
             mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15));
-            tvPlaceDescribe.setText(place.getAddress());
+            tvPlaceDescribe.setText(place.getName()+"\n"+place.getAddress());
         } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-            Toast.makeText(NewEventActivity.this, "fuck", Toast.LENGTH_SHORT).show();
+            Toast.makeText(NewEventActivity.this, ""+resultCode, Toast.LENGTH_SHORT).show();
         }
     }
 }
