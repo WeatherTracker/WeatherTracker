@@ -64,10 +64,8 @@ public interface RetrofitService {
     Call<Ack> getWeatherIcon(@Query("latitude") Double latitude,
                              @Query("longitude") Double longitude);
 
-    @FormUrlEncoded
     @POST("newEvent")
-    Call<Ack> newEvent(@Field("userId") String userId,
-                       @Field("event") Event e);
+    Call<Ack> newEvent(@Body Event e);
 
     @FormUrlEncoded
     @DELETE("deleteEvent")

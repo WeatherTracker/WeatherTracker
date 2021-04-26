@@ -142,7 +142,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
             public void onClick(View v) {
                 Event e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(),tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
                 RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-                Call<Ack> call = retrofitService.newEvent(userId, e);
+                Call<Ack> call = retrofitService.newEvent(e);
                 call.enqueue(new Callback<Ack>() {
                     @Override
                     public void onResponse(Call<Ack> call, Response<Ack> response) {
