@@ -400,6 +400,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     }
 
     private void getData(String pickDay) {
+        System.out.println("123");
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
         Call<chartList> call = retrofitService.getChart(22.074033, 120.716073, pickDay);
         call.enqueue(new Callback<chartList>() {
