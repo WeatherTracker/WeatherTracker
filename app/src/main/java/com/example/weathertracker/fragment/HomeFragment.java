@@ -87,21 +87,10 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         currentProperty.layoutResource = R.layout.current_view;
         currentProperty.dateTextViewResource = R.id.text_view;
         descHashMap.put("current",currentProperty);
-        Property absentProperty = new Property();
-        absentProperty.layoutResource = R.layout.absent_view;
-        absentProperty.dateTextViewResource = R.id.text_view;
-        descHashMap.put("absent",absentProperty);
-
-        //todo:unavailable???
         Property disableProperty = new Property();
         disableProperty.layoutResource = R.layout.disable_view;
         disableProperty.dateTextViewResource = R.id.text_view;
         descHashMap.put("disabled", disableProperty);
-
-        Property unavailableProperty = new Property();
-        absentProperty.layoutResource = R.layout.disable_view;
-        absentProperty.dateTextViewResource = R.id.text_view;
-        descHashMap.put("unavailable",unavailableProperty);
 
         customCalendar.setMapDescToProp(descHashMap);
 
@@ -124,8 +113,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         customCalendar.setOnDateSelectedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(View view, Calendar selectedDate, Object desc) {
-                View[] month_days = customCalendar.getAllViews();
-
+                View[] controlDayinCalendar = customCalendar.getAllViews();
                 Intent intent = new Intent(getActivity(), dateDetailActivity.class);
                 date =selectedDate.get(Calendar.DATE);
                 month =(selectedDate.get(Calendar.MONTH)+1);
@@ -138,10 +126,12 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 } else {
                     startClickTime = SystemClock.uptimeMillis();
                     if(pickDate!=date) {
-                        View temp_view = month_days[date-1];
+                        View temp_view = controlDayinCalendar[date-1];
+                        View dateEvent = temp_view.findViewById(R.id.cycle);
+                        dateEvent.setVisibility(View.GONE);
                         temp_view.setBackgroundResource(R.drawable.date_pick);
                         if(pickDate!=0) {
-                            temp_view = month_days[pickDate-1];
+                            temp_view = controlDayinCalendar[pickDate-1];
                             temp_view.setBackgroundResource(R.drawable.date_picknull);
                             //todo:
                             try {
