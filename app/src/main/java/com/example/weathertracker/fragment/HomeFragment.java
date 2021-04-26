@@ -48,7 +48,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -63,12 +62,9 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private Spinner spinner;
     private LineChart lineChart;
     private long startClickTime = 0;
-
-    private int pickDate=0, date = 0, month = 0,year = 0,today=0,today_month=0,today_year=0;
-    private String nowTime=null;
-    private chartList data;
+    private int pickDate = 0, date = 0, month = 0, year = 0, today = 0, today_month = 0, today_year = 0;
+    private String nowTime = null;
     private Boolean isOpen = false;
-
 
     ArrayAdapter<CharSequence> adapter = null;
 
@@ -89,7 +85,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         today_year = calendar.get(Calendar.YEAR);
 
         nowTime = getNowTime();
-        System.out.println("nnnn"+nowTime);//yyyy/MM/dd hh:mm:ss
+        System.out.println(nowTime);//yyyy/MM/dd hh:mm:ss
         getData(nowTime);
 
         HashMap<Object, Property> descHashMap = new HashMap<>();
@@ -100,12 +96,22 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         Property currentProperty = new Property();
         currentProperty.layoutResource = R.layout.current_view;
         currentProperty.dateTextViewResource = R.id.text_view;
-        descHashMap.put("current",currentProperty);
-      
+        descHashMap.put("current", currentProperty);
+        Property absentProperty = new Property();
+        absentProperty.layoutResource = R.layout.absent_view;
+        absentProperty.dateTextViewResource = R.id.text_view;
+        descHashMap.put("absent", absentProperty);
+
+        //todo:unavailable???
         Property disableProperty = new Property();
         disableProperty.layoutResource = R.layout.disable_view;
         disableProperty.dateTextViewResource = R.id.text_view;
         descHashMap.put("disabled", disableProperty);
+
+        Property unavailableProperty = new Property();
+        absentProperty.layoutResource = R.layout.disable_view;
+        absentProperty.dateTextViewResource = R.id.text_view;
+        descHashMap.put("unavailable", unavailableProperty);
 
         customCalendar.setMapDescToProp(descHashMap);
 
@@ -128,7 +134,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         customCalendar.setOnDateSelectedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(View view, Calendar selectedDate, Object desc) {
-
                 View[] month_days = customCalendar.getAllViews();
                 date = selectedDate.get(Calendar.DATE);
                 month = (selectedDate.get(Calendar.MONTH) + 1);
@@ -205,18 +210,22 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         return root;
     }
 
-    private void getDropdownList(int i,int j,int h) throws ParseException {
-        String I = null,J = null;
-        if(i<10) I = "0" + i; else I = String.valueOf(i);
-        if(j<10) J = "0" + j; else J = String.valueOf(j);
-        //System.out.println("pickday "+ h+j+i + "today"+today_year+today_month+today);
-        //System.out.println(pickDay);
+    private void getDropdownList(int i, int j, int h) throws ParseException {
+        String I = null, J = null;
+        if (i < 10) I = "0" + i;
+        else I = String.valueOf(i);
+        if (j < 10) J = "0" + j;
+        else J = String.valueOf(j);
+        System.out.println("pickday " + h + j + i + "today" + today_year + today_month + today);
+        String pickDay = h + "/" + J + "/" + I + " 00:00:00";
+        System.out.println(pickDay);
         SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
-        Date beginDate= format.parse(h+"-"+j+"-"+i);
-        Date endDate= format.parse(today_year+"-"+today_month+"-"+today);
-        long day=(beginDate.getTime()-endDate.getTime())/(24*60*60*1000);
-        //System.out.println("相隔的天數="+day);
-        if(day>=0&&day<=3) {
+        Date beginDate = format.parse(h + "-" + j + "-" + i);
+        Date endDate = format.parse(today_year + "-" + today_month + "-" + today);
+        long day = (beginDate.getTime() - endDate.getTime()) / (24 * 60 * 60 * 1000);
+        System.out.println("相隔的天數=" + day);
+        getData(pickDay);
+        if (day >= 0 && day <= 3) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_2, android.R.layout.simple_spinner_item);
         }
         if (day > 2 && day <= 7) {
@@ -229,14 +238,27 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     }
 
 
+    private List<Entry> lineChartDataSet() {
+        ArrayList<Entry> dataSet = new ArrayList<Entry>();
 
+        dataSet.add(new Entry(0, 40));
+        dataSet.add(new Entry(1, 10));
+        dataSet.add(new Entry(2, 15));
+        dataSet.add(new Entry(3, 12));
+        dataSet.add(new Entry(4, 20));
+        dataSet.add(new Entry(5, 50));
+        dataSet.add(new Entry(6, 23));
+        dataSet.add(new Entry(7, 34));
+        dataSet.add(new Entry(8, 12));
+        return dataSet;
+    }
 
     @Override//drodownlistSelect
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         String text = adapterView.getItemAtPosition(i).toString();
         //Toast.makeText(adapterView.getContext(),text,Toast.LENGTH_SHORT).show();
+        makeChart(date, month, text);
 
-        makeChart(date,month-1,text);
     }
 
     @Override//預設
@@ -246,10 +268,8 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
 
     //折線圖
-
-    public void makeChart(int date,int month,String s){
-        LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(s),s);
-
+    public void makeChart(int date, int month, String s) {
+        LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(), s);
         ArrayList<ILineDataSet> iLineDataSets = new ArrayList<>();
         iLineDataSets.add(lineDataSet);
 
@@ -280,7 +300,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         lineDataSet.setCircleHoleRadius(2);
         lineDataSet.setValueTextSize(10);
         lineDataSet.setValueTextColor(Color.BLACK);
-        System.out.println("okokok2");
     }
 
     //換月
@@ -298,6 +317,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 for (int i = 201; i <= 231; i++) {
                     String j = String.valueOf(i);
                 }
+
                 arr[1] = null; //Optional: This is the map linking a date to its tag.
                 break;
             case Calendar.MARCH:
@@ -340,11 +360,8 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         return arr;
     }
 
-
-    public String getNowTime(){
-        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS000");
-        sdFormat.setTimeZone(TimeZone.getTimeZone("GMT+20:00"));
-
+    public String getNowTime() {
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
         Date date = new Date();
         String strDate = sdFormat.format(date);
         return strDate;
@@ -352,24 +369,15 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     private void getData(String pickDay) {
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-
-        Call<chartList> call = retrofitService.getChart(22.1505447,121.7735869,pickDay);
-
+        Call<chartList> call = retrofitService.getChart(22.074033, 120.716073, "2021-04-27 23:59:59.628556");
         call.enqueue(new Callback<chartList>() {
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {
                 if (!response.isSuccessful()) {
                     Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
-
-                }
-                else{
-                     data = response.body();
-                    System.out.println("OKOKOKOKOKOKpickday"+pickDay);
-
-                    makeChart(date,month-1,"溫度");
-                     //System.out.println(data);
-                   // Log.i("1234",data.toString());
-
+                } else {
+                    chartList data = response.body();
+                    System.out.println(data);
                 }
             }
 
@@ -378,47 +386,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
             }
         });
-    }
 
-    private List<Entry> lineChartDataSet(String s) {
-        ArrayList<Entry> dataSet = new ArrayList<Entry>();
-        int x; Double y;
-        if(s.equals("溫度")) {
-            for (int i = 0; i < data.getTemperature().size(); i++) {
-                y = data.getTemperature().get(i).getValue();
-                dataSet.add(new Entry(i, y.floatValue()));
-            }
-        }
-        else if(s.equals("AQI")) {
-            for (int i = 0; i < data.getAQI().size(); i++) {
-                y = data.getAQI().get(i).getValue();
-                dataSet.add(new Entry(i, y.floatValue()));
-            }
-        }
-        else if(s.equals("紫外線")) {
-            for (int i = 0; i < data.getUV().size(); i++) {
-                y = data.getUV().get(i).getValue();
-                dataSet.add(new Entry(i, y.floatValue()));
-            }
-        }
-        else if(s.equals("風速")) {
-            for (int i = 0; i < data.getWindSpeed().size(); i++) {
-                y = data.getWindSpeed().get(i).getValue();
-                dataSet.add(new Entry(i, y.floatValue()));
-            }
-        }
-        else if(s.equals("濕度")) {
-            for (int i = 0; i < data.getHumidity().size(); i++) {
-                y = data.getHumidity().get(i).getValue();
-                dataSet.add(new Entry(i, y.floatValue()));
-            }
-        }
-        else if(s.equals("降雨機率")) {
-            for (int i = 0; i < data.getPOP().size(); i++) {
-                y = data.getPOP().get(i).getValue();
-                dataSet.add(new Entry(i, y.floatValue()));
-            }
-        }
-        return  dataSet;
     }
 }
