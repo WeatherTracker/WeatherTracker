@@ -56,7 +56,7 @@
         app:layout_constraintTop_toBottomOf="@+id/btnBack" />
 
     <TextView
-        android:id="@+id/tvDate"
+        android:id="@+id/tvStartDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
@@ -65,13 +65,30 @@
         app:layout_constraintTop_toBottomOf="@+id/etEventName" />
 
     <TextView
-        android:id="@+id/tvTime"
+        android:id="@+id/tvStartTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@+id/tvDate"
+        app:layout_constraintStart_toEndOf="@+id/tvStartDate"
         app:layout_constraintTop_toBottomOf="@+id/etEventName" />
+    <TextView
+        android:id="@+id/tvEndDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvStartDate" />
+
+    <TextView
+        android:id="@+id/tvEndTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/tvStartDate"
+        app:layout_constraintTop_toBottomOf="@+id/tvStartTime" />
     <ToggleButton
         android:id="@+id/isPublic"
         android:layout_width="wrap_content"
@@ -99,7 +116,7 @@
         android:text="活動地點"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTime" />
+        app:layout_constraintTop_toBottomOf="@+id/tvEndTime" />
 
     <ImageButton
         android:id="@+id/btnAddPlace"
@@ -108,7 +125,7 @@
         android:layout_margin="15dp"
         android:background="@color/float_transparent"
         app:layout_constraintStart_toEndOf="@+id/tvSpot"
-        app:layout_constraintTop_toBottomOf="@+id/tvTime"
+        app:layout_constraintTop_toBottomOf="@+id/tvEndTime"
         app:srcCompat="@drawable/ic_baseline_add_location_alt_24" />
 
     <ImageButton
@@ -119,7 +136,7 @@
         android:background="@color/float_transparent"
         android:visibility="gone"
         app:layout_constraintStart_toEndOf="@+id/tvSpot"
-        app:layout_constraintTop_toBottomOf="@+id/tvTime"
+        app:layout_constraintTop_toBottomOf="@+id/tvStartTime"
         app:srcCompat="@drawable/ic_baseline_remove_circle_outline_24" />
 
     <fragment

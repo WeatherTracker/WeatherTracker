@@ -48,9 +48,8 @@ public class ProfileActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private TextInputEditText etUserName;
     private List<Double> AHPPreference;
-    private List<Integer> freeTime;//todo:確認型態
-    private List<String> hobbies;
-
+    private List<Integer> freeTime = new ArrayList<>();//todo:確認型態
+    private List<String> hobbies = new ArrayList<>();
 
 
     @Override
@@ -199,7 +198,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private Boolean AHP_check(double eigenMax) {
         double CI = (eigenMax - 3) / 2;
-        return CI / 0.52 < 0.1;
+        return (CI / 0.52 )< 0.1;
     }
 
     private List<Double> AHP_count() {
@@ -256,6 +255,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         }
         if (AHP_check(max_eigen)) {
+            AHPPreference = new ArrayList<>();
             double[] vector = decomposition.getEigenvector(index).toArray();
             double sum = 0;
             for (double i : vector) {

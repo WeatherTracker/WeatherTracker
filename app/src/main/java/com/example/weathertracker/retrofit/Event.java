@@ -8,10 +8,11 @@ public class Event {
     private List<String> participants, hosts;
     private Boolean isPublic, isOutDoor;
 
-    public Event(String eventName, String hostRemark, String startTime, String staticHobbyClass, String staticHobbyTag, double latitude, double longitude, List<String> hosts, Boolean isPublic, Boolean isOutDoor) {
+    public Event(String eventName, String hostRemark, String startTime, String endTime, String staticHobbyClass, String staticHobbyTag, double latitude, double longitude, List<String> hosts, Boolean isPublic, Boolean isOutDoor) {
         this.eventName = eventName;
         this.hostRemark = hostRemark;
         this.startTime = startTime;
+        this.endTime = endTime;
         this.staticHobbyClass = staticHobbyClass;
         this.staticHobbyTag = staticHobbyTag;
         this.latitude = latitude;
