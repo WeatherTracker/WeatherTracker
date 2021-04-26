@@ -13,7 +13,6 @@ import android.view.animation.BounceInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -48,6 +47,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,6 +65,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private int pickDate = 0, date = 0, month = 0, year = 0, today = 0, today_month = 0, today_year = 0;
     private String nowTime = null;
     private Boolean isOpen = false;
+    private chartList data = null;
 
     ArrayAdapter<CharSequence> adapter = null;
 
@@ -146,6 +147,9 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                         temp_view.setBackgroundResource(R.drawable.date_picknull);
                         //todo:
                         try {
+                            String pickDay = year+"-"+month+"-"+date+" 00:00:00.000000";
+                            if(today_year==year&&today_month==month&&today==date)getData(nowTime);
+                            else getData(pickDay);
                             getDropdownList(date, month, year);
                         } catch (ParseException e) {
                             e.printStackTrace();
@@ -212,12 +216,12 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     private void getDropdownList(int i, int j, int h) throws ParseException {
         String I = null, J = null;
-        if (i < 10) I = "0" + i;
+        if (i < 10) I = "0" + (i);
         else I = String.valueOf(i);
         if (j < 10) J = "0" + j;
         else J = String.valueOf(j);
         System.out.println("pickday " + h + j + i + "today" + today_year + today_month + today);
-        String pickDay = h + "/" + J + "/" + I + " 00:00:00";
+        String pickDay = h + "-" + J + "-" + I + " 00:00:00.000000";
         System.out.println(pickDay);
         SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
         Date beginDate = format.parse(h + "-" + j + "-" + i);
@@ -238,19 +242,46 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     }
 
 
-    private List<Entry> lineChartDataSet() {
+    private List<Entry> lineChartDataSet(String s) {
         ArrayList<Entry> dataSet = new ArrayList<Entry>();
-
-        dataSet.add(new Entry(0, 40));
-        dataSet.add(new Entry(1, 10));
-        dataSet.add(new Entry(2, 15));
-        dataSet.add(new Entry(3, 12));
-        dataSet.add(new Entry(4, 20));
-        dataSet.add(new Entry(5, 50));
-        dataSet.add(new Entry(6, 23));
-        dataSet.add(new Entry(7, 34));
-        dataSet.add(new Entry(8, 12));
-        return dataSet;
+        int x; Double y;
+        if(s.equals("溫度")) {
+            for (int i = 0; i < data.getTemperature().size(); i++) {
+                y = data.getTemperature().get(i).getValue();
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        }
+        else if(s.equals("AQI")) {
+            for (int i = 0; i < data.getAQI().size(); i++) {
+                y = data.getAQI().get(i).getValue();
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        }
+        else if(s.equals("紫外線")) {
+            for (int i = 0; i < data.getUV().size(); i++) {
+                y = data.getUV().get(i).getValue();
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        }
+        else if(s.equals("風速")) {
+            for (int i = 0; i < data.getWindSpeed().size(); i++) {
+                y = data.getWindSpeed().get(i).getValue();
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        }
+        else if(s.equals("濕度")) {
+            for (int i = 0; i < data.getHumidity().size(); i++) {
+                y = data.getHumidity().get(i).getValue();
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        }
+        else if(s.equals("降雨機率")) {
+            for (int i = 0; i < data.getPOP().size(); i++) {
+                y = data.getPOP().get(i).getValue();
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        }
+        return  dataSet;
     }
 
     @Override//drodownlistSelect
@@ -269,7 +300,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     //折線圖
     public void makeChart(int date, int month, String s) {
-        LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(), s);
+        LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(s), s);
         ArrayList<ILineDataSet> iLineDataSets = new ArrayList<>();
         iLineDataSets.add(lineDataSet);
 
@@ -360,8 +391,9 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         return arr;
     }
 
-    public String getNowTime() {
-        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+    public String getNowTime(){
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS000");
+        sdFormat.setTimeZone(TimeZone.getTimeZone("GMT+20:00"));
         Date date = new Date();
         String strDate = sdFormat.format(date);
         return strDate;
@@ -369,15 +401,18 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     private void getData(String pickDay) {
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-        Call<chartList> call = retrofitService.getChart(22.074033, 120.716073, "2021-04-27 23:59:59.628556");
+        Call<chartList> call = retrofitService.getChart(22.074033, 120.716073, pickDay);
         call.enqueue(new Callback<chartList>() {
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {
                 if (!response.isSuccessful()) {
                     Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
+                    System.out.println("nonononononononononnonnonononono");
                 } else {
-                    chartList data = response.body();
-                    System.out.println(data);
+                    data = response.body();
+                    System.out.println("daaaa"+data);
+
+                    makeChart(date,month-1,"溫度");
                 }
             }
 
