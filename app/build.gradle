@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId "com.example.weathertracker"
         minSdkVersion 24
-        targetSdkVersion 27
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -50,7 +50,7 @@ dependencies {
 // FCM
     implementation platform('com.google.firebase:firebase-bom:26.2.0')
     implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-messaging:21.0.1'
+    implementation 'com.google.firebase:firebase-messaging:21.1.0'
 // calendar
     implementation 'org.naishadhparmar.zcustomcalendar:zcustomcalendar:1.0.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
