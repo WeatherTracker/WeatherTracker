@@ -369,7 +369,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     private void getData(String pickDay) {
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-        Call<chartList> call = retrofitService.getChart(120.716073, 22.074033, "2021-04-03%2023:59:59.628556");
+        Call<chartList> call = retrofitService.getChart(22.074033, 120.716073, "2021-04-27 23:59:59.628556");
         call.enqueue(new Callback<chartList>() {
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {
@@ -377,6 +377,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                     Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
                 } else {
                     chartList data = response.body();
+                    System.out.println(data);
                 }
             }
 
