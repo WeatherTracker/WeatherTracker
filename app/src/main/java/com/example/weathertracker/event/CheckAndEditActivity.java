@@ -45,12 +45,12 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private RetrofitService retrofitService;
     private Event event;
     private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnRemovePlace;
-    private TextView tvPlaceDescribe, tvDate, tvTime;
+    private TextView tvPlaceDescribe, tvStartDate, tvStartTime,tvEndDate,tvEndTime;
     private EditText etEventName, etHostRemark;
     private SupportMapFragment mapFragment;
     private double latitude, longitude;
-    private DatePickerDialog datePickerDialog;
-    private TimePickerDialog timePickerDialog;
+    private DatePickerDialog datePickerDialog,datePickerDialog2;
+    private TimePickerDialog timePickerDialog,timePickerDialog2;
     private GoogleMap mMap;
     private SimpleDateFormat dateFormatter, timeFormatter;
     private final HashMap<String, Integer> idMap = new HashMap<>();
@@ -68,7 +68,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
         userId = getSharedPreferences("sharedPreferences", MODE_PRIVATE).getString("userId", "");
         userId = "uuid";
-        event = new Event("名稱", "備註", "2020-03-02 16:00", "藝文嗜好類", "舞蹈", 23.0, 121.5, Arrays.asList("uuid"), true, true);
+        event = new Event("名稱", "備註", "2020-03-02 16:00","2020-03-03 18:00", "藝文嗜好類", "舞蹈", 23.0, 121.5, Arrays.asList("uuid"), true, true);
 
         idMap.put("戶外活動類", R.array.hobbies_outdoor_events);
         idMap.put("運動類", R.array.hobbies_sports);
@@ -95,8 +95,10 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         btnAddPlace = findViewById(R.id.btnAddPlace);
         btnRemovePlace = findViewById(R.id.btnRemovePlace);
         etEventName = findViewById(R.id.etEventName);
-        tvDate = findViewById(R.id.tvDate);
-        tvTime = findViewById(R.id.tvTime);
+        tvStartDate = findViewById(R.id.tvStartDate);
+        tvStartTime = findViewById(R.id.tvStartTime);
+        tvEndDate = findViewById(R.id.tvEndDate);
+        tvEndTime = findViewById(R.id.tvEndTime);
         etHostRemark = findViewById(R.id.etHostRemark);
         tvPlaceDescribe = findViewById(R.id.tvPlaceDescribe);
         etHobbies = findViewById(R.id.etHobbies);
@@ -165,24 +167,37 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 //todo:
             }
         });
-        tvDate.setOnClickListener(new View.OnClickListener() {
+        tvStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 datePickerDialog.show();
             }
         });
 
-        tvTime.setOnClickListener(new View.OnClickListener() {
+        tvStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 timePickerDialog.show();
+            }
+        });
+        tvEndDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerDialog2.show();
+            }
+        });
+
+        tvEndTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timePickerDialog2.show();
             }
         });
         datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 String s = year + "-" + (month + 1) + "-" + dayOfMonth;
-                tvDate.setText(s);
+                tvStartDate.setText(s);
             }
         }, year, month, day);
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
@@ -190,7 +205,23 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 String s = hourOfDay + ":" + String.format("%02d", minute);
-                tvTime.setText(s);
+                tvStartTime.setText(s);
+            }
+        }, 12, 0, false);
+
+        datePickerDialog2 = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                String s = year + "-" + (month + 1) + "-" + dayOfMonth;
+                tvStartDate.setText(s);
+            }
+        }, year, month, day);
+        datePickerDialog2.getDatePicker().setMinDate(System.currentTimeMillis());
+        timePickerDialog2 = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                String s = hourOfDay + ":" + String.format("%02d", minute);
+                tvStartTime.setText(s);
             }
         }, 12, 0, false);
         hobbyClassAdapter = ArrayAdapter.createFromResource(this, R.array.hobby_classes, R.layout.list_item);
@@ -238,8 +269,8 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private void initField() {
         setNonEditable();
         etEventName.setText(event.getEventName());
-        tvDate.setText(event.strSplit()[0]);
-        tvTime.setText(event.strSplit()[1]);
+        tvStartDate.setText(event.strSplit()[0]);
+        tvStartTime.setText(event.strSplit()[1]);
         isOutDoor.setChecked(event.isOutDoor());
         isPublic.setChecked(event.isPublic());
 //        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.getLatitude(), event.getLongitude()), 15));
@@ -260,8 +291,8 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         etHostRemark.setEnabled(true);
         isPublic.setEnabled(true);
         isOutDoor.setEnabled(true);
-        tvDate.setEnabled(true);
-        tvTime.setEnabled(true);
+        tvStartDate.setEnabled(true);
+        tvStartTime.setEnabled(true);
         btnAddPlace.setVisibility(View.VISIBLE);
 
     }
@@ -275,8 +306,8 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         etHostRemark.setEnabled(false);
         isPublic.setEnabled(false);
         isOutDoor.setEnabled(false);
-        tvDate.setEnabled(false);
-        tvTime.setEnabled(false);
+        tvStartDate.setEnabled(false);
+        tvStartTime.setEnabled(false);
         btnAddPlace.setVisibility(View.GONE);
         btnRemovePlace.setVisibility(View.GONE);
 
@@ -286,8 +317,8 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         etHostRemark.setTextColor(getResources().getColor(R.color.white));
         isPublic.setTextColor(getResources().getColor(R.color.white));
         isOutDoor.setTextColor(getResources().getColor(R.color.white));
-        tvDate.setTextColor(getResources().getColor(R.color.white));
-        tvTime.setTextColor(getResources().getColor(R.color.white));
+        tvStartDate.setTextColor(getResources().getColor(R.color.white));
+        tvStartTime.setTextColor(getResources().getColor(R.color.white));
 
         //todo:
     }
