@@ -1,7 +1,9 @@
 package com.example.weathertracker.fragment;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -33,6 +35,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.google.gson.Gson;
 
 import org.naishadhparmar.zcustomcalendar.CustomCalendar;
 import org.naishadhparmar.zcustomcalendar.OnDateSelectedListener;
@@ -66,7 +69,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private String nowTime = null;
     private Boolean isOpen = false;
     private chartList data = null;
-
     ArrayAdapter<CharSequence> adapter = null;
 
     public HomeFragment() {
@@ -84,7 +86,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         today = calendar.get(Calendar.DAY_OF_MONTH);
         today_month = calendar.get(Calendar.MONTH) + 1;
         today_year = calendar.get(Calendar.YEAR);
-
         nowTime = getNowTime();
         System.out.println(nowTime);//yyyy/MM/dd hh:mm:ss
         getData(nowTime);
@@ -147,7 +148,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                         temp_view.setBackgroundResource(R.drawable.date_picknull);
                         //todo:
                         try {
-                            String pickDay = year+"-"+month+"-"+date+" 00:00:00.000000";
+                            String pickDay = year+"-"+month+"-"+date;
                             if(today_year==year&&today_month==month&&today==date)getData(nowTime);
                             else getData(pickDay);
                             getDropdownList(date, month, year);
@@ -177,11 +178,30 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                         scaleAnimation.setDuration(500);
                         BounceInterpolator bounceInterpolator = new BounceInterpolator();
                         scaleAnimation.setInterpolator(bounceInterpolator);
+
+
+
+                        SharedPreferences sharedPreferences= getContext().getSharedPreferences("favorite",Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
                         ToggleButton buttonFavorite = layoutView.findViewById(R.id.button_favorite);
                         buttonFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                 buttonView.startAnimation(scaleAnimation);
+                                String I = null, J = null;
+                                if (month < 10) I = "0" + (month);
+                                else I = String.valueOf(month);
+                                if (date < 10) J = "0" + date;
+                                else J = String.valueOf(date);
+                                String favorateDay =String.valueOf(year)+ "-" + I + "-" + J ;
+                                System.out.println("favoer" + favorateDay);
+
+                                Gson gson = new Gson();
+                                String json = gson.toJson(data);
+                                //System.out.println(json);
+
+                                editor.putString(favorateDay,json);
+                                editor.apply();
                             }
                         });
                         dialogBuilder.setView(layoutView);
@@ -221,7 +241,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         if (j < 10) J = "0" + j;
         else J = String.valueOf(j);
         System.out.println("pickday " + h + j + i + "today" + today_year + today_month + today);
-        String pickDay = h + "-" + J + "-" + I + " 00:00:00.000000";
+        String pickDay = h + "-" + J + "-" + I ;
         System.out.println(pickDay);
         SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
         Date beginDate = format.parse(h + "-" + j + "-" + i);
@@ -392,7 +412,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     }
 
     public String getNowTime(){
-        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS000");
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
         sdFormat.setTimeZone(TimeZone.getTimeZone("GMT+20:00"));
         Date date = new Date();
         String strDate = sdFormat.format(date);
@@ -408,10 +428,10 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             public void onResponse(Call<chartList> call, Response<chartList> response) {
                 if (!response.isSuccessful()) {
                     Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
-                    System.out.println("nonononononononononnonnonononono");
+                    //System.out.println("nonononononononononnonnonononono");
                 } else {
                     data = response.body();
-                    System.out.println("daaaa"+data);
+                    //System.out.println("daaaa"+data);
 
                     makeChart(date,month-1,"溫度");
                 }
