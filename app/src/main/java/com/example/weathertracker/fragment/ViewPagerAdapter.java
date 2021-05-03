@@ -8,9 +8,13 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
+    private FragmentManager fm;
+
     public ViewPagerAdapter(@NonNull FragmentManager fm, int behavior) {
         super(fm, behavior);
+        this.fm = fm;
     }
+
 
     @NonNull
     @Override
@@ -19,6 +23,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             case 0:
                 return new HomeFragment();
             case 1:
+                System.out.println("1235454645646465");
                 return new FavoriteFragment();
             default:
                 return new HomeFragment();
@@ -45,4 +50,5 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         return title;
     }
+
 }

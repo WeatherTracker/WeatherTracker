@@ -24,6 +24,7 @@ import android.widget.ToggleButton;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.example.weathertracker.MainActivity;
 import com.example.weathertracker.R;
 import com.example.weathertracker.event.NewEventActivity;
 import com.example.weathertracker.retrofit.RetrofitManager;
@@ -202,6 +203,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
                                 editor.putString(favorateDay,json);
                                 editor.apply();
+                                Reload();
                             }
                         });
                         dialogBuilder.setView(layoutView);
@@ -232,6 +234,11 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.NEXT, (OnNavigationButtonClickedListener) this);
         customCalendar.setDate(calendar, dateHashMap);
         return root;
+    }
+
+    private void Reload() {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        startActivity(intent);
     }
 
     private void getDropdownList(int i, int j, int h) throws ParseException {

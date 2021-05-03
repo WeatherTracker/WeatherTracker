@@ -40,7 +40,7 @@ public class FavoriteFragment extends Fragment {
         ArrayList<String> favorDateData = new ArrayList<String>();
         favoriteSize=0;
         for (Object key : allPreferences.keySet()) {
-            System.out.println(key + " : " + allPreferences.get(key));
+            //System.out.println(key + " : " + allPreferences.get(key));
             favorDate.add((String) key);
             favorDateData.add((String)allPreferences.get(key));
             favoriteSize++;
@@ -49,8 +49,9 @@ public class FavoriteFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rv_hor.setLayoutManager(linearLayoutManager);
         rv_hor.setAdapter(new favoriteAdapter(getActivity(),favorDate,favorDateData));
-        System.out.println(favoriteSize);
+        //System.out.println(favoriteSize);
         return root;
     }
+
 
 }
