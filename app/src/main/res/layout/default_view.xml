@@ -17,7 +17,8 @@
             android:layout_gravity="right"
             android:layout_width="10dp"
             android:layout_height="10dp"
-            android:src="@drawable/ic_baseline_brightness_1_24"/>
+            android:src="@drawable/ic_baseline_brightness_1_24"
+            android:visibility="invisible"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"

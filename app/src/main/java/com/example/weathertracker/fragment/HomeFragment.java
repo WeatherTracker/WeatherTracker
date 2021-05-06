@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -61,7 +62,7 @@ import retrofit2.Response;
  * A simple {@link Fragment} subclass.
  */
 public class HomeFragment extends Fragment implements AdapterView.OnItemSelectedListener, OnNavigationButtonClickedListener {
-    private CustomCalendar customCalendar;
+    private static CustomCalendar customCalendar;
     private Calendar calendar, lastPickedDate;
     private Spinner spinner;
     private LineChart lineChart;
@@ -133,7 +134,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         }
 
         spinner.setOnItemSelectedListener(this);
-
         customCalendar.setOnDateSelectedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(View view, Calendar selectedDate, Object desc) {
@@ -143,6 +143,8 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 year = selectedDate.get(Calendar.YEAR);
                 if (pickDate != date) {
                     View temp_view = month_days[date - 1];
+                        //todo:
+                    getRedPoint("04",selectedDate.getWeekYear());
                     temp_view.setBackgroundResource(R.drawable.date_pick);
                     if (pickDate != 0) {
                         temp_view = month_days[pickDate - 1];
@@ -249,12 +251,10 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         else J = String.valueOf(j);
         System.out.println("pickday " + h + j + i + "today" + today_year + today_month + today);
         String pickDay = h + "-" + J + "-" + I ;
-        System.out.println(pickDay);
         SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
         Date beginDate = format.parse(h + "-" + j + "-" + i);
         Date endDate = format.parse(today_year + "-" + today_month + "-" + today);
         long day = (beginDate.getTime() - endDate.getTime()) / (24 * 60 * 60 * 1000);
-        System.out.println("相隔的天數=" + day);
         getData(pickDay);
         if (day >= 0 && day <= 3) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_2, android.R.layout.simple_spinner_item);
@@ -361,38 +361,33 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     }
 
     //換月
-    public Map<Integer, Object>[] onNavigationButtonClicked(int whichButton, Calendar newMonth) {
+    public Map<Integer, Object>[] onNavigationButtonClicked(int whichButton, Calendar Mcalendar) {
         Map<Integer, Object>[] arr = new Map[2];
-        switch (newMonth.get(Calendar.MONTH)) {
+        switch (Mcalendar.get(Calendar.MONTH)) {
             case Calendar.JANUARY:
                 arr[0] = new HashMap<>();
                 break;
             case Calendar.FEBRUARY:
-                arr[0] = new HashMap<>(); //This is the map linking a date to its description
-//                for(int i=1;i<=31;i++){
-//                    if(a[2][i]==1)arr[0].put(i,"absent");
-//                }
-                for (int i = 201; i <= 231; i++) {
-                    String j = String.valueOf(i);
-                }
+                arr[0] = new HashMap<>();
 
-                arr[1] = null; //Optional: This is the map linking a date to its tag.
                 break;
             case Calendar.MARCH:
                 arr[0] = new HashMap<>();
                 break;
             case Calendar.APRIL:
+                getRedPoint("04",Mcalendar.getWeekYear());
                 arr[0] = new HashMap<>();
                 break;
             case Calendar.MAY:
+                //getRedPoint("05",Mcalendar.getWeekYear());
                 arr[0] = new HashMap<>();
                 break;
             case Calendar.JUNE:
 
                 arr[0] = new HashMap<>();
-                arr[0].put(5, "presnet");
-                arr[0].put(10, "presnet");
-                arr[0].put(19, "presnet");
+//                arr[0].put(5, "presnet");
+//                arr[0].put(10, "presnet");
+//                arr[0].put(19, "presnet");
                 break;
 
             case Calendar.JULY:
@@ -427,7 +422,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     }
 
     private void getData(String pickDay) {
-        System.out.println("123");
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
         Call<chartList> call = retrofitService.getChart(22.074033, 120.716073, pickDay);
         call.enqueue(new Callback<chartList>() {
@@ -447,6 +441,47 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             @Override
             public void onFailure(Call<chartList> call, Throwable t) {
 
+            }
+        });
+
+    }
+
+    private void getRedPoint(String month,int year) {
+        System.out.println(month + "" +year);
+        //todo:
+                View[] mday = customCalendar.getAllViews();
+        RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+        Call<List<String>> call = retrofitService.getCalendarMonth("a",year+"-"+month);
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
+                } else {
+                    List<String> monthEvent = response.body();
+                    if(monthEvent!=null) {
+                        for (int i = 0; i < monthEvent.size(); i++) {
+                            //todo:
+                            String da = monthEvent.get(i).substring(8, 10);
+
+                            View view = mday[Integer.parseInt(da)];
+                            ImageView mcycle = view.findViewById(R.id.cycle);
+                            mcycle.setVisibility(View.VISIBLE);
+                            System.out.println(da);
+                        }
+                    }
+                    else{
+
+                        View view = mday[5];
+                        ImageView mcycle = view.findViewById(R.id.cycle);
+                        mcycle.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                System.out.println("1111111"+t);
             }
         });
 
