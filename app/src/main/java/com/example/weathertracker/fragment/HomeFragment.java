@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +53,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -61,7 +61,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements AdapterView.OnItemSelectedListener, OnNavigationButtonClickedListener {
+public class HomeFragment extends Fragment implements OnNavigationButtonClickedListener {
     private static CustomCalendar customCalendar;
     private Calendar calendar, lastPickedDate;
     private Spinner spinner;
@@ -72,6 +72,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private Boolean isOpen = false;
     private chartList data = null;
     ArrayAdapter<CharSequence> adapter = null;
+    private boolean flag = false;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -133,7 +134,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             e.printStackTrace();
         }
 
-        spinner.setOnItemSelectedListener(this);
+//        spinner.setOnItemSelectedListener(this);
         customCalendar.setOnDateSelectedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(View view, Calendar selectedDate, Object desc) {
@@ -143,16 +144,17 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 year = selectedDate.get(Calendar.YEAR);
                 if (pickDate != date) {
                     View temp_view = month_days[date - 1];
-                        //todo:
-                    getRedPoint("04",selectedDate.getWeekYear());
+                    //todo:
+                    getRedPoint("04", selectedDate.getWeekYear());
                     temp_view.setBackgroundResource(R.drawable.date_pick);
                     if (pickDate != 0) {
                         temp_view = month_days[pickDate - 1];
                         temp_view.setBackgroundResource(R.drawable.date_picknull);
                         //todo:
                         try {
-                            String pickDay = year+"-"+month+"-"+date;
-                            if(today_year==year&&today_month==month&&today==date)getData(nowTime);
+                            String pickDay = year + "-" + month + "-" + date;
+                            if (today_year == year && today_month == month && today == date)
+                                getData(nowTime);
                             else getData(pickDay);
                             getDropdownList(date, month, year);
                         } catch (ParseException e) {
@@ -169,7 +171,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                         isOpen = true;
                         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
                         View layoutView = getLayoutInflater().inflate(R.layout.pop_up_layout, null);
-                        ImageButton btnNewEvent  = layoutView.findViewById(R.id.btnNewEvent);
+                        ImageButton btnNewEvent = layoutView.findViewById(R.id.btnNewEvent);
                         btnNewEvent.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -183,8 +185,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                         scaleAnimation.setInterpolator(bounceInterpolator);
 
 
-
-                        SharedPreferences sharedPreferences= getContext().getSharedPreferences("favorite",Context.MODE_PRIVATE);
+                        SharedPreferences sharedPreferences = getContext().getSharedPreferences("favorite", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         ToggleButton buttonFavorite = layoutView.findViewById(R.id.button_favorite);
                         buttonFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -196,14 +197,14 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                                 else I = String.valueOf(month);
                                 if (date < 10) J = "0" + date;
                                 else J = String.valueOf(date);
-                                String favorateDay =String.valueOf(year)+ "-" + I + "-" + J ;
+                                String favorateDay = String.valueOf(year) + "-" + I + "-" + J;
                                 System.out.println("favoer" + favorateDay);
 
                                 Gson gson = new Gson();
                                 String json = gson.toJson(data);
                                 //System.out.println(json);
 
-                                editor.putString(favorateDay,json);
+                                editor.putString(favorateDay, json);
                                 editor.apply();
                                 Reload();
                             }
@@ -250,12 +251,11 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         if (j < 10) J = "0" + j;
         else J = String.valueOf(j);
         System.out.println("pickday " + h + j + i + "today" + today_year + today_month + today);
-        String pickDay = h + "-" + J + "-" + I ;
+        String pickDay = h + "-" + J + "-" + I;
         SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
         Date beginDate = format.parse(h + "-" + j + "-" + i);
         Date endDate = format.parse(today_year + "-" + today_month + "-" + today);
         long day = (beginDate.getTime() - endDate.getTime()) / (24 * 60 * 60 * 1000);
-        getData(pickDay);
         if (day >= 0 && day <= 3) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_2, android.R.layout.simple_spinner_item);
         }
@@ -271,58 +271,54 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     private List<Entry> lineChartDataSet(String s) {
         ArrayList<Entry> dataSet = new ArrayList<Entry>();
-        int x; Double y;
-        if(s.equals("溫度")) {
+        int x;
+        Double y;
+        if (s.equals("溫度")) {
             for (int i = 0; i < data.getTemperature().size(); i++) {
                 y = data.getTemperature().get(i).getValue();
                 dataSet.add(new Entry(i, y.floatValue()));
             }
-        }
-        else if(s.equals("AQI")) {
+        } else if (s.equals("AQI")) {
             for (int i = 0; i < data.getAQI().size(); i++) {
                 y = data.getAQI().get(i).getValue();
                 dataSet.add(new Entry(i, y.floatValue()));
             }
-        }
-        else if(s.equals("紫外線")) {
+        } else if (s.equals("紫外線")) {
             for (int i = 0; i < data.getUV().size(); i++) {
                 y = data.getUV().get(i).getValue();
                 dataSet.add(new Entry(i, y.floatValue()));
             }
-        }
-        else if(s.equals("風速")) {
+        } else if (s.equals("風速")) {
             for (int i = 0; i < data.getWindSpeed().size(); i++) {
                 y = data.getWindSpeed().get(i).getValue();
                 dataSet.add(new Entry(i, y.floatValue()));
             }
-        }
-        else if(s.equals("濕度")) {
+        } else if (s.equals("濕度")) {
             for (int i = 0; i < data.getHumidity().size(); i++) {
                 y = data.getHumidity().get(i).getValue();
                 dataSet.add(new Entry(i, y.floatValue()));
             }
-        }
-        else if(s.equals("降雨機率")) {
+        } else if (s.equals("降雨機率")) {
             for (int i = 0; i < data.getPOP().size(); i++) {
                 y = data.getPOP().get(i).getValue();
                 dataSet.add(new Entry(i, y.floatValue()));
             }
         }
-        return  dataSet;
+        return dataSet;
     }
 
-    @Override//drodownlistSelect
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        String text = adapterView.getItemAtPosition(i).toString();
-        //Toast.makeText(adapterView.getContext(),text,Toast.LENGTH_SHORT).show();
-        makeChart(date, month, text);
-
-    }
-
-    @Override//預設
-    public void onNothingSelected(AdapterView<?> adapterView) {
-        makeChart(today, today_month, "溫度");
-    }
+//    @Override//drodownlistSelect
+//    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//        String text = adapterView.getItemAtPosition(i).toString();
+//        //Toast.makeText(adapterView.getContext(),text,Toast.LENGTH_SHORT).show();
+//        makeChart(date, month, text);
+//
+//    }
+//
+//    @Override//預設
+//    public void onNothingSelected(AdapterView<?> adapterView) {
+//        makeChart(today, today_month, "溫度");
+//    }
 
 
     //折線圖
@@ -362,6 +358,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     //換月
     public Map<Integer, Object>[] onNavigationButtonClicked(int whichButton, Calendar Mcalendar) {
+        Toast.makeText(getContext(), "getRed!!!", Toast.LENGTH_SHORT).show();
         Map<Integer, Object>[] arr = new Map[2];
         switch (Mcalendar.get(Calendar.MONTH)) {
             case Calendar.JANUARY:
@@ -375,8 +372,15 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 arr[0] = new HashMap<>();
                 break;
             case Calendar.APRIL:
-                getRedPoint("04",Mcalendar.getWeekYear());
                 arr[0] = new HashMap<>();
+                getRedPoint("04", Mcalendar.getWeekYear());
+                Log.e("sock my dick ", String.valueOf(Mcalendar.getWeekYear()));
+                while (true) {
+                    if (flag) {
+                        flag = false;
+                        break;
+                    }
+                }
                 break;
             case Calendar.MAY:
                 //getRedPoint("05",Mcalendar.getWeekYear());
@@ -385,9 +389,9 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             case Calendar.JUNE:
 
                 arr[0] = new HashMap<>();
-//                arr[0].put(5, "presnet");
-//                arr[0].put(10, "presnet");
-//                arr[0].put(19, "presnet");
+                arr[0].put(5, "presnet");
+                arr[0].put(10, "presnet");
+                arr[0].put(19, "presnet");
                 break;
 
             case Calendar.JULY:
@@ -413,12 +417,10 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         return arr;
     }
 
-    public String getNowTime(){
+    public String getNowTime() {
         SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
-        sdFormat.setTimeZone(TimeZone.getTimeZone("GMT+20:00"));
         Date date = new Date();
-        String strDate = sdFormat.format(date);
-        return strDate;
+        return sdFormat.format(date);
     }
 
     private void getData(String pickDay) {
@@ -434,7 +436,20 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                     data = response.body();
                     //System.out.println("daaaa"+data);
 
-                    makeChart(date,month-1,"溫度");
+                    makeChart(date, month - 1, "溫度");
+                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            String text = parent.getItemAtPosition(position).toString();
+                            //Toast.makeText(adapterView.getContext(),text,Toast.LENGTH_SHORT).show();
+                            makeChart(date, month, text);
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
                 }
             }
 
@@ -446,12 +461,12 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     }
 
-    private void getRedPoint(String month,int year) {
-        System.out.println(month + "" +year);
+    private void getRedPoint(String month, int year) {
+        System.out.println("getRedPoint" + 1);
         //todo:
-                View[] mday = customCalendar.getAllViews();
+        View[] mday = customCalendar.getAllViews();
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-        Call<List<String>> call = retrofitService.getCalendarMonth("a",year+"-"+month);
+        Call<List<String>> call = retrofitService.getCalendarMonth("a", year + "-" + month);
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
@@ -459,18 +474,19 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                     Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
                 } else {
                     List<String> monthEvent = response.body();
-                    if(monthEvent!=null) {
+                    if (monthEvent != null) {
                         for (int i = 0; i < monthEvent.size(); i++) {
                             //todo:
                             String da = monthEvent.get(i).substring(8, 10);
 
+                            System.out.println("Integer.parseInt(da)" + Integer.parseInt(da));
                             View view = mday[Integer.parseInt(da)];
                             ImageView mcycle = view.findViewById(R.id.cycle);
                             mcycle.setVisibility(View.VISIBLE);
+                            flag = true;
                             System.out.println(da);
                         }
-                    }
-                    else{
+                    } else {
 
                         View view = mday[5];
                         ImageView mcycle = view.findViewById(R.id.cycle);
@@ -481,7 +497,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
-                System.out.println("1111111"+t);
+                System.out.println("1111111" + t);
             }
         });
 
