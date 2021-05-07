@@ -21,9 +21,10 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position){
             case 0:
+                System.out.println("new HomeFragment()");
                 return new HomeFragment();
             case 1:
-                System.out.println("1235454645646465");
+                System.out.println("new FavoriteFragment()");
                 return new FavoriteFragment();
             default:
                 return new HomeFragment();
