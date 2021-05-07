@@ -107,16 +107,15 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         absentProperty.dateTextViewResource = R.id.text_view;
         descHashMap.put("absent", absentProperty);
 
-        //todo:unavailable???
         Property disableProperty = new Property();
         disableProperty.layoutResource = R.layout.disable_view;
         disableProperty.dateTextViewResource = R.id.text_view;
         descHashMap.put("disabled", disableProperty);
 
-        Property unavailableProperty = new Property();
-        absentProperty.layoutResource = R.layout.disable_view;
-        absentProperty.dateTextViewResource = R.id.text_view;
-        descHashMap.put("unavailable", unavailableProperty);
+        Property redPointProperty = new Property();
+        disableProperty.layoutResource = R.layout.redpoint_view;
+        disableProperty.dateTextViewResource = R.id.text_view;
+        descHashMap.put("redPoint", redPointProperty);
 
         customCalendar.setMapDescToProp(descHashMap);
 
