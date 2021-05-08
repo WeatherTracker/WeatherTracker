@@ -35,7 +35,6 @@ import com.example.weathertracker.retrofit.chartList;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -437,9 +436,6 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 break;
             case Calendar.JUNE:
                 arr[0] = new HashMap<>();
-//                arr[0].put(5, "presnet");
-//                arr[0].put(10, "presnet");
-//                arr[0].put(19, "presnet");
                 break;
 
             case Calendar.JULY:
@@ -480,11 +476,8 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             public void onResponse(Call<chartList> call, Response<chartList> response) {
                 if (!response.isSuccessful()) {
                     Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
-                    //System.out.println("nonononononononononnonnonononono");
                 } else {
                     data = response.body();
-                    //System.out.println("daaaa"+data);
-
 //                    makeChart(date, month - 1, "溫度");
                     spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
@@ -511,14 +504,6 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     }
 
     private void getRedPoint(String month, int year) {
-        System.out.println("getRedPoint");
-        //todo:
-        System.out.println("-----------------------");
-        System.out.println(customCalendar.getSelectedDate().get(Calendar.YEAR));
-        System.out.println(customCalendar.getSelectedDate().get(Calendar.MONTH) + 1);
-        System.out.println(customCalendar.getSelectedDate().get(Calendar.DAY_OF_MONTH));
-
-//        System.out.println("mday.length: " + mday.length);
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
         Call<List<String>> call = retrofitService.getCalendarMonth("a", year + "-" + month);
         call.enqueue(new Callback<List<String>>() {
@@ -541,11 +526,6 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                             System.out.println(da);
                         }
                     }
-//                    else {
-//                        View view = mday[5];
-//                        ImageView mcycle = view.findViewById(R.id.cycle);
-//                        mcycle.setVisibility(View.VISIBLE);
-//                    }
                 }
             }
 
