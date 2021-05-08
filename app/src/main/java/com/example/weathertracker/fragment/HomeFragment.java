@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -33,9 +34,12 @@ import com.example.weathertracker.retrofit.RetrofitService;
 import com.example.weathertracker.retrofit.chartList;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.gson.Gson;
 
@@ -65,13 +69,15 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     private Calendar calendar, lastPickedDate;
     private Spinner spinner;
     private LineChart lineChart;
-    private long startClickTime = 0;
     private int pickDate = 0, date = 0, month = 0, year = 0, today = 0, today_month = 0, today_year = 0;
     private String nowTime = null;
     private Boolean isOpen = false;
     private chartList data = null;
-    ArrayAdapter<CharSequence> adapter = null;
-    HashMap<Integer, Object> dateHashMap = new HashMap<>();
+    private ArrayAdapter<CharSequence> adapter = null;
+    private HashMap<Integer, Object> dateHashMap = new HashMap<>();
+    private ArrayList<String> xLabels = new ArrayList<>();
+    private LinearLayout ll;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -84,6 +90,10 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_home, container, false);
         customCalendar = root.findViewById(R.id.custom_calender);
+        ll = root.findViewById(R.id.ll);
+
+
+
         calendar = Calendar.getInstance();
         today = calendar.get(Calendar.DAY_OF_MONTH);
         today_month = calendar.get(Calendar.MONTH) + 1;
@@ -263,39 +273,68 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         spinner.setAdapter(adapter);
     }
 
+    private String xLabelFormatter(String x) {
+        try {
+            SimpleDateFormat std = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = std.parse(x);
+            SimpleDateFormat dts = new SimpleDateFormat("MM/dd HH:mm");
+            return dts.format(date);
+        } catch (Exception e) {
+            System.out.println("error format");
+            return "";
+        }
+    }
 
-    private List<Entry> lineChartDataSet(String s) {
-        ArrayList<Entry> dataSet = new ArrayList<Entry>();
-        int x;
+    private ArrayList<Entry> lineChartDataSet(String s) {
+        ArrayList<Entry> dataSet = new ArrayList<>();
+        String x;
         Double y;
         if (s.equals("溫度")) {
+            xLabels.clear();
             for (int i = 0; i < data.getTemperature().size(); i++) {
+                x = data.getTemperature().get(i).getTime();
                 y = data.getTemperature().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
                 dataSet.add(new Entry(i, y.floatValue()));
             }
         } else if (s.equals("AQI")) {
+            xLabels.clear();
             for (int i = 0; i < data.getAQI().size(); i++) {
+                x = data.getAQI().get(i).getTime();
                 y = data.getAQI().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
                 dataSet.add(new Entry(i, y.floatValue()));
             }
         } else if (s.equals("紫外線")) {
+            xLabels.clear();
             for (int i = 0; i < data.getUV().size(); i++) {
+                x = data.getUV().get(i).getTime();
                 y = data.getUV().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
                 dataSet.add(new Entry(i, y.floatValue()));
             }
         } else if (s.equals("風速")) {
+            xLabels.clear();
             for (int i = 0; i < data.getWindSpeed().size(); i++) {
+                x = data.getWindSpeed().get(i).getTime();
                 y = data.getWindSpeed().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
                 dataSet.add(new Entry(i, y.floatValue()));
             }
         } else if (s.equals("濕度")) {
+            xLabels.clear();
             for (int i = 0; i < data.getHumidity().size(); i++) {
+                x = data.getHumidity().get(i).getTime();
                 y = data.getHumidity().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
                 dataSet.add(new Entry(i, y.floatValue()));
             }
         } else if (s.equals("降雨機率")) {
+            xLabels.clear();
             for (int i = 0; i < data.getPOP().size(); i++) {
+                x = data.getPOP().get(i).getTime();
                 y = data.getPOP().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
                 dataSet.add(new Entry(i, y.floatValue()));
             }
         }
@@ -324,31 +363,49 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
         LineData lineData = new LineData(iLineDataSets);
         lineChart.setData(lineData);
-        lineChart.invalidate();
-
-        lineChart.setNoDataText("Data not Available");
-
-        //you can modify your line chart graph according to your requirement there are lots of method available in this library
-
-        //now customize line chart
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return xLabels.get((int) value);
+            }
+        });
+        System.out.println(xLabels);
+        System.out.println(xLabels.size());
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        lineChart.getAxisRight().setEnabled(false);
+        lineChart.getAxisLeft().setEnabled(false);
         Description description = lineChart.getDescription();
-        description.setText(String.valueOf(month * 100 + date));//顯示文字名稱
-        description.setTextSize(14);//字體大小
-        description.setTextColor(Color.BLUE);//字體顏色
-        description.setPosition(900, 100);
+        description.setText("");
+        lineChart.setVisibleXRange(0,6);
 
-        //設定沒資料時顯示的內容
-        lineChart.setNoDataText("暫時沒有數據");
-        lineChart.setNoDataTextColor(Color.BLUE);
-        lineDataSet.setColor(Color.RED);
-        lineDataSet.setCircleColor(Color.RED);
-        lineDataSet.setDrawCircles(true);
-        lineDataSet.setDrawCircleHole(true);
-        lineDataSet.setLineWidth(2);
-        lineDataSet.setCircleRadius(5);
-        lineDataSet.setCircleHoleRadius(2);
-        lineDataSet.setValueTextSize(10);
-        lineDataSet.setValueTextColor(Color.BLACK);
+
+        lineChart.invalidate();
+//
+//        lineChart.setNoDataText("Data not Available");
+//
+//        //you can modify your line chart graph according to your requirement there are lots of method available in this library
+//
+//        //now customize line chart
+//        Description description = lineChart.getDescription();
+//        description.setText(String.valueOf(month * 100 + date));//顯示文字名稱
+//        description.setTextSize(14);//字體大小
+//        description.setTextColor(Color.BLUE);//字體顏色
+//        description.setPosition(900, 100);
+//
+//        //設定沒資料時顯示的內容
+//        lineChart.setNoDataText("暫時沒有數據");
+//        lineChart.setNoDataTextColor(Color.BLUE);
+//        lineDataSet.setColor(Color.RED);
+//        lineDataSet.setCircleColor(Color.RED);
+//        lineDataSet.setDrawCircles(true);
+//        lineDataSet.setDrawCircleHole(true);
+//        lineDataSet.setLineWidth(2);
+//        lineDataSet.setCircleRadius(5);
+//        lineDataSet.setCircleHoleRadius(2);
+//        lineDataSet.setValueTextSize(10);
+//        lineDataSet.setValueTextColor(Color.BLACK);
     }
 
     //換月
@@ -499,4 +556,6 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         });
 
     }
+
+
 }
