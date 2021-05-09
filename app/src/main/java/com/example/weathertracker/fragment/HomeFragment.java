@@ -25,10 +25,13 @@ import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weathertracker.MainActivity;
 import com.example.weathertracker.R;
 import com.example.weathertracker.event.NewEventActivity;
+import com.example.weathertracker.retrofit.Event;
 import com.example.weathertracker.retrofit.RetrofitManager;
 import com.example.weathertracker.retrofit.RetrofitService;
 import com.example.weathertracker.retrofit.chartList;
@@ -72,6 +75,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     private String nowTime = null;
     private Boolean isOpen = false;
     private chartList data = null;
+    private List<Event> event = null;
     private ArrayAdapter<CharSequence> adapter = null;
     private HashMap<Integer, Object> dateHashMap = new HashMap<>();
     private ArrayList<String> xLabels = new ArrayList<>();
@@ -166,7 +170,6 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                     }
                     pickDate = date;
                 }
-                //dropdownlist
                 if (lastPickedDate != null) {
                     if (lastPickedDate.get(Calendar.DATE) == selectedDate.get(Calendar.DATE) &&
                             lastPickedDate.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH) &&
@@ -187,6 +190,14 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                         BounceInterpolator bounceInterpolator = new BounceInterpolator();
                         scaleAnimation.setInterpolator(bounceInterpolator);
 
+                        String X = null, Y = null;
+                        if (month < 10) X = "0" + (month);
+                        else X = String.valueOf(month);
+                        if (date < 10) Y = "0" + date;
+                        else Y = String.valueOf(date);
+                        //todo:
+                        RecyclerView rv_day = layoutView.findViewById(R.id.rv_day);
+                        getCalenderDay(year,X,Y,rv_day);
 
                         SharedPreferences sharedPreferences = getContext().getSharedPreferences("favorite", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -239,7 +250,11 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.NEXT, (OnNavigationButtonClickedListener) this);
 
         customCalendar.setDate(calendar, dateHashMap);
-        getRedPoint("04", 2021);
+        String M=null;
+        if(today_month<10)M="0"+today_month;
+        else M= String.valueOf(today_month);
+        System.out.println(M);
+        getRedPoint(M,today_year);
         return root;
     }
 
@@ -353,7 +368,6 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 //        makeChart(today, today_month, "溫度");
 //    }
 
-
     //折線圖
     public void makeChart(int date, int month, String s) {
         LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(s), s);
@@ -409,52 +423,56 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
     //換月
     public Map<Integer, Object>[] onNavigationButtonClicked(int whichButton, Calendar Mcalendar) {
-        Toast.makeText(getContext(), "getRed!!!", Toast.LENGTH_SHORT).show();
         Map<Integer, Object>[] arr = new Map[2];
 
         switch (Mcalendar.get(Calendar.MONTH)) {
             case Calendar.JANUARY:
                 arr[0] = new HashMap<>();
+                getRedPoint("01",Mcalendar.getWeekYear());
                 break;
             case Calendar.FEBRUARY:
                 arr[0] = new HashMap<>();
-
+                getRedPoint("02",Mcalendar.getWeekYear());
                 break;
             case Calendar.MARCH:
                 arr[0] = new HashMap<>();
+                getRedPoint("03",Mcalendar.getWeekYear());
                 break;
             case Calendar.APRIL:
                 arr[0] = new HashMap<>();
-//                getRedPoint("04", Mcalendar.getWeekYear());
-//                getRedPoint("04", 2021);
-                getRedPoint("04", 2021);
-//                Log.e("sock my dick ", String.valueOf(Mcalendar.getWeekYear()));
+                getRedPoint("04",Mcalendar.getWeekYear());
                 break;
             case Calendar.MAY:
-                //getRedPoint("05",Mcalendar.getWeekYear());
+                getRedPoint("05",Mcalendar.getWeekYear());
                 arr[0] = new HashMap<>();
                 break;
             case Calendar.JUNE:
                 arr[0] = new HashMap<>();
+                getRedPoint("06",Mcalendar.getWeekYear());
                 break;
-
             case Calendar.JULY:
                 arr[0] = new HashMap<>();
+                getRedPoint("07",Mcalendar.getWeekYear());
                 break;
             case Calendar.AUGUST:
                 arr[0] = new HashMap<>();
+                getRedPoint("08",Mcalendar.getWeekYear());
                 break;
             case Calendar.SEPTEMBER:
                 arr[0] = new HashMap<>();
+                getRedPoint("09",Mcalendar.getWeekYear());
                 break;
             case Calendar.OCTOBER:
                 arr[0] = new HashMap<>();
+                getRedPoint("10",Mcalendar.getWeekYear());
                 break;
             case Calendar.NOVEMBER:
                 arr[0] = new HashMap<>();
+                getRedPoint("11",Mcalendar.getWeekYear());
                 break;
             case Calendar.DECEMBER:
                 arr[0] = new HashMap<>();
+                getRedPoint("12",Mcalendar.getWeekYear());
                 break;
 
         }
@@ -503,6 +521,33 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
     }
 
+    private void getCalenderDay(int year, String month, String day, RecyclerView rv_day){
+        RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+        Call<List<Event>> call = retrofitService.getCalendarDay("a", year + "-" + month+"-"+day);
+        call.enqueue(new Callback<List<Event>>() {
+            @Override
+            public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
+                } else {
+                    event=response.body();
+                    if (event!=null) {
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                        rv_day.setLayoutManager(linearLayoutManager);
+                        rv_day.setAdapter(new calenderDayAdapter(getActivity(), event));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Event>> call, Throwable t) {
+                System.out.println("onFailure:event" + t);
+            }
+        });
+
+    }
+
     private void getRedPoint(String month, int year) {
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
         Call<List<String>> call = retrofitService.getCalendarMonth("a", year + "-" + month);
@@ -517,8 +562,6 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                     System.out.println("mday.length: " + mday.length);
                     if (monthEvent != null) {
                         for (int i = 0; i < monthEvent.size(); i++) {
-                            //todo:
-
                             int da = Integer.parseInt(monthEvent.get(i).substring(8, 10));
                             View view = mday[da];
                             ImageView mcycle = view.findViewById(R.id.cycle);
