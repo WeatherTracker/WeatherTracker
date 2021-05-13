@@ -9,9 +9,11 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -19,6 +21,7 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.example.weathertracker.R;
 import com.example.weathertracker.retrofit.Ack;
@@ -36,9 +39,11 @@ import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -49,12 +54,12 @@ import retrofit2.Response;
 public class NewEventActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private ImageButton btnBack, btnDone, btnAddPlace, btnRemovePlace;
-    private TextView tvPlaceDescribe, tvStartDate, tvStartTime,tvEndDate,tvEndTime;
+    private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime;
     private EditText etEventName, etHostRemark;
     private SupportMapFragment mapFragment;
     private double latitude, longitude;
-    private DatePickerDialog datePickerDialog,datePickerDialog2;
-    private TimePickerDialog timePickerDialog,timePickerDialog2;
+    private DatePickerDialog datePickerDialog, datePickerDialog2;
+    private TimePickerDialog timePickerDialog, timePickerDialog2;
     private GoogleMap mMap;
     private final HashMap<String, Integer> idMap = new HashMap<>();
     private AutoCompleteTextView etHobbies, etHobbyClass;
@@ -62,6 +67,8 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
     private String userId, staticHobbyTag, staticHobbyClass;
     private int year, month, day;
     private ToggleButton isOutDoor, isPublic;
+    private SwitchCompat isAllDay;
+    private LinearLayout timeLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +121,8 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
         etHobbyClass = findViewById(R.id.etHobbyClass);
         isOutDoor = findViewById(R.id.isOutDoor);
         isPublic = findViewById(R.id.isPublic);
+        isAllDay = findViewById(R.id.isAllDay);
+        timeLayout = findViewById(R.id.timeLayout);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapView);
     }
@@ -140,7 +149,24 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Event e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(),tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
+                Event e = null;
+                String endDateString;
+                if (isAllDay.isChecked()) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    try {
+                        Date date = sdf.parse(tvEndDate.getText().toString());
+                        Calendar c = Calendar.getInstance();
+                        c.setTime(date);
+                        c.add(Calendar.DATE, 1);
+                        date = c.getTime();
+                        endDateString = sdf.format(date);
+                        e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " 00:00", endDateString + " 00:00", etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
+                    } catch (ParseException parseException) {
+                        parseException.printStackTrace();
+                    }
+                } else {
+                    e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(), tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
+                }
                 RetrofitService retrofitService = RetrofitManager.getInstance().getService();
                 Call<Ack> call = retrofitService.newEvent(e);
                 call.enqueue(new Callback<Ack>() {
@@ -166,7 +192,6 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                 System.out.println(e.toString());
             }
         });
-
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -179,7 +204,6 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                 datePickerDialog.show();
             }
         });
-
         tvStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,7 +216,6 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                 datePickerDialog2.show();
             }
         });
-
         tvEndTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -202,7 +225,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
         datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String s = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d",dayOfMonth);
+                String s = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d", dayOfMonth);
                 tvStartDate.setText(s);
             }
         }, year, month, day);
@@ -217,7 +240,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
         datePickerDialog2 = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String s = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d",dayOfMonth);
+                String s = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d", dayOfMonth);
                 tvEndDate.setText(s);
             }
         }, year, month, day);
@@ -252,7 +275,6 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
 
             }
         });
-
         etHobbies.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -269,6 +291,16 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void afterTextChanged(Editable s) {
 
+            }
+        });
+        isAllDay.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    timeLayout.setVisibility(View.INVISIBLE);
+                } else {
+                    timeLayout.setVisibility(View.VISIBLE);
+                }
             }
         });
     }
@@ -291,9 +323,9 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
             mMap.clear();
             mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15));
-            tvPlaceDescribe.setText(place.getName()+"\n"+place.getAddress());
+            tvPlaceDescribe.setText(place.getName() + "\n" + place.getAddress());
         } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-            Toast.makeText(NewEventActivity.this, ""+resultCode, Toast.LENGTH_SHORT).show();
+            Toast.makeText(NewEventActivity.this, "" + resultCode, Toast.LENGTH_SHORT).show();
         }
     }
 }
