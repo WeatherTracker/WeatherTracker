@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,44 +45,45 @@ public class favoriteAdapter extends RecyclerView.Adapter<favoriteAdapter.Linear
         chartList dateData = gson.fromJson(favorDateData.get(position), chartList.class);
 
         //weedspeed
-        for(int i=0;i<dateData.getWindSpeed().size();i++){
-            if(dateData.getWindSpeed().get(i).getTime().substring(0,10).equals(favorDate.get(position))){
-                dataWeedSpeed += dateData.getWindSpeed().get(i).getTime().substring(11,16) +" "+ dateData.getWindSpeed().get(i).getValue()+"級 ";
+        for (int i = 0; i < dateData.getWindSpeed().size(); i++) {
+            if (dateData.getWindSpeed().get(i).getTime().substring(0, 10).equals(favorDate.get(position))) {
+                dataWeedSpeed += dateData.getWindSpeed().get(i).getTime().substring(11, 16) + " " + dateData.getWindSpeed().get(i).getValue() + "級 ";
             }
         }
-        holder.windSpeed.setText(dataWeedSpeed);
+        if (dataWeedSpeed!=null) holder.windSpeed.setText(dataWeedSpeed);
 
         //POP
-        for(int i=0;i<dateData.getPOP().size();i++){
-            if(dateData.getPOP().get(i).getTime().substring(0,10).equals(favorDate.get(position))){
-                dataPOP += dateData.getPOP().get(i).getTime().substring(11,16) +" "+ dateData.getPOP().get(i).getValue()+"% ";
+        for (int i = 0; i < dateData.getPOP().size(); i++) {
+            if (dateData.getPOP().get(i).getTime().substring(0, 10).equals(favorDate.get(position))) {
+                dataPOP += dateData.getPOP().get(i).getTime().substring(11, 16) + " " + dateData.getPOP().get(i).getValue() + "% ";
             }
         }
-        holder.POP.setText(dataPOP);
+        if (dataPOP!=null)holder.POP.setText(dataPOP);
 
         //UV
-        for(int i=0;i<dateData.getUV().size();i++){
-            if(dateData.getUV().get(i).getTime().substring(0,10).equals(favorDate.get(position))){
-                dataUV += dateData.getUV().get(i).getTime().substring(11,16) +" "+ dateData.getUV().get(i).getValue()+" ";
+        for (int i = 0; i < dateData.getUV().size(); i++) {
+            if (dateData.getUV().get(i).getTime().substring(0, 10).equals(favorDate.get(position))) {
+                dataUV += dateData.getUV().get(i).getTime().substring(11, 16) + " " + dateData.getUV().get(i).getValue() + " ";
             }
         }
-        holder.UV.setText(dataUV);
+        if (dataUV!=null)holder.UV.setText(dataUV);
 
         //humidity
-        for(int i=0;i<dateData.getHumidity().size();i++){
-            if(dateData.getHumidity().get(i).getTime().substring(0,10).equals(favorDate.get(position))){
-                dataHumidity += dateData.getHumidity().get(i).getTime().substring(11,16) +" "+ dateData.getHumidity().get(i).getValue()+"% ";
+        for (int i = 0; i < dateData.getHumidity().size(); i++) {
+            if (dateData.getHumidity().get(i).getTime().substring(0, 10).equals(favorDate.get(position))) {
+                dataHumidity += dateData.getHumidity().get(i).getTime().substring(11, 16) + " " + dateData.getHumidity().get(i).getValue() + "% ";
             }
         }
-        holder.humidity.setText(dataHumidity);
+        if (dataHumidity!=null) holder.humidity.setText(dataHumidity);
 
         //temperature
-        for(int i=0;i<dateData.getTemperature().size();i++){
-            if(dateData.getTemperature().get(i).getTime().substring(0,10).equals(favorDate.get(position))){
-                dataTemperature += dateData.getTemperature().get(i).getTime().substring(11,16) +" "+ dateData.getTemperature().get(i).getValue()+"度 ";
+        for (int i = 0; i < dateData.getTemperature().size(); i++) {
+            if (dateData.getTemperature().get(i).getTime().substring(0, 10).equals(favorDate.get(position))) {
+                dataTemperature += dateData.getTemperature().get(i).getTime().substring(11, 16) + " " + dateData.getTemperature().get(i).getValue() + "度 ";
             }
         }
-        holder.temperature.setText(dataTemperature);
+        if (dataTemperature!=null)holder.temperature.setText(dataTemperature);
+
     }
 
     @Override
@@ -93,10 +95,12 @@ public class favoriteAdapter extends RecyclerView.Adapter<favoriteAdapter.Linear
 
         private TextView date,AQI,windSpeed,POP,UV,humidity,temperature;
         private ImageView event_delete;
-
+        private LinearLayout favoritem;
 
         public LinearViewHolder(View itemView){
             super(itemView);
+            favoritem = itemView.findViewById(R.id.favor_item);
+            favoritem.setAlpha((float) 0.7);
             date = itemView.findViewById(R.id.date);
             AQI = itemView.findViewById(R.id.AQI);
             windSpeed = itemView.findViewById(R.id.windSpeed);

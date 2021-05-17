@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    android:id="@+id/favor_item"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="#FFFFFF"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp">
+    android:layout_margin="5dp"
+    android:padding="10dp"
+    android:background="@drawable/favoritem">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,12 +24,11 @@
             />
         <ImageView
             android:id="@+id/event_delete"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_alignParentEnd="true"
-            android:padding="10dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="3dp"
             android:src="@drawable/ic_delete"
-            android:background="@drawable/date_pick"/>
+            android:background="@drawable/favoritem_delete"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,7 +48,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="#000"
-            android:textSize="20sp"
+            android:textSize="16sp"
+            android:text="No Data"
             />
     </LinearLayout>
     <LinearLayout
@@ -69,7 +70,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="#000"
-            android:textSize="20sp"
+            android:textSize="16sp"
+            android:text="No Data"
             />
     </LinearLayout>
     <LinearLayout
@@ -90,7 +92,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="#000"
-            android:textSize="20sp"
+            android:textSize="16sp"
+            android:text="No Data"
             />
     </LinearLayout><LinearLayout
     android:layout_width="match_parent"
@@ -110,7 +113,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textColor="#000"
-        android:textSize="20sp"
+        android:textSize="16sp"
+        android:text="No Data"
         />
 </LinearLayout><LinearLayout
     android:layout_width="match_parent"
@@ -130,7 +134,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textColor="#000"
-        android:textSize="20sp"
+        android:textSize="16sp"
+        android:text="No Data"
         />
 </LinearLayout>
     <LinearLayout
@@ -151,7 +156,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="#000"
-            android:textSize="20sp"
+            android:textSize="16sp"
+            android:text="No Data"
             />
     </LinearLayout>
 

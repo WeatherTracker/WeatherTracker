@@ -47,6 +47,7 @@ public class FavoriteFragment extends Fragment {
         }
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
         rv_hor.setLayoutManager(linearLayoutManager);
         rv_hor.setAdapter(new favoriteAdapter(getActivity(),favorDate,favorDateData));
         //System.out.println(favoriteSize);
