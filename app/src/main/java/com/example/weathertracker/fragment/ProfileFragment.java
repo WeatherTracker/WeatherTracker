@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,9 +57,10 @@ public class ProfileFragment extends Fragment {
     private Slider weatherVsReasonable, reasonableVsKeepParticipants, keepParticipantsVsWeather;
     private FloatingActionButton fab;
     private TextInputEditText etUserName;
-    private List<Double> AHPPreference=new ArrayList<>();
-    private List<Integer> freeTime;//todo:確認型態
-    private List<String> hobbies;
+    private List<Double> AHPPreference;
+    private ArrayList<ArrayList<Boolean>> freeTime = new ArrayList<>();//todo:確認型態
+    private List<String> hobbies = new ArrayList<>();
+    private ArrayList<List<CheckBox>> checkBoxList = new ArrayList<>();
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -91,6 +94,13 @@ public class ProfileFragment extends Fragment {
         reasonableVsKeepParticipants = view.findViewById(R.id.reasonableVsKeepParticipants);
         keepParticipantsVsWeather = view.findViewById(R.id.keepParticipantsVsWeather);
         fab = view.findViewById(R.id.floatingActionButton);
+        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_11), view.findViewById(R.id.cb_11), view.findViewById(R.id.cb_11)));
+        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_21), view.findViewById(R.id.cb_21), view.findViewById(R.id.cb_21)));
+        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_31), view.findViewById(R.id.cb_31), view.findViewById(R.id.cb_31)));
+        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_41), view.findViewById(R.id.cb_41), view.findViewById(R.id.cb_41)));
+        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_51), view.findViewById(R.id.cb_51), view.findViewById(R.id.cb_51)));
+        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_61), view.findViewById(R.id.cb_61), view.findViewById(R.id.cb_61)));
+        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_71), view.findViewById(R.id.cb_71), view.findViewById(R.id.cb_71)));
     }
 
     private void setListener() {
@@ -100,6 +110,7 @@ public class ProfileFragment extends Fragment {
                 if (AHP_count() != null) {
                     RetrofitService retrofitService = RetrofitManager.getInstance().getService();
                     hobbies = new ArrayList<>(chipSet);
+                    findFreeTime();
                     Call<Ack> call = retrofitService.editProfile(userId, etUserName.getText().toString(), AHPPreference, freeTime, hobbies);
                     call.enqueue(new Callback<Ack>() {
                         @Override
@@ -206,6 +217,17 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void findFreeTime() {
+        freeTime.clear();
+        for (List i : checkBoxList) {
+            ArrayList<Boolean> innerList = new ArrayList<>();
+            for (Object c : i) {
+                innerList.add(((CheckBox) c).isChecked());
+            }
+            freeTime.add(innerList);
+        }
     }
 
     private Boolean AHP_check(double eigenMax) {
