@@ -1,6 +1,5 @@
 package com.example.weathertracker.retrofit;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +43,7 @@ public interface RetrofitService {
     Call<Ack> editProfile(@Field("userId") String userId,
                           @Field("userName") String userName,
                           @Field("AHPPreference") List<Double> AHPPreference,
-                          @Field("freeTime") ArrayList<ArrayList<Boolean>> freeTime,
+                          @Field("freeTime") List<Integer> freeTime,
                           @Field("hobbies") List<String> hobbies);
 
     @GET("getCalendarMonth")

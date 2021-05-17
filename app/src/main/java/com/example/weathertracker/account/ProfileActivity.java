@@ -6,7 +6,6 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.CheckBox;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -27,7 +26,6 @@ import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -50,9 +48,9 @@ public class ProfileActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private TextInputEditText etUserName;
     private List<Double> AHPPreference;
-    private ArrayList<ArrayList<Boolean>> freeTime = new ArrayList<>();//todo:確認型態
+    private List<Integer> freeTime = new ArrayList<>();//todo:確認型態
     private List<String> hobbies = new ArrayList<>();
-    private ArrayList<List<CheckBox>> checkBoxList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,13 +79,6 @@ public class ProfileActivity extends AppCompatActivity {
         reasonableVsKeepParticipants = findViewById(R.id.reasonableVsKeepParticipants);
         keepParticipantsVsWeather = findViewById(R.id.keepParticipantsVsWeather);
         fab = findViewById(R.id.floatingActionButton);
-        checkBoxList.add(Arrays.asList(findViewById(R.id.cb_11), findViewById(R.id.cb_11), findViewById(R.id.cb_11)));
-        checkBoxList.add(Arrays.asList(findViewById(R.id.cb_21), findViewById(R.id.cb_21), findViewById(R.id.cb_21)));
-        checkBoxList.add(Arrays.asList(findViewById(R.id.cb_31), findViewById(R.id.cb_31), findViewById(R.id.cb_31)));
-        checkBoxList.add(Arrays.asList(findViewById(R.id.cb_41), findViewById(R.id.cb_41), findViewById(R.id.cb_41)));
-        checkBoxList.add(Arrays.asList(findViewById(R.id.cb_51), findViewById(R.id.cb_51), findViewById(R.id.cb_51)));
-        checkBoxList.add(Arrays.asList(findViewById(R.id.cb_61), findViewById(R.id.cb_61), findViewById(R.id.cb_61)));
-        checkBoxList.add(Arrays.asList(findViewById(R.id.cb_71), findViewById(R.id.cb_71), findViewById(R.id.cb_71)));
     }
 
     private void setListener() {
@@ -97,7 +88,6 @@ public class ProfileActivity extends AppCompatActivity {
                 if (AHP_count() != null) {
                     RetrofitService retrofitService = RetrofitManager.getInstance().getService();
                     hobbies = new ArrayList<>(chipSet);
-                    findFreeTime();
                     Call<Ack> call = retrofitService.editProfile(userId, etUserName.getText().toString(), AHPPreference, freeTime, hobbies);
                     call.enqueue(new Callback<Ack>() {
                         @Override
@@ -127,6 +117,7 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             }
         });
+
         hobbyClassAdapter = ArrayAdapter.createFromResource(this, R.array.hobby_classes, R.layout.list_item);
         etHobbyClass.setAdapter(hobbyClassAdapter);
         etHobbyClass.addTextChangedListener(new TextWatcher() {
@@ -149,6 +140,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
+
         etHobbies.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -190,6 +182,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
+
         scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
             public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -203,20 +196,9 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void findFreeTime() {
-        freeTime.clear();
-        for (List i : checkBoxList) {
-            ArrayList<Boolean> innerList = new ArrayList<>();
-            for (Object c : i) {
-                innerList.add(((CheckBox) c).isChecked());
-            }
-            freeTime.add(innerList);
-        }
-    }
-
     private Boolean AHP_check(double eigenMax) {
         double CI = (eigenMax - 3) / 2;
-        return (CI / 0.52) < 0.1;
+        return (CI / 0.52 )< 0.1;
     }
 
     private List<Double> AHP_count() {
