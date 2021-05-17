@@ -197,7 +197,8 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                         else Y = String.valueOf(date);
                         //todo:
                         RecyclerView rv_day = layoutView.findViewById(R.id.rv_day);
-                        getCalenderDay(year,X,Y,rv_day);
+                        RecyclerView rv_day2 = layoutView.findViewById(R.id.rv_day2);
+                        getCalenderDay(year,X,Y,rv_day,rv_day2);
 
                         SharedPreferences sharedPreferences = getContext().getSharedPreferences("favorite", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -521,7 +522,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
     }
 
-    private void getCalenderDay(int year, String month, String day, RecyclerView rv_day){
+    private void getCalenderDay(int year, String month, String day, RecyclerView rv_day, RecyclerView rv_day2){
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
         Call<List<Event>> call = retrofitService.getCalendarDay("a", year + "-" + month+"-"+day);
         call.enqueue(new Callback<List<Event>>() {
@@ -535,7 +536,11 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                         rv_day.setLayoutManager(linearLayoutManager);
-                        rv_day.setAdapter(new calenderDayAdapter(getActivity(), event));
+                        rv_day.setAdapter(new calenderDayHostAdapter(getActivity(), event,"a"));
+                        LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(getActivity());
+                        linearLayoutManager2.setOrientation(LinearLayoutManager.VERTICAL);
+                        rv_day2.setLayoutManager(linearLayoutManager2 );
+                        rv_day2.setAdapter(new calenderDayNoHostAdapter(getActivity(), event,"a"));
                     }
                 }
             }
