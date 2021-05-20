@@ -34,6 +34,7 @@ import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -66,9 +67,19 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_and_edit);
 
+        Intent intent = this.getIntent();
+        String json = intent.getStringExtra("json");
+        System.out.println("Event:"+json);
+
+        Gson gson = new Gson();
+        Event event0 = gson.fromJson(json, Event.class);
+
         userId = getSharedPreferences("sharedPreferences", MODE_PRIVATE).getString("userId", "");
         userId = "uuid";
-        event = new Event("名稱", "備註", "2020-03-02 16:00","2020-03-03 18:00", "藝文嗜好類", "舞蹈", 23.0, 121.5, Arrays.asList("uuid"), true, true);
+
+        //todo:
+        event = event0;
+        //event = new Event(event0.getEventName(), event0.getHostRemark(), event0.getStartTime(),event0.getEndTime(), event0.getStaticHobbyClass(), event0.getStaticHobbyTag(), event0.getLatitude(), event0.getLongitude(), event0.getHosts(), event0.isPublic(), event0.isOutDoor());
 
         idMap.put("戶外活動類", R.array.hobbies_outdoor_events);
         idMap.put("運動類", R.array.hobbies_sports);
