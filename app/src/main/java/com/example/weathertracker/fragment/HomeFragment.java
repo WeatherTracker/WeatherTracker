@@ -69,7 +69,7 @@ import retrofit2.Response;
 public class HomeFragment extends Fragment implements OnNavigationButtonClickedListener {
     private static CustomCalendar customCalendar;
     private Calendar calendar, lastPickedDate;
-    private Spinner spinner;
+//    private Spinner spinner;
     private LineChart lineChart;
     private int pickDate = 0, date = 0, month = 0, year = 0, today = 0, today_month = 0, today_year = 0;
     private String nowTime = null;
@@ -134,7 +134,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         dateHashMap.put(today, "current");
 
 //        pickDate=today;
-        spinner = root.findViewById(R.id.spinners_weatherDetail);
+//        spinner = root.findViewById(R.id.spinners_weatherDetail);
         try {
             getDropdownList(today, today_month, today_year);
         } catch (ParseException e) {
@@ -285,7 +285,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         if (day < 0) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_history, android.R.layout.simple_spinner_item);
         }
-        spinner.setAdapter(adapter);
+//        spinner.setAdapter(adapter);
     }
 
     private String xLabelFormatter(String x) {
@@ -498,19 +498,19 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 } else {
                     data = response.body();
 //                    makeChart(date, month - 1, "溫度");
-                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            String text = parent.getItemAtPosition(position).toString();
-                            //Toast.makeText(adapterView.getContext(),text,Toast.LENGTH_SHORT).show();
-                            makeChart(date, month, text);
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-
-                        }
-                    });
+//                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                        @Override
+//                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                            String text = parent.getItemAtPosition(position).toString();
+//                            //Toast.makeText(adapterView.getContext(),text,Toast.LENGTH_SHORT).show();
+//                            makeChart(date, month, text);
+//                        }
+//
+//                        @Override
+//                        public void onNothingSelected(AdapterView<?> parent) {
+//
+//                        }
+//                    });
                 }
             }
 

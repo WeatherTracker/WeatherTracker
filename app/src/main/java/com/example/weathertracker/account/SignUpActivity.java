@@ -1,5 +1,6 @@
 package com.example.weathertracker.account;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,8 +18,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,7 +51,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void findId() {
-        email = findViewById(R.id.etEmail);
+        email = findViewById(R.id.etEmailLayout);
         password = findViewById(R.id.etPassword);
         passwordAgain = findViewById(R.id.etPasswordAgain);
         btnSendMail = findViewById(R.id.btnSendVerifyEmail);
@@ -80,6 +79,9 @@ public class SignUpActivity extends AppCompatActivity {
                                         Ack ack = response.body();
                                         if (ack.getCode() == 200) {
                                             Toast.makeText(SignUpActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//去信箱收信
+                                            Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                                            startActivity(intent);
+                                            finish();
                                         } else {
                                             Toast.makeText(SignUpActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
                                         }

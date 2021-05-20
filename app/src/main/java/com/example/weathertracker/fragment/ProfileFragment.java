@@ -16,7 +16,6 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.example.weathertracker.R;
-import com.example.weathertracker.account.ProfileActivity;
 import com.example.weathertracker.retrofit.Ack;
 import com.example.weathertracker.retrofit.RetrofitManager;
 import com.example.weathertracker.retrofit.RetrofitService;
@@ -107,7 +106,8 @@ public class ProfileFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (AHP_count() != null) {
+                AHP_count();
+                if (AHPPreference != null) {
                     RetrofitService retrofitService = RetrofitManager.getInstance().getService();
                     hobbies = new ArrayList<>(chipSet);
                     findFreeTime();
@@ -232,10 +232,10 @@ public class ProfileFragment extends Fragment {
 
     private Boolean AHP_check(double eigenMax) {
         double CI = (eigenMax - 3) / 2;
-        return CI / 0.52 < 0.1;
+        return (CI / 0.52) < 0.1;
     }
 
-    private List<Double> AHP_count() {
+    private void AHP_count() {
         float value_1 = weatherVsReasonable.getValue();
         float value_2 = reasonableVsKeepParticipants.getValue();
         float value_3 = keepParticipantsVsWeather.getValue();
@@ -289,6 +289,7 @@ public class ProfileFragment extends Fragment {
             }
         }
         if (AHP_check(max_eigen)) {
+            AHPPreference = new ArrayList<>();
             double[] vector = decomposition.getEigenvector(index).toArray();
             double sum = 0;
             for (double i : vector) {
@@ -298,9 +299,8 @@ public class ProfileFragment extends Fragment {
                 AHPPreference.add(Math.abs(i) / sum);
             }
             Toast.makeText(getActivity(), AHPPreference.toString(), Toast.LENGTH_SHORT).show();
-            return AHPPreference;
         } else {
-            return null;
+            AHPPreference = null;
         }
     }
 

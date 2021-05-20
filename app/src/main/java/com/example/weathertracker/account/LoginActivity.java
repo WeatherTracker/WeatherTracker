@@ -38,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     private SignInButton signInButton;
     private String TAG = "GSO";
     private int RC_SIGN_IN = 200;
-    private Button btnForget, btnSignUp,testBtn ;
+    private Button btnForget, btnSignUp;
     private TransitionButton btnLogin;
 
     @Override
@@ -59,41 +59,9 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         btnForget = findViewById(R.id.btnForget);
         btnSignUp = findViewById(R.id.btnSignUp);
-        testBtn = findViewById(R.id.button);
     }
 
     private void setListener() {
-        testBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-                Map<String, String> map = new HashMap<>();
-                map.put("Authorization","");
-                Call<Ack> call = retrofitService.activeAccount(map);
-                call.enqueue(new Callback<Ack>() {
-                    @Override
-                    public void onResponse(Call<Ack> call, Response<Ack> response) {
-                        if (!response.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Ack ack = response.body();
-                            if (ack.getCode() == 200) {
-                                Toast.makeText(LoginActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//去信箱收信
-                            } else {
-                                Toast.makeText(LoginActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Ack> call, Throwable t) {
-                        Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-
-                    }
-                });
-
-            }
-        });
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,29 +73,43 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Start the loading animation when the user tap the button
                 btnLogin.startAnimation();
-
-                // Do your networking task or background work here.
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
+                RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+                Map<String, String> map = new HashMap<>();
+                map.put("Authorization", "");
+                Call<Ack> call = retrofitService.activeAccount(map);
+                call.enqueue(new Callback<Ack>() {
                     @Override
-                    public void run() {
-                        boolean isSuccessful = true;
-
-                        // Choose a stop animation if your call was successful or not
-                        if (isSuccessful) {
-                            btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND, new TransitionButton.OnAnimationStopEndListener() {
-                                @Override
-                                public void onAnimationStopEnd() {
-                                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                            });
-                        } else {
+                    public void onResponse(Call<Ack> call, Response<Ack> response) {
+                        if (!response.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
                             btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
+                        } else {
+                            Ack ack = response.body();
+
+                            // Choose a stop animation if your call was successful or not
+                            if (ack.getCode() == 200) {
+                                btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND, new TransitionButton.OnAnimationStopEndListener() {
+                                    @Override
+                                    public void onAnimationStopEnd() {
+                                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                });
+                            } else {
+                                btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
+                                Toast.makeText(LoginActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
-                }, 1000);
+
+                    @Override
+                    public void onFailure(Call<Ack> call, Throwable t) {
+                        Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                        btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
+                    }
+                });
+
             }
         });
         btnForget.setOnClickListener(new View.OnClickListener() {

@@ -19,7 +19,7 @@
         app:layout_constraintVertical_bias="0.2" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/etEmail"
+        android:id="@+id/etEmailLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
         android:layout_margin="15dp"
         android:hint="@string/password"
         app:endIconMode="password_toggle"
-        app:layout_constraintTop_toBottomOf="@+id/etEmail"
+        app:layout_constraintTop_toBottomOf="@+id/etEmailLayout"
         app:startIconDrawable="@drawable/ic_baseline_vpn_key_24"
         tools:layout_editor_absoluteX="15dp">
 

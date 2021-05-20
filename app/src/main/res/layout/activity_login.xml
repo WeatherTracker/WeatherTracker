@@ -7,7 +7,7 @@
     tools:context=".account.LoginActivity">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/etEmail"
+        android:id="@+id/etEmailLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
         android:layout_margin="15dp"
         android:hint="@string/password"
         app:endIconMode="password_toggle"
-        app:layout_constraintTop_toBottomOf="@+id/etEmail"
+        app:layout_constraintTop_toBottomOf="@+id/etEmailLayout"
         app:startIconDrawable="@drawable/ic_baseline_vpn_key_24"
         tools:layout_editor_absoluteX="15dp">
 
@@ -64,13 +64,12 @@
         android:layout_margin="15dp"
         android:text="@string/login"
         android:textColor="@android:color/black"
-        app:loaderColor="@android:color/black"
         app:defaultColor="white"
         app:layout_constraintBottom_toTopOf="@+id/view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etPassword" />
-
+        app:layout_constraintTop_toBottomOf="@+id/etPassword"
+        app:loaderColor="@android:color/black" />
 
 
     <Button
@@ -111,13 +110,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
