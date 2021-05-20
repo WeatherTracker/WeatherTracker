@@ -17,17 +17,23 @@
         app:layout_constraintTop_toTopOf="parent"
         app:month_year_format="full_month__with_year" />
 
-    <Spinner
-        android:id="@+id/spinners_weatherDetail"
-        android:layout_width="55dp"
-        android:layout_height="20dp"
-        android:layout_above="@+id/ll"
-        android:layout_below="@+id/custom_calender"
-        android:layout_alignParentEnd="true"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/weatherElement"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="天氣因子"
         app:layout_constraintBottom_toTopOf="@+id/ll"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/custom_calender" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <AutoCompleteTextView
+            android:id="@+id/etWeatherElement"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 
         <LinearLayout

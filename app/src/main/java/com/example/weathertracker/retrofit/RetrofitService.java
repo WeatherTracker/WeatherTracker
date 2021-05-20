@@ -90,7 +90,9 @@ public interface RetrofitService {
 
     @GET("getRecommendTime")
     Call<List<String>> getRecommendTime(@Query("userId") String userId,
-                                        @Query("eventId") String eventId);
+                                        @Query("eventId") String eventId,
+                                        @Query("whiteList") List<String> whiteList,
+                                        @Query("blackList") List<String> blackList);
 
     @FormUrlEncoded
     @PUT("changeTime")
