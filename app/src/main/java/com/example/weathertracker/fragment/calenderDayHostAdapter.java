@@ -1,6 +1,7 @@
 package com.example.weathertracker.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,9 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weathertracker.R;
+import com.example.weathertracker.event.CheckAndEditActivity;
 import com.example.weathertracker.retrofit.Event;
+import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -63,6 +66,20 @@ public class calenderDayHostAdapter extends RecyclerView.Adapter<calenderDayHost
             super(itemView);
             calenderday_item = itemView.findViewById(R.id.calenderday_item);
             tv_1=itemView.findViewById(R.id.tv_1);
+
+            calenderday_item.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Gson gson = new Gson();
+                    String json = gson.toJson(event.get(0));
+                    System.out.println("json" + json);
+
+                    Intent intent = new Intent(mContext, CheckAndEditActivity.class);
+                    intent.putExtra("json", json);
+
+                    mContext.startActivity(intent);
+                }
+            });
         }
     }
 

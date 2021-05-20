@@ -195,33 +195,58 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                         else X = String.valueOf(month);
                         if (date < 10) Y = "0" + date;
                         else Y = String.valueOf(date);
-                        //todo:
+                        String sharedPreferencesPickDay = String.valueOf(year) + "-" + X + "-" + Y;
                         RecyclerView rv_day = layoutView.findViewById(R.id.rv_day);
                         RecyclerView rv_day2 = layoutView.findViewById(R.id.rv_day2);
                         getCalenderDay(year,X,Y,rv_day,rv_day2);
 
                         SharedPreferences sharedPreferences = getContext().getSharedPreferences("favorite", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                        String S = sharedPreferences.getString(sharedPreferencesPickDay,"0");
+
                         ToggleButton buttonFavorite = layoutView.findViewById(R.id.button_favorite);
+                        if(S!="0"){
+                            System.out.println("shared "+S);
+                            buttonFavorite.setChecked(true);
+                            buttonFavorite.startAnimation(scaleAnimation);
+                        }
+                        else{
+                            buttonFavorite.setChecked(false);
+                        }
                         buttonFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                buttonView.startAnimation(scaleAnimation);
-                                String I = null, J = null;
-                                if (month < 10) I = "0" + (month);
-                                else I = String.valueOf(month);
-                                if (date < 10) J = "0" + date;
-                                else J = String.valueOf(date);
-                                String favorateDay = String.valueOf(year) + "-" + I + "-" + J;
-                                System.out.println("favoer" + favorateDay);
+                                if(!isChecked){
+                                    System.out.println("yes");
+                                    String I = null, J = null;
+                                    if (month < 10) I = "0" + (month);
+                                    else I = String.valueOf(month);
+                                    if (date < 10) J = "0" + date;
+                                    else J = String.valueOf(date);
+                                    String deleteDay = String.valueOf(year) + "-" + I + "-" + J;
+                                    sharedPreferences.edit().remove(deleteDay).commit();
+                                    buttonView.setChecked(false);
+                                    Reload();
+                                }
+                                else {
+                                    System.out.println("no");
+                                    buttonView.startAnimation(scaleAnimation);
+                                    String I = null, J = null;
+                                    if (month < 10) I = "0" + (month);
+                                    else I = String.valueOf(month);
+                                    if (date < 10) J = "0" + date;
+                                    else J = String.valueOf(date);
+                                    String favorateDay = String.valueOf(year) + "-" + I + "-" + J;
+                                    System.out.println("favoer" + favorateDay);
 
-                                Gson gson = new Gson();
-                                String json = gson.toJson(data);
-                                //System.out.println(json);
-
-                                editor.putString(favorateDay, json);
-                                editor.apply();
-                                Reload();
+                                    Gson gson = new Gson();
+                                    String json = gson.toJson(data);
+                                    //System.out.println(json);
+                                    editor.putString(favorateDay, json);
+                                    editor.apply();
+                                    Reload();
+                                }
                             }
                         });
                         dialogBuilder.setView(layoutView);
