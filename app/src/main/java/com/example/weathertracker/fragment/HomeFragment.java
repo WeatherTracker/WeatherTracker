@@ -7,19 +7,20 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.ScaleAnimation;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -69,7 +70,7 @@ import retrofit2.Response;
 public class HomeFragment extends Fragment implements OnNavigationButtonClickedListener {
     private static CustomCalendar customCalendar;
     private Calendar calendar, lastPickedDate;
-//    private Spinner spinner;
+    //    private Spinner spinner;
     private LineChart lineChart;
     private int pickDate = 0, date = 0, month = 0, year = 0, today = 0, today_month = 0, today_year = 0;
     private String nowTime = null;
@@ -80,7 +81,8 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     private HashMap<Integer, Object> dateHashMap = new HashMap<>();
     private ArrayList<String> xLabels = new ArrayList<>();
     private LinearLayout ll;
-
+    private AutoCompleteTextView etWeatherElement;
+    private View root;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -91,20 +93,42 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_home, container, false);
-        customCalendar = root.findViewById(R.id.custom_calender);
-        ll = root.findViewById(R.id.ll);
+        root = inflater.inflate(R.layout.fragment_home, container, false);
+
+        findId();
+        initCalendar();
+
+        try {
+            getDropdownList(today, today_month, today_year);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        setListener();
+
+//        pickDate=today;
+//        spinner = root.findViewById(R.id.spinners_weatherDetail);
 
 
+//        spinner.setOnItemSelectedListener(this);
 
+
+        String M = null;
+        if (today_month < 10) M = "0" + today_month;
+        else M = String.valueOf(today_month);
+        System.out.println(M);
+        getRedPoint(M, today_year);
+
+        return root;
+    }
+
+    private void initCalendar() {
         calendar = Calendar.getInstance();
         today = calendar.get(Calendar.DAY_OF_MONTH);
         today_month = calendar.get(Calendar.MONTH) + 1;
         today_year = calendar.get(Calendar.YEAR);
         nowTime = getNowTime();
-        System.out.println(nowTime);//yyyy/MM/dd hh:mm:ss
         getData(nowTime);
-
         HashMap<Object, Property> descHashMap = new HashMap<>();
         Property defaultProperty = new Property();
         defaultProperty.layoutResource = R.layout.default_view;
@@ -129,19 +153,12 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         disableProperty.dateTextViewResource = R.id.text_view;
         descHashMap.put("disabled", disableProperty);
 
-
         customCalendar.setMapDescToProp(descHashMap);
         dateHashMap.put(today, "current");
+        customCalendar.setDate(calendar, dateHashMap);
+    }
 
-//        pickDate=today;
-//        spinner = root.findViewById(R.id.spinners_weatherDetail);
-        try {
-            getDropdownList(today, today_month, today_year);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-//        spinner.setOnItemSelectedListener(this);
+    private void setListener() {
         customCalendar.setOnDateSelectedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(View view, Calendar selectedDate, Object desc) {
@@ -198,26 +215,25 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                         String sharedPreferencesPickDay = String.valueOf(year) + "-" + X + "-" + Y;
                         RecyclerView rv_day = layoutView.findViewById(R.id.rv_day);
                         RecyclerView rv_day2 = layoutView.findViewById(R.id.rv_day2);
-                        getCalenderDay(year,X,Y,rv_day,rv_day2);
+                        getCalenderDay(year, X, Y, rv_day, rv_day2);
 
                         SharedPreferences sharedPreferences = getContext().getSharedPreferences("favorite", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                        String S = sharedPreferences.getString(sharedPreferencesPickDay,"0");
+                        String S = sharedPreferences.getString(sharedPreferencesPickDay, "0");
 
                         ToggleButton buttonFavorite = layoutView.findViewById(R.id.button_favorite);
-                        if(S!="0"){
-                            System.out.println("shared "+S);
+                        if (S != "0") {
+                            System.out.println("shared " + S);
                             buttonFavorite.setChecked(true);
                             buttonFavorite.startAnimation(scaleAnimation);
-                        }
-                        else{
+                        } else {
                             buttonFavorite.setChecked(false);
                         }
                         buttonFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                if(!isChecked){
+                                if (!isChecked) {
                                     System.out.println("yes");
                                     String I = null, J = null;
                                     if (month < 10) I = "0" + (month);
@@ -228,8 +244,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                                     sharedPreferences.edit().remove(deleteDay).commit();
                                     buttonView.setChecked(false);
                                     Reload();
-                                }
-                                else {
+                                } else {
                                     System.out.println("no");
                                     buttonView.startAnimation(scaleAnimation);
                                     String I = null, J = null;
@@ -271,17 +286,34 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 }
             }
         });
-        lineChart = root.findViewById(R.id.lineChart);
         customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.PREVIOUS, (OnNavigationButtonClickedListener) this);
         customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.NEXT, (OnNavigationButtonClickedListener) this);
+        etWeatherElement.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        customCalendar.setDate(calendar, dateHashMap);
-        String M=null;
-        if(today_month<10)M="0"+today_month;
-        else M= String.valueOf(today_month);
-        System.out.println(M);
-        getRedPoint(M,today_year);
-        return root;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s != null) {
+                    makeChart(date, month - 1, s.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
+    private void findId() {
+        ll = root.findViewById(R.id.ll);
+        customCalendar = root.findViewById(R.id.custom_calender);
+        etWeatherElement = root.findViewById(R.id.etWeatherElement);
+        lineChart = root.findViewById(R.id.lineChart);
+        etWeatherElement = root.findViewById(R.id.etWeatherElement);
     }
 
     private void Reload() {
@@ -310,7 +342,8 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         if (day < 0) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_history, android.R.layout.simple_spinner_item);
         }
-//        spinner.setAdapter(adapter);
+        etWeatherElement.setText("溫度", false);
+        etWeatherElement.setAdapter(adapter);
     }
 
     private String xLabelFormatter(String x) {
@@ -417,7 +450,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         lineChart.getAxisLeft().setEnabled(false);
         Description description = lineChart.getDescription();
         description.setText("");
-        lineChart.setVisibleXRange(0,6);
+        lineChart.setVisibleXRange(0, 6);
 
 
         lineChart.invalidate();
@@ -454,51 +487,51 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         switch (Mcalendar.get(Calendar.MONTH)) {
             case Calendar.JANUARY:
                 arr[0] = new HashMap<>();
-                getRedPoint("01",Mcalendar.getWeekYear());
+                getRedPoint("01", Mcalendar.getWeekYear());
                 break;
             case Calendar.FEBRUARY:
                 arr[0] = new HashMap<>();
-                getRedPoint("02",Mcalendar.getWeekYear());
+                getRedPoint("02", Mcalendar.getWeekYear());
                 break;
             case Calendar.MARCH:
                 arr[0] = new HashMap<>();
-                getRedPoint("03",Mcalendar.getWeekYear());
+                getRedPoint("03", Mcalendar.getWeekYear());
                 break;
             case Calendar.APRIL:
                 arr[0] = new HashMap<>();
-                getRedPoint("04",Mcalendar.getWeekYear());
+                getRedPoint("04", Mcalendar.getWeekYear());
                 break;
             case Calendar.MAY:
-                getRedPoint("05",Mcalendar.getWeekYear());
+                getRedPoint("05", Mcalendar.getWeekYear());
                 arr[0] = new HashMap<>();
                 break;
             case Calendar.JUNE:
                 arr[0] = new HashMap<>();
-                getRedPoint("06",Mcalendar.getWeekYear());
+                getRedPoint("06", Mcalendar.getWeekYear());
                 break;
             case Calendar.JULY:
                 arr[0] = new HashMap<>();
-                getRedPoint("07",Mcalendar.getWeekYear());
+                getRedPoint("07", Mcalendar.getWeekYear());
                 break;
             case Calendar.AUGUST:
                 arr[0] = new HashMap<>();
-                getRedPoint("08",Mcalendar.getWeekYear());
+                getRedPoint("08", Mcalendar.getWeekYear());
                 break;
             case Calendar.SEPTEMBER:
                 arr[0] = new HashMap<>();
-                getRedPoint("09",Mcalendar.getWeekYear());
+                getRedPoint("09", Mcalendar.getWeekYear());
                 break;
             case Calendar.OCTOBER:
                 arr[0] = new HashMap<>();
-                getRedPoint("10",Mcalendar.getWeekYear());
+                getRedPoint("10", Mcalendar.getWeekYear());
                 break;
             case Calendar.NOVEMBER:
                 arr[0] = new HashMap<>();
-                getRedPoint("11",Mcalendar.getWeekYear());
+                getRedPoint("11", Mcalendar.getWeekYear());
                 break;
             case Calendar.DECEMBER:
                 arr[0] = new HashMap<>();
-                getRedPoint("12",Mcalendar.getWeekYear());
+                getRedPoint("12", Mcalendar.getWeekYear());
                 break;
 
         }
@@ -522,7 +555,8 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                     Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
                 } else {
                     data = response.body();
-//                    makeChart(date, month - 1, "溫度");
+                    makeChart(date, month - 1, etWeatherElement.getEditableText().toString());
+
 //                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 //                        @Override
 //                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -547,25 +581,25 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
     }
 
-    private void getCalenderDay(int year, String month, String day, RecyclerView rv_day, RecyclerView rv_day2){
+    private void getCalenderDay(int year, String month, String day, RecyclerView rv_day, RecyclerView rv_day2) {
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-        Call<List<Event>> call = retrofitService.getCalendarDay("a", year + "-" + month+"-"+day);
+        Call<List<Event>> call = retrofitService.getCalendarDay("a", year + "-" + month + "-" + day);
         call.enqueue(new Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
                 if (!response.isSuccessful()) {
                     Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
                 } else {
-                    event=response.body();
-                    if (event!=null) {
+                    event = response.body();
+                    if (event != null) {
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                         rv_day.setLayoutManager(linearLayoutManager);
-                        rv_day.setAdapter(new calenderDayHostAdapter(getActivity(), event,"a"));
+                        rv_day.setAdapter(new calenderDayHostAdapter(getActivity(), event, "a"));
                         LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(getActivity());
                         linearLayoutManager2.setOrientation(LinearLayoutManager.VERTICAL);
-                        rv_day2.setLayoutManager(linearLayoutManager2 );
-                        rv_day2.setAdapter(new calenderDayNoHostAdapter(getActivity(), event,"a"));
+                        rv_day2.setLayoutManager(linearLayoutManager2);
+                        rv_day2.setAdapter(new calenderDayNoHostAdapter(getActivity(), event, "a"));
                     }
                 }
             }
