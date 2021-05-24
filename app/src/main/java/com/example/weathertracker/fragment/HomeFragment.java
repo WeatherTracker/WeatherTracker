@@ -105,14 +105,6 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         }
 
         setListener();
-
-//        pickDate=today;
-//        spinner = root.findViewById(R.id.spinners_weatherDetail);
-
-
-//        spinner.setOnItemSelectedListener(this);
-
-
         String M = null;
         if (today_month < 10) M = "0" + today_month;
         else M = String.valueOf(today_month);
@@ -162,6 +154,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         customCalendar.setOnDateSelectedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(View view, Calendar selectedDate, Object desc) {
+
                 View[] month_days = customCalendar.getAllViews();
                 date = selectedDate.get(Calendar.DATE);
                 month = (selectedDate.get(Calendar.MONTH) + 1);
@@ -327,7 +320,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         else I = String.valueOf(i);
         if (j < 10) J = "0" + j;
         else J = String.valueOf(j);
-        System.out.println("pickday " + h + j + i + "today" + today_year + today_month + today);
+        //System.out.println("pickday " + h + j + i + "today" + today_year + today_month + today);
         String pickDay = h + "-" + J + "-" + I;
         SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
         Date beginDate = format.parse(h + "-" + j + "-" + i);
@@ -546,6 +539,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     }
 
     private void getData(String pickDay) {
+        System.out.println("123456789");
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
         Call<chartList> call = retrofitService.getChart(22.074033, 120.716073, pickDay);
         call.enqueue(new Callback<chartList>() {
@@ -630,7 +624,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                             View view = mday[da];
                             ImageView mcycle = view.findViewById(R.id.cycle);
                             mcycle.setVisibility(View.VISIBLE);
-                            System.out.println(da);
+                            //System.out.println(da);
                         }
                     }
                 }
