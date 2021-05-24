@@ -82,8 +82,12 @@ public interface RetrofitService {
                            @Field("userId") String userId,
                            @Field("action") Boolean action);
 
-    @GET("getRecommendEvent")
-    Call<List<Event>> getRecommendEvent(@Query("userId") String userId);
+    @GET("getRecommendEvents")
+    Call<List<Event>> getRecommendEvents(@Query("userId") String userId);
+
+    @GET("getRecommendSights")
+    Call<List<Sight>> getRecommendSights(@Query("longitude") double longitude,
+                                         @Query("latitude") double latitude);
 
     @GET("searchEvent")
     Call<List<Event>> searchEvent(@Query("input") String input);

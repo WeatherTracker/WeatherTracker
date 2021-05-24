@@ -14,16 +14,16 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/hobbyClass"
+            android:id="@+id/whiteDateLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="2.5dp"
             android:layout_weight="1"
-            android:hint="@string/hobby_class">
+            android:hint="日期">
 
             <AutoCompleteTextView
-                android:id="@+id/etHobbyClass"
+                android:id="@+id/etWhiteDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none" />
@@ -31,16 +31,16 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/hobbies"
+            android:id="@+id/whiteTimeLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="2.5dp"
             android:layout_weight="1"
-            android:hint="@string/hobby_name">
+            android:hint="時間">
 
             <AutoCompleteTextView
-                android:id="@+id/etHobbies"
+                android:id="@+id/etWhiteTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none" />
@@ -51,7 +51,7 @@
 
 
     <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipGroup"
+        android:id="@+id/whiteChipGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -59,5 +59,58 @@
         app:layout_constraintTop_toBottomOf="@+id/whiteList"
         app:singleSelection="true" />
 
+    <LinearLayout
+        android:id="@+id/blackList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/whiteChipGroup">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/blackDateLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2.5dp"
+            android:layout_weight="1"
+            android:hint="日期">
+
+            <AutoCompleteTextView
+                android:id="@+id/etBlackDate"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/blackTimeLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2.5dp"
+            android:layout_weight="1"
+            android:hint="時間">
+
+            <AutoCompleteTextView
+                android:id="@+id/etBlackTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/blackChipGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/whiteList"
+        app:singleSelection="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
