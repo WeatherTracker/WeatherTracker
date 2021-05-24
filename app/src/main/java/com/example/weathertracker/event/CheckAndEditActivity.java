@@ -19,10 +19,14 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weathertracker.R;
 import com.example.weathertracker.retrofit.Event;
+import com.example.weathertracker.retrofit.RetrofitManager;
 import com.example.weathertracker.retrofit.RetrofitService;
+import com.example.weathertracker.retrofit.Sight;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -37,21 +41,26 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CheckAndEditActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private RetrofitService retrofitService;
     private Event event;
     private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnRemovePlace;
-    private TextView tvPlaceDescribe, tvStartDate, tvStartTime,tvEndDate,tvEndTime;
+    private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime;
     private EditText etEventName, etHostRemark;
     private SupportMapFragment mapFragment;
     private double latitude, longitude;
-    private DatePickerDialog datePickerDialog,datePickerDialog2;
-    private TimePickerDialog timePickerDialog,timePickerDialog2;
+    private DatePickerDialog datePickerDialog, datePickerDialog2;
+    private TimePickerDialog timePickerDialog, timePickerDialog2;
     private GoogleMap mMap;
     private SimpleDateFormat dateFormatter, timeFormatter;
     private final HashMap<String, Integer> idMap = new HashMap<>();
@@ -61,6 +70,8 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private int year, month, day;
     private ToggleButton isOutDoor, isPublic;
     private TextInputLayout hobbyClass, hobbies;
+    private RecyclerView eventToSight;
+    private ArrayList<Sight> sights;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +80,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
         Intent intent = this.getIntent();
         String json = intent.getStringExtra("json");
-        System.out.println("Event:"+json);
+        System.out.println("Event:" + json);
 
         Gson gson = new Gson();
         Event event0 = gson.fromJson(json, Event.class);
@@ -91,12 +102,33 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
         findId();
         setListener();
+        getEventToSight();
 
         Places.initialize(getApplicationContext(), getString(R.string.maps_api_key));
         mapFragment.getMapAsync(this);
         mapFragment.getView().setVisibility(View.GONE);
         initField();
+    }
 
+    private void getEventToSight() {
+        RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+        Call<List<Sight>> call = retrofitService.getRecommendSights(event.getLongitude(), event.getLatitude());
+        call.enqueue(new Callback<List<Sight>>() {
+            @Override
+            public void onResponse(Call<List<Sight>> call, Response<List<Sight>> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(CheckAndEditActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
+                } else {
+                    eventToSight.setLayoutManager(new LinearLayoutManager(CheckAndEditActivity.this));
+                    eventToSight.setAdapter(new eventToSightAdapter(CheckAndEditActivity.this, sights));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Sight>> call, Throwable t) {
+                Toast.makeText(CheckAndEditActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void findId() {
@@ -118,6 +150,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         isPublic = findViewById(R.id.isPublic);
         hobbyClass = findViewById(R.id.hobbyClass);
         hobbies = findViewById(R.id.hobbies);
+        eventToSight = findViewById(R.id.eventToSight);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapView);
     }
