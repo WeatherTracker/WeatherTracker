@@ -141,7 +141,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
             public void onClick(View v) {
                 mapFragment.getView().setVisibility(View.GONE);
                 btnAddPlace.setVisibility(View.VISIBLE);
-                btnRemovePlace.setVisibility(View.GONE);
+                btnRemovePlace.setVisibility(View.INVISIBLE);
                 tvPlaceDescribe.setText("");
                 //todo:
             }
@@ -167,29 +167,31 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                 } else {
                     e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(), tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
                 }
-                RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-                Call<Ack> call = retrofitService.newEvent(e);
-                call.enqueue(new Callback<Ack>() {
-                    @Override
-                    public void onResponse(Call<Ack> call, Response<Ack> response) {
-                        if (!response.isSuccessful()) {
-                            Toast.makeText(NewEventActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Ack ack = response.body();
-                            if (ack.getCode() == 200) {
-                                Toast.makeText(NewEventActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//去信箱收信
+                if (Event.isTimeValid(e.getStartTime(), e.getEndTime())) {
+                    RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+                    Call<Ack> call = retrofitService.newEvent(e);
+                    call.enqueue(new Callback<Ack>() {
+                        @Override
+                        public void onResponse(Call<Ack> call, Response<Ack> response) {
+                            if (!response.isSuccessful()) {
+                                Toast.makeText(NewEventActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(NewEventActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                Ack ack = response.body();
+                                if (ack.getCode() == 200) {
+                                    Toast.makeText(NewEventActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//去信箱收信
+                                } else {
+                                    Toast.makeText(NewEventActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<Ack> call, Throwable t) {
-                        Toast.makeText(NewEventActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-                System.out.println(e.toString());
+                        @Override
+                        public void onFailure(Call<Ack> call, Throwable t) {
+                            Toast.makeText(NewEventActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+//                System.out.println(e.toString());
             }
         });
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -315,7 +317,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 200 && resultCode == RESULT_OK) {
             mapFragment.getView().setVisibility(View.VISIBLE);
-            btnAddPlace.setVisibility(View.GONE);
+            btnAddPlace.setVisibility(View.INVISIBLE);
             btnRemovePlace.setVisibility(View.VISIBLE);
             Place place = Autocomplete.getPlaceFromIntent(data);
             latitude = place.getLatLng().latitude;

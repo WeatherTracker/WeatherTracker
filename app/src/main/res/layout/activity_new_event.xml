@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView13"
             app:layout_constraintTop_toBottomOf="@+id/etEventName" />
 
         <TextView
@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView14"
             app:layout_constraintTop_toBottomOf="@+id/tvStartDate" />
 
 
@@ -72,6 +72,13 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvEndDate">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:text="每日時間"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/tvStartTime"
@@ -141,7 +148,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:background="@color/float_transparent"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:layout_constraintStart_toEndOf="@+id/tvSpot"
             app:layout_constraintTop_toBottomOf="@+id/timeLayout"
             app:srcCompat="@drawable/ic_baseline_remove_circle_outline_24" />
@@ -233,8 +240,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:text="備註"
             android:textSize="18sp"
+            android:text="備註"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/whiteList" />
 
@@ -259,6 +266,26 @@
             android:text="全天"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/isOutDoor" />
+
+        <TextView
+            android:id="@+id/textView13"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="起始日期"
+            android:layout_margin="15dp"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etEventName" />
+
+        <TextView
+            android:id="@+id/textView14"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="結束時間"
+            android:layout_margin="15dp"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView13" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

@@ -1,11 +1,13 @@
 package com.example.weathertracker.retrofit;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class Event {
     private String eventName, eventId, hostRemark, startTime, endTime, staticHobbyClass, staticHobbyTag;
     private double latitude, longitude;
-    private List<String> participants, hosts;
+    private List<String> participants, hosts, dynamicTags;
     private Boolean isPublic, isOutDoor;
 
     public Event(String eventName, String hostRemark, String startTime, String endTime, String staticHobbyClass, String staticHobbyTag, double latitude, double longitude, List<String> hosts, Boolean isPublic, Boolean isOutDoor) {
@@ -78,8 +80,12 @@ public class Event {
         return hosts.contains(user_id);
     }
 
-    public String[] strSplit() {
-        return this.startTime.split(" ");
+    public List<String> getDynamicTags() {
+        return dynamicTags;
+    }
+
+    public String[] strSplit(String s) {
+        return s.split(" ");
     }
 
     @Override
@@ -107,4 +113,20 @@ public class Event {
 //    public String ISOToStr(Date ISO){
 //
 //    }
+
+    public static Boolean isTimeValid(String startDate, String endDate) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            //進行轉換
+            Date nowDate = new Date(System.currentTimeMillis());
+            Date sdate = sdf.parse(startDate);
+            Date edate = sdf.parse(endDate);
+            if (sdate.compareTo(edate) < 0) {//開始時間要比結束時間早
+                return nowDate.compareTo(sdate) < 0;//未來的活動
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

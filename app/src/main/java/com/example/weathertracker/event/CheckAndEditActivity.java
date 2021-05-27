@@ -2,22 +2,30 @@ package com.example.weathertracker.event;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +45,8 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 
@@ -44,7 +54,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -54,7 +66,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
     private RetrofitService retrofitService;
     private Event event;
-    private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnRemovePlace;
+    private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnRemovePlace, btnSchedule, btnTags;
     private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime;
     private EditText etEventName, etHostRemark;
     private SupportMapFragment mapFragment;
@@ -86,10 +98,11 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         Event event0 = gson.fromJson(json, Event.class);
 
         userId = getSharedPreferences("sharedPreferences", MODE_PRIVATE).getString("userId", "");
-        userId = "uuid";
+        userId = "a";
 
         //todo:
         event = event0;
+        System.out.println(event.getHosts().get(0));
         //event = new Event(event0.getEventName(), event0.getHostRemark(), event0.getStartTime(),event0.getEndTime(), event0.getStaticHobbyClass(), event0.getStaticHobbyTag(), event0.getLatitude(), event0.getLongitude(), event0.getHosts(), event0.isPublic(), event0.isOutDoor());
 
         idMap.put("戶外活動類", R.array.hobbies_outdoor_events);
@@ -137,6 +150,8 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         btnBack = findViewById(R.id.btnBack);
         btnAddPlace = findViewById(R.id.btnAddPlace);
         btnRemovePlace = findViewById(R.id.btnRemovePlace);
+        btnTags = findViewById(R.id.btnTags);
+        btnSchedule = findViewById(R.id.btnSchedule);
         etEventName = findViewById(R.id.etEventName);
         tvStartDate = findViewById(R.id.tvStartDate);
         tvStartTime = findViewById(R.id.tvStartTime);
@@ -161,14 +176,14 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
             public void onClick(View v) {
                 setEditable();
                 btnDone.setVisibility(View.VISIBLE);
-                btnEdit.setVisibility(View.GONE);
+                btnEdit.setVisibility(View.INVISIBLE);
             }
         });
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setNonEditable();
-                btnDone.setVisibility(View.GONE);
+                btnDone.setVisibility(View.INVISIBLE);
                 btnEdit.setVisibility(View.VISIBLE);
 //                Call<Ack> call = retrofitService.editEvent(event);
 //                call.enqueue(new Callback<Ack>() {
@@ -193,6 +208,173 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 //                });
             }
         });
+
+        btnSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Set<String> blackSet = new HashSet<>();
+                Set<String> whiteSet = new HashSet<>();
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(CheckAndEditActivity.this);
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.schedule, null);
+                dialogBuilder.setView(dialogView);
+                TextView tvScheduleStartDate = dialogView.findViewById(R.id.tvScheduleStartDate);
+                TextView tvScheduleStartTime = dialogView.findViewById(R.id.tvScheduleStartTime);
+                TextView tvScheduleEndDate = dialogView.findViewById(R.id.tvScheduleEndDate);
+                TextView tvScheduleEndTime = dialogView.findViewById(R.id.tvScheduleEndTime);
+                Button btnAddList = dialogView.findViewById(R.id.btnAddList);
+                ToggleButton blackWhiteToggle = dialogView.findViewById(R.id.blackWhiteToggle);
+                ChipGroup whiteChipGroup, blackChipGroup;
+                whiteChipGroup = dialogView.findViewById(R.id.whiteChipGroup);
+                blackChipGroup = dialogView.findViewById(R.id.blackChipGroup);
+                DatePickerDialog datePickerDialog, datePickerDialog2;
+                TimePickerDialog timePickerDialog, timePickerDialog2;
+                tvScheduleStartDate.setText(event.getStartTime().split(" ")[0]);
+                tvScheduleStartTime.setText(event.getStartTime().split(" ")[1]);
+                tvScheduleEndDate.setText(event.getEndTime().split(" ")[0]);
+                tvScheduleEndTime.setText(event.getEndTime().split(" ")[1]);
+                datePickerDialog = new DatePickerDialog(CheckAndEditActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        String s = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d", dayOfMonth);
+                        tvScheduleStartDate.setText(s);
+                    }
+                }, year, month, day);
+                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
+                timePickerDialog = new TimePickerDialog(CheckAndEditActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        String s = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute);
+                        tvScheduleStartTime.setText(s);
+                    }
+                }, 12, 0, false);
+                datePickerDialog2 = new DatePickerDialog(CheckAndEditActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        String s = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d", dayOfMonth);
+                        tvScheduleEndDate.setText(s);
+                    }
+                }, year, month, day);
+                datePickerDialog2.getDatePicker().setMinDate(System.currentTimeMillis());
+                timePickerDialog2 = new TimePickerDialog(CheckAndEditActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        String s = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute);
+                        tvScheduleEndTime.setText(s);
+                    }
+                }, 12, 0, false);
+                tvScheduleStartDate.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        System.out.println("test dia");
+                        datePickerDialog.show();
+                    }
+                });
+                tvScheduleStartTime.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        timePickerDialog.show();
+                    }
+                });
+                tvScheduleEndDate.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        datePickerDialog2.show();
+                    }
+                });
+                tvScheduleEndTime.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        timePickerDialog2.show();
+                    }
+                });
+                btnAddList.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String str = tvScheduleStartDate.getText().toString() + " " + tvScheduleStartTime.getText().toString() + " 至 " + tvScheduleEndDate.getText().toString() + " " + tvScheduleEndTime.getText().toString();
+                        if (blackWhiteToggle.isChecked() && !whiteSet.contains(str)) {//白名單
+                            whiteSet.add(str);
+                            Chip chip = new Chip(CheckAndEditActivity.this);
+                            chip.setText(str);
+                            chip.setChipBackgroundColorResource(R.color.black);
+                            chip.setCloseIconVisible(true);
+                            chip.setTextColor(getResources().getColor(R.color.white));
+                            chip.setTextAppearance(R.style.ChipTextAppearance);
+                            chip.setOnCloseIconClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    whiteSet.remove(((Chip) v).getText());
+                                    whiteChipGroup.removeView(v);
+                                }
+                            });
+                            whiteChipGroup.addView(chip);
+                        }
+                        if (!blackWhiteToggle.isChecked() && !blackSet.contains(str)) {//黑名單
+                            blackSet.add(str);
+                            Chip chip = new Chip(CheckAndEditActivity.this);
+                            chip.setText(str);
+                            chip.setChipBackgroundColorResource(R.color.black);
+                            chip.setCloseIconVisible(true);
+                            chip.setTextColor(getResources().getColor(R.color.white));
+                            chip.setTextAppearance(R.style.ChipTextAppearance);
+                            chip.setOnCloseIconClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    blackSet.remove(((Chip) v).getText());
+                                    blackChipGroup.removeView(v);
+                                }
+                            });
+                            blackChipGroup.addView(chip);
+                        }
+                    }
+                });
+                dialogBuilder.setPositiveButton("開始排程", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+                        ArrayList<String> whiteList = new ArrayList<>(whiteSet);
+                        ArrayList<String> blackList = new ArrayList<>(blackSet);
+                        Call<List<String>> call = retrofitService.getRecommendTime(userId, event.getEventId(), whiteList, blackList);
+                        call.enqueue(new Callback<List<String>>() {
+                            @Override
+                            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<List<String>> call, Throwable t) {
+
+                            }
+                        });
+                    }
+                });
+                dialogBuilder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                AlertDialog alertDialog = dialogBuilder.create();
+                alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                alertDialog.setCanceledOnTouchOutside(false);
+                alertDialog.show();
+            }
+        });
+
+        btnTags.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupWindow popupWindow = new PopupWindow(CheckAndEditActivity.this);
+                popupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+                popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+                popupWindow.setContentView(LayoutInflater.from(CheckAndEditActivity.this).inflate(R.layout.card_item, null));
+                popupWindow.setBackgroundDrawable(new ColorDrawable(0x00000000));
+                popupWindow.setOutsideTouchable(false);
+                popupWindow.setFocusable(true);
+                popupWindow.showAsDropDown(btnTags,-100,0);
+            }
+        });
+
         btnAddPlace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -206,7 +388,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
             public void onClick(View v) {
                 mapFragment.getView().setVisibility(View.GONE);
                 btnAddPlace.setVisibility(View.VISIBLE);
-                btnRemovePlace.setVisibility(View.GONE);
+                btnRemovePlace.setVisibility(View.INVISIBLE);
                 tvPlaceDescribe.setText("");
                 //todo:
             }
@@ -240,7 +422,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String s = year + "-" + (month + 1) + "-" + dayOfMonth;
+                String s = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d", dayOfMonth);
                 tvStartDate.setText(s);
             }
         }, year, month, day);
@@ -256,8 +438,8 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         datePickerDialog2 = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String s = year + "-" + (month + 1) + "-" + dayOfMonth;
-                tvStartDate.setText(s);
+                String s = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d", dayOfMonth);
+                tvEndDate.setText(s);
             }
         }, year, month, day);
         datePickerDialog2.getDatePicker().setMinDate(System.currentTimeMillis());
@@ -265,7 +447,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 String s = hourOfDay + ":" + String.format("%02d", minute);
-                tvStartTime.setText(s);
+                tvEndTime.setText(s);
             }
         }, 12, 0, false);
         hobbyClassAdapter = ArrayAdapter.createFromResource(this, R.array.hobby_classes, R.layout.list_item);
@@ -313,8 +495,10 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private void initField() {
         setNonEditable();
         etEventName.setText(event.getEventName());
-        tvStartDate.setText(event.strSplit()[0]);
-        tvStartTime.setText(event.strSplit()[1]);
+        tvStartDate.setText(event.strSplit(event.getStartTime())[0]);
+        tvStartTime.setText(event.strSplit(event.getStartTime())[1]);
+        tvEndDate.setText(event.strSplit(event.getEndTime())[0]);
+        tvEndTime.setText(event.strSplit(event.getEndTime())[1]);
         isOutDoor.setChecked(event.isOutDoor());
         isPublic.setChecked(event.isPublic());
 //        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.getLatitude(), event.getLongitude()), 15));
@@ -337,7 +521,11 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         isOutDoor.setEnabled(true);
         tvStartDate.setEnabled(true);
         tvStartTime.setEnabled(true);
+        tvEndDate.setEnabled(true);
+        tvEndTime.setEnabled(true);
         btnAddPlace.setVisibility(View.VISIBLE);
+        btnSchedule.setVisibility(View.VISIBLE);
+
 
     }
 
@@ -352,8 +540,11 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         isOutDoor.setEnabled(false);
         tvStartDate.setEnabled(false);
         tvStartTime.setEnabled(false);
-        btnAddPlace.setVisibility(View.GONE);
-        btnRemovePlace.setVisibility(View.GONE);
+        tvEndDate.setEnabled(false);
+        tvEndTime.setEnabled(false);
+        btnAddPlace.setVisibility(View.INVISIBLE);
+        btnRemovePlace.setVisibility(View.INVISIBLE);
+        btnSchedule.setVisibility(View.INVISIBLE);
 
         etEventName.setTextColor(getResources().getColor(R.color.white));
         etHobbyClass.setTextColor(getResources().getColor(R.color.white));
@@ -363,8 +554,8 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         isOutDoor.setTextColor(getResources().getColor(R.color.white));
         tvStartDate.setTextColor(getResources().getColor(R.color.white));
         tvStartTime.setTextColor(getResources().getColor(R.color.white));
-
-        //todo:
+        tvEndDate.setTextColor(getResources().getColor(R.color.white));
+        tvEndTime.setTextColor(getResources().getColor(R.color.white));
     }
 
     @Override
@@ -377,7 +568,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 200 && resultCode == RESULT_OK) {
             mapFragment.getView().setVisibility(View.VISIBLE);
-            btnAddPlace.setVisibility(View.GONE);
+            btnAddPlace.setVisibility(View.INVISIBLE);
             btnRemovePlace.setVisibility(View.VISIBLE);
             Place place = Autocomplete.getPlaceFromIntent(data);
             mMap.clear();
