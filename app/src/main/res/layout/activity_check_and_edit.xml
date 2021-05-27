@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:background="@color/float_transparent"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_baseline_edit_24" />
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:background="@color/float_transparent"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_baseline_done_all_24" />
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView15"
             app:layout_constraintTop_toBottomOf="@+id/etEventName" />
 
 
@@ -74,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView16"
             app:layout_constraintTop_toBottomOf="@+id/tvStartDate" />
 
 
@@ -84,6 +84,13 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvEndDate">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:text="每日時間"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/tvStartTime"
@@ -153,7 +160,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:background="@color/float_transparent"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:layout_constraintStart_toEndOf="@+id/tvSpot"
             app:layout_constraintTop_toBottomOf="@+id/timeLayout"
             app:srcCompat="@drawable/ic_baseline_remove_circle_outline_24" />
@@ -279,6 +286,46 @@
             android:text="全天"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/isOutDoor" />
+
+        <ImageButton
+            android:id="@+id/btnTags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:background="@color/float_transparent"
+            app:layout_constraintEnd_toStartOf="@+id/btnSchedule"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_label_24" />
+
+        <ImageButton
+            android:id="@+id/btnSchedule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:background="@color/float_transparent"
+            app:layout_constraintEnd_toStartOf="@+id/btnEdit"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_schedule_24" />
+
+        <TextView
+            android:id="@+id/textView15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="起始日期"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etEventName" />
+
+        <TextView
+            android:id="@+id/textView16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="結束時間"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView15" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

@@ -1,108 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/round_corner">
 
-    <LinearLayout
-        android:id="@+id/whiteList"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/btnAddList"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="增加時段"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/whiteDateLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="2.5dp"
-            android:layout_weight="1"
-            android:hint="日期">
-
-            <AutoCompleteTextView
-                android:id="@+id/etWhiteDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/whiteTimeLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="2.5dp"
-            android:layout_weight="1"
-            android:hint="時間">
-
-            <AutoCompleteTextView
-                android:id="@+id/etWhiteTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-    </LinearLayout>
-
-
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/whiteChipGroup"
-        android:layout_width="match_parent"
+    <ToggleButton
+        android:id="@+id/blackWhiteToggle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/whiteList"
-        app:singleSelection="true" />
+        android:textOff="黑名單"
+        android:textOn="白名單"
+        app:layout_constraintEnd_toStartOf="@+id/btnAddList"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/blackList"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/textView20"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="15dp"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:text="起始時間"
+        app:layout_constraintEnd_toStartOf="@+id/tvScheduleStartDate"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/whiteChipGroup">
+        app:layout_constraintTop_toBottomOf="@+id/blackWhiteToggle" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/blackDateLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="2.5dp"
-            android:layout_weight="1"
-            android:hint="日期">
+    <TextView
+        android:id="@+id/tvScheduleStartDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:gravity="center"
+        android:text="起始日期"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/tvScheduleStartTime"
+        app:layout_constraintStart_toEndOf="@+id/textView20"
+        app:layout_constraintTop_toBottomOf="@+id/blackWhiteToggle" />
 
-            <AutoCompleteTextView
-                android:id="@+id/etBlackDate"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="none" />
+    <TextView
+        android:id="@+id/tvScheduleStartTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:gravity="center"
+        android:text="起始時間"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tvScheduleStartDate"
+        app:layout_constraintTop_toBottomOf="@+id/blackWhiteToggle" />
 
-        </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/blackTimeLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="2.5dp"
-            android:layout_weight="1"
-            android:hint="時間">
+    <TextView
+        android:id="@+id/textView21"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:text="結束時間"
+        app:layout_constraintEnd_toStartOf="@+id/tvScheduleEndDate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView20" />
+    <TextView
+        android:id="@+id/tvScheduleEndDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:gravity="center"
+        android:text="起始日期"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/tvScheduleEndTime"
+        app:layout_constraintStart_toEndOf="@+id/textView21"
+        app:layout_constraintTop_toBottomOf="@+id/tvScheduleStartDate" />
 
-            <AutoCompleteTextView
-                android:id="@+id/etBlackTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
+    <TextView
+        android:id="@+id/tvScheduleEndTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:gravity="center"
+        android:text="起始時間"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tvScheduleEndDate"
+        app:layout_constraintTop_toBottomOf="@+id/tvScheduleStartTime" />
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-    </LinearLayout>
-
+    <TextView
+        android:id="@+id/textView17"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="黑名單"
+        android:layout_margin="15dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvScheduleEndDate" />
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/blackChipGroup"
@@ -110,7 +110,38 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/whiteList"
+        app:layout_constraintTop_toBottomOf="@+id/textView17"
         app:singleSelection="true" />
+
+    <TextView
+        android:id="@+id/textView18"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="白名單"
+        android:layout_margin="15dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/blackChipGroup" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/whiteChipGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView18">
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <TextView
+        android:id="@+id/textView19"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="結果"
+        android:layout_margin="15dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/whiteChipGroup" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
