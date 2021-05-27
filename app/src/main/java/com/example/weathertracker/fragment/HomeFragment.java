@@ -148,6 +148,43 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         customCalendar.setMapDescToProp(descHashMap);
         dateHashMap.put(today, "current");
         customCalendar.setDate(calendar, dateHashMap);
+
+        getWeatherIcon();
+    }
+
+    //todo:
+    private void getWeatherIcon(){
+        RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+        Call<List<String>> call = retrofitService.getWeatherIcon(25.1505447,121.7735869);
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
+                } else {
+                    int iconTime=7,iconDay=today;
+                    View[] month_days = customCalendar.getAllViews();
+                    if((month_days.length-today)<7)iconTime=(month_days.length-today);
+                    List<String> icon= response.body();
+                    for (int i=0;i<iconTime;i++){
+                        System.out.println(icon.get(i));
+                        String s= "R.drawable."+icon.get(i);
+                        String uri =  icon.get(i); //圖片路徑和名稱
+
+                        int imageResource = getContext().getResources().getIdentifier(uri,"drawable",getContext().getPackageName());
+                        System.out.println("image+" + imageResource+"+"+uri);
+                        View temp_view = month_days[iconDay];
+                        temp_view.findViewById(R.id.icon).setBackgroundResource(imageResource);
+                        iconDay++;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                System.out.println("onFailure:icon" + t);
+            }
+        });
     }
 
     private void setListener() {
