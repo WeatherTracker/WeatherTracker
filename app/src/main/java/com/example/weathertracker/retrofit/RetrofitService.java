@@ -62,7 +62,7 @@ public interface RetrofitService {
 
     //todo:
     @GET("getWeatherIcon")
-    Call<Ack> getWeatherIcon(@Query("latitude") Double latitude,
+    Call<List<String>> getWeatherIcon(@Query("latitude") Double latitude,
                              @Query("longitude") Double longitude);
 
     @POST("newEvent")

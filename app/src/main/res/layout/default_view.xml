@@ -18,6 +18,17 @@
             android:layout_height="10dp"
             android:src="@drawable/ic_baseline_brightness_1_24"
             android:visibility="invisible"/>
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_gravity="left"
+<<<<<<< Updated upstream
+            android:layout_width="10dp"
+            android:layout_height="10dp"/>
+=======
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@drawable/day_01"/>
+>>>>>>> Stashed changes
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
