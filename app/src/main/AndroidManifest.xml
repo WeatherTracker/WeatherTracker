@@ -31,6 +31,7 @@
             android:name=".account.LoginActivity"
             android:screenOrientation="portrait">
 
+
         </activity>
         <activity android:name=".MainActivity">
 
@@ -47,7 +48,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
         <service

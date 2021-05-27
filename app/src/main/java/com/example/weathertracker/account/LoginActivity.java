@@ -1,13 +1,20 @@
 package com.example.weathertracker.account;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.example.weathertracker.MainActivity;
 import com.example.weathertracker.R;
@@ -20,6 +27,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.royrodriguez.transitionbutton.TransitionButton;
 
@@ -39,6 +49,8 @@ public class LoginActivity extends AppCompatActivity {
     private int RC_SIGN_IN = 200;
     private Button btnForget, btnSignUp;
     private TransitionButton btnLogin;
+    public static Double latitude=0.0,longitude=0.0;
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +60,9 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         findID();
         setListener();
-
+        System.out.println("hi");
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        getLocatuon();
     }
 
     private void findID() {
@@ -171,9 +185,31 @@ public class LoginActivity extends AppCompatActivity {
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            Log.w(TAG, "signInResult:failed '''code'''=" + e.getStatusCode());
 //            updateUI(null);
             Toast.makeText(this, "登入失敗，請稍後再試", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void getLocatuon() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                Location location = task.getResult();
+                if(location!=null){
+                    latitude=location.getLatitude();
+                    longitude=location.getLongitude();
+                    System.out.println(longitude+"+"+latitude);
+                    SharedPreferences sharedPreferences= getSharedPreferences("Data", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("longitude", String.valueOf(longitude));
+                    editor.putString("latitude", String.valueOf(latitude));
+                    //todo:
+                }
+            }
+        });
     }
 }
