@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Event {
+    private Boolean isAuth;
     private String eventName, eventId, hostRemark, startTime, endTime, staticHobbyClass, staticHobbyTag;
     private double latitude, longitude;
     private List<String> participants, hosts, dynamicTags;
@@ -76,9 +77,13 @@ public class Event {
         return isOutDoor;
     }
 
-    public Boolean isHost(String user_id) {
-        return hosts.contains(user_id);
+    public Boolean isAuth() {
+        return isAuth;
     }
+
+//    public Boolean isHost(String user_id) {
+//        return hosts.contains(user_id);
+//    }
 
     public List<String> getDynamicTags() {
         return dynamicTags;
@@ -87,6 +92,11 @@ public class Event {
     public String[] strSplit(String s) {
         return s.split(" ");
     }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
+    }
+
 
     @Override
     public String toString() {
@@ -116,7 +126,7 @@ public class Event {
 
     public static Boolean isTimeValid(String startDate, String endDate) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             //進行轉換
             Date nowDate = new Date(System.currentTimeMillis());
             Date sdate = sdf.parse(startDate);
@@ -126,6 +136,7 @@ public class Event {
             }
             return false;
         } catch (Exception e) {
+            System.out.println("isTimeValid exception happened");
             return false;
         }
     }

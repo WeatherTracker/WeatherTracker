@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#67ffae"
+    android:background="@drawable/favor_background"
     android:orientation="vertical">
 
     <org.naishadhparmar.zcustomcalendar.CustomCalendar
@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:padding="15dp"
         app:day_of_week_length="3"
+        android:outlineAmbientShadowColor="@color/yellow"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -23,6 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="天氣因子"
+        app:hintTextColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/ll"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -31,6 +33,7 @@
             android:id="@+id/etWeatherElement"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
             android:inputType="none" />
 
     </com.google.android.material.textfield.TextInputLayout>

@@ -21,34 +21,35 @@ public class calenderDayHostAdapter extends RecyclerView.Adapter<calenderDayHost
 
     private Context mContext;
     private List<Event> event;
-    private String ID;
 
-    public calenderDayHostAdapter(Context context, List<Event> event,String ID){
-        this.mContext=context;
-        this.event=event;
-        this.ID=ID;
+    public calenderDayHostAdapter(Context context, List<Event> event) {
+        this.mContext = context;
+        this.event = event;
     }
 
     @Override
     public calenderDayHostAdapter.LinearViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new LinearViewHolder(LayoutInflater.from(mContext).inflate(R.layout.calenderday_item,parent,false));
+        return new LinearViewHolder(LayoutInflater.from(mContext).inflate(R.layout.calenderday_item, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(calenderDayHostAdapter.LinearViewHolder  holder, final int position) {
-        boolean flag=false;
-        for (int i=0;i<event.get(position).getHosts().size();i++){
-            System.out.println("ID:" + ID + "host" + event.get(position).getHosts().get(i));
-            if(ID.equals(event.get(position).getHosts().get(i))) {
-                flag = true;
-            }
-        }
-        System.out.println(flag);
-        if (flag == true){
+    public void onBindViewHolder(calenderDayHostAdapter.LinearViewHolder holder, final int position) {
+//        boolean flag = false;
+//        for (int i = 0; i < event.get(position).getHosts().size(); i++) {
+//            if (ID.equals(event.get(position).getHosts().get(i))) {
+//                flag = true;
+//            }
+//        }
+//        System.out.println(flag);
+//        if (flag == true) {
+//            holder.tv_1.setText(event.get(position).getEventName());
+//            System.out.println(event.get(position).getEventName());
+//        } else {
+//            holder.calenderday_item.setVisibility(View.GONE);
+//        }
+        if (event.get(position).isAuth()) {
             holder.tv_1.setText(event.get(position).getEventName());
-            System.out.println(event.get(position).getEventName());
-        }
-        else {
+        } else {
             holder.calenderday_item.setVisibility(View.GONE);
         }
     }
@@ -58,14 +59,15 @@ public class calenderDayHostAdapter extends RecyclerView.Adapter<calenderDayHost
         return event.size();
     }
 
-    class LinearViewHolder extends RecyclerView.ViewHolder{
+    class LinearViewHolder extends RecyclerView.ViewHolder {
 
         private TextView tv_1;
         private LinearLayout calenderday_item;
-        public LinearViewHolder(View itemView){
+
+        public LinearViewHolder(View itemView) {
             super(itemView);
             calenderday_item = itemView.findViewById(R.id.calenderday_item);
-            tv_1=itemView.findViewById(R.id.tv_1);
+            tv_1 = itemView.findViewById(R.id.tv_1);
 
             calenderday_item.setOnClickListener(new View.OnClickListener() {
                 @Override

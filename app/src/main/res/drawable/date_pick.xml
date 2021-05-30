@@ -15,7 +15,7 @@
                 android:color="#2f6699" />
 
             <!--圓角-->
-            <corners android:radius="2dp" />
+            <corners android:radius="5dp" />
 
 <!--            <padding-->
 <!--                android:left="10dp"-->

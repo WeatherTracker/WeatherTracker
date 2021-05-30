@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,10 +32,8 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
 import com.royrodriguez.transitionbutton.TransitionButton;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,8 +48,9 @@ public class LoginActivity extends AppCompatActivity {
     private int RC_SIGN_IN = 200;
     private Button btnForget, btnSignUp;
     private TransitionButton btnLogin;
-    public static Double latitude=0.0,longitude=0.0;
+    public static Double latitude = 0.0, longitude = 0.0;
     private FusedLocationProviderClient fusedLocationProviderClient;
+    private TextInputEditText etLoginEmail, etLoginPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +71,8 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         btnForget = findViewById(R.id.btnForget);
         btnSignUp = findViewById(R.id.btnSignUp);
+        etLoginEmail = findViewById(R.id.etLoginEmail);
+        etLoginPassword = findViewById(R.id.etLoginPassword);
     }
 
     private void setListener() {
@@ -86,9 +88,7 @@ public class LoginActivity extends AppCompatActivity {
                 // Start the loading animation when the user tap the button
                 btnLogin.startAnimation();
                 RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-                Map<String, String> map = new HashMap<>();
-                map.put("Authorization", "");
-                Call<Ack> call = retrofitService.activeAccount(map);
+                Call<Ack> call = retrofitService.signIn(etLoginEmail.getText().toString(), etLoginPassword.getText().toString());
                 call.enqueue(new Callback<Ack>() {
                     @Override
                     public void onResponse(Call<Ack> call, Response<Ack> response) {
@@ -99,19 +99,29 @@ public class LoginActivity extends AppCompatActivity {
                             Ack ack = response.body();
 
                             // Choose a stop animation if your call was successful or not
-                            if (ack.getCode() == 200) {
-                                btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND, new TransitionButton.OnAnimationStopEndListener() {
-                                    @Override
-                                    public void onAnimationStopEnd() {
-                                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                                        startActivity(intent);
-                                        finish();
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (ack.getCode() == 200) {
+                                        SharedPreferences pref = getSharedPreferences("sharedPreferences", MODE_PRIVATE);
+                                        pref.edit()
+                                                .putString("userId", ack.getMsg())
+                                                .apply();
+                                        btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND, new TransitionButton.OnAnimationStopEndListener() {
+                                            @Override
+                                            public void onAnimationStopEnd() {
+                                                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                                                startActivity(intent);
+                                                finish();
+                                            }
+                                        });
+                                    } else {
+                                        btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
+                                        Toast.makeText(LoginActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
                                     }
-                                });
-                            } else {
-                                btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
-                                Toast.makeText(LoginActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
-                            }
+                                }
+                            }, 1000);
                         }
                     }
 
@@ -199,11 +209,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Location> task) {
                 Location location = task.getResult();
-                if(location!=null){
-                    latitude=location.getLatitude();
-                    longitude=location.getLongitude();
-                    System.out.println(longitude+"+"+latitude);
-                    SharedPreferences sharedPreferences= getSharedPreferences("Data", Context.MODE_PRIVATE);
+                if (location != null) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                    System.out.println(longitude + "+" + latitude);
+                    SharedPreferences sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("longitude", String.valueOf(longitude));
                     editor.putString("latitude", String.valueOf(latitude));

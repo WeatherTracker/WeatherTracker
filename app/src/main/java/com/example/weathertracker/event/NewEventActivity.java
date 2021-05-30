@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
 import com.example.weathertracker.R;
+import com.example.weathertracker.account.LoginActivity;
 import com.example.weathertracker.retrofit.Ack;
 import com.example.weathertracker.retrofit.Event;
 import com.example.weathertracker.retrofit.RetrofitManager;
@@ -167,32 +168,37 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                 } else {
                     e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(), tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
                 }
-                if (Event.isTimeValid(e.getStartTime(), e.getEndTime())) {
-                    RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-                    Call<Ack> call = retrofitService.newEvent(e);
-                    call.enqueue(new Callback<Ack>() {
-                        @Override
-                        public void onResponse(Call<Ack> call, Response<Ack> response) {
-                            if (!response.isSuccessful()) {
-                                Toast.makeText(NewEventActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
+//                if (Event.isTimeValid(e.getStartTime(), e.getEndTime())) {
+                RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+                Call<Ack> call = retrofitService.newEvent(e);
+                call.enqueue(new Callback<Ack>() {
+                    @Override
+                    public void onResponse(Call<Ack> call, Response<Ack> response) {
+                        if (!response.isSuccessful()) {
+                            Toast.makeText(NewEventActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Ack ack = response.body();
+                            if (ack == null) {
+                                Intent intent = new Intent(NewEventActivity.this, LoginActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                            }
+                            if (ack.getCode() == 200) {
+                                Toast.makeText(NewEventActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//去信箱收信
                             } else {
-                                Ack ack = response.body();
-                                if (ack.getCode() == 200) {
-                                    Toast.makeText(NewEventActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//去信箱收信
-                                } else {
-                                    Toast.makeText(NewEventActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
-                                }
+                                Toast.makeText(NewEventActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
                             }
                         }
+                    }
 
-                        @Override
-                        public void onFailure(Call<Ack> call, Throwable t) {
-                            Toast.makeText(NewEventActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-//                System.out.println(e.toString());
+                    @Override
+                    public void onFailure(Call<Ack> call, Throwable t) {
+                        Toast.makeText(NewEventActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
+//                System.out.println(e.toString());
+//            }
         });
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override

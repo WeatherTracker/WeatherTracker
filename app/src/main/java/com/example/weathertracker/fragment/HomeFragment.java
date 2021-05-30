@@ -26,11 +26,13 @@ import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weathertracker.MainActivity;
 import com.example.weathertracker.R;
+import com.example.weathertracker.account.LoginActivity;
 import com.example.weathertracker.event.NewEventActivity;
 import com.example.weathertracker.retrofit.Event;
 import com.example.weathertracker.retrofit.RetrofitManager;
@@ -83,6 +85,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     private LinearLayout ll;
     private AutoCompleteTextView etWeatherElement;
     private View root;
+    private String userId;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -94,6 +97,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         root = inflater.inflate(R.layout.fragment_home, container, false);
+        userId = getContext().getSharedPreferences("sharedPreferences", getContext().MODE_PRIVATE).getString("userId", "");
 
         findId();
         initCalendar();
@@ -153,26 +157,26 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     }
 
     //todo:
-    private void getWeatherIcon(){
+    private void getWeatherIcon() {
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-        Call<List<String>> call = retrofitService.getWeatherIcon(25.1505447,121.7735869);
+        Call<List<String>> call = retrofitService.getWeatherIcon(25.1505447, 121.7735869);
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 if (!response.isSuccessful()) {
                     Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
                 } else {
-                    int iconTime=7,iconDay=today;
+                    int iconTime = 7, iconDay = today;
                     View[] month_days = customCalendar.getAllViews();
-                    if((month_days.length-today)<7)iconTime=(month_days.length-today);
-                    List<String> icon= response.body();
-                    for (int i=0;i<iconTime;i++){
+                    if ((month_days.length - today) < 7) iconTime = (month_days.length - today);
+                    List<String> icon = response.body();
+                    for (int i = 0; i < iconTime; i++) {
                         System.out.println(icon.get(i));
-                        String s= "R.drawable."+icon.get(i);
-                        String uri =  icon.get(i); //圖片路徑和名稱
+                        String s = "R.drawable." + icon.get(i);
+                        String uri = icon.get(i); //圖片路徑和名稱
 
-                        int imageResource = getContext().getResources().getIdentifier(uri,"drawable",getContext().getPackageName());
-                        System.out.println("image+" + imageResource+"+"+uri);
+                        int imageResource = getContext().getResources().getIdentifier(uri, "drawable", getContext().getPackageName());
+                        System.out.println("image+" + imageResource + "+" + uri);
                         View temp_view = month_days[iconDay];
                         temp_view.findViewById(R.id.icon).setBackgroundResource(imageResource);
                         iconDay++;
@@ -202,7 +206,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 //                    getRedPoint("04", selectedDate.getWeekYear());
                     temp_view.setBackgroundResource(R.drawable.date_pick);
                     if (pickDate != 0) {
-                        temp_view = month_days[pickDate - 1];
+                        temp_view = month_days[pickDate - 1];//有時候會out of index (30 of 30)
                         temp_view.setBackgroundResource(R.drawable.date_picknull);
                         //todo:
                         try {
@@ -271,7 +275,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                                     if (date < 10) J = "0" + date;
                                     else J = String.valueOf(date);
                                     String deleteDay = String.valueOf(year) + "-" + I + "-" + J;
-                                    sharedPreferences.edit().remove(deleteDay).commit();
+                                    sharedPreferences.edit().remove(deleteDay).apply();
                                     buttonView.setChecked(false);
                                     Reload();
                                 } else {
@@ -305,15 +309,12 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                         });
                         alertDialog.show();
                     }
-                    lastPickedDate.set(Calendar.YEAR, selectedDate.get(Calendar.YEAR));
-                    lastPickedDate.set(Calendar.MONTH, selectedDate.get(Calendar.MONTH));
-                    lastPickedDate.set(Calendar.DATE, selectedDate.get(Calendar.DATE));
                 } else {
                     lastPickedDate = Calendar.getInstance();
-                    lastPickedDate.set(Calendar.YEAR, selectedDate.get(Calendar.YEAR));
-                    lastPickedDate.set(Calendar.MONTH, selectedDate.get(Calendar.MONTH));
-                    lastPickedDate.set(Calendar.DATE, selectedDate.get(Calendar.DATE));
                 }
+                lastPickedDate.set(Calendar.YEAR, selectedDate.get(Calendar.YEAR));
+                lastPickedDate.set(Calendar.MONTH, selectedDate.get(Calendar.MONTH));
+                lastPickedDate.set(Calendar.DATE, selectedDate.get(Calendar.DATE));
             }
         });
         customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.PREVIOUS, (OnNavigationButtonClickedListener) this);
@@ -348,6 +349,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
     private void Reload() {
         Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
@@ -469,19 +471,23 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return xLabels.get((int) value);
+                try {
+                    String i = xLabels.get((int) value);
+                    return i;
+                } catch (Exception e) {
+                    return "N/A";
+                }
             }
         });
-        System.out.println(xLabels);
-        System.out.println(xLabels.size());
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setLabelCount(5, true);
         xAxis.setDrawGridLines(false);
         lineChart.getAxisRight().setEnabled(false);
         lineChart.getAxisLeft().setEnabled(false);
         Description description = lineChart.getDescription();
         description.setText("");
-        lineChart.setVisibleXRange(0, 6);
-
+        lineChart.setVisibleXRange(0, 4);
+        lineChart.setScaleEnabled(false);
 
         lineChart.invalidate();
 //
@@ -499,15 +505,15 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 //        //設定沒資料時顯示的內容
 //        lineChart.setNoDataText("暫時沒有數據");
 //        lineChart.setNoDataTextColor(Color.BLUE);
-//        lineDataSet.setColor(Color.RED);
-//        lineDataSet.setCircleColor(Color.RED);
-//        lineDataSet.setDrawCircles(true);
-//        lineDataSet.setDrawCircleHole(true);
-//        lineDataSet.setLineWidth(2);
-//        lineDataSet.setCircleRadius(5);
-//        lineDataSet.setCircleHoleRadius(2);
-//        lineDataSet.setValueTextSize(10);
-//        lineDataSet.setValueTextColor(Color.BLACK);
+        lineDataSet.setColor(Color.WHITE);
+        lineDataSet.setCircleColor(Color.BLACK);
+        lineDataSet.setDrawCircles(true);
+        lineDataSet.setDrawCircleHole(true);
+        lineDataSet.setLineWidth(2);
+        lineDataSet.setCircleRadius(5);
+        lineDataSet.setCircleHoleRadius(2);
+        lineDataSet.setValueTextSize(10);
+        lineDataSet.setValueTextColor(Color.BLACK);
     }
 
     //換月
@@ -576,7 +582,6 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     }
 
     private void getData(String pickDay) {
-        System.out.println("123456789");
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
         Call<chartList> call = retrofitService.getChart(22.074033, 120.716073, pickDay);
         call.enqueue(new Callback<chartList>() {
@@ -614,7 +619,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
     private void getCalenderDay(int year, String month, String day, RecyclerView rv_day, RecyclerView rv_day2) {
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-        Call<List<Event>> call = retrofitService.getCalendarDay("a", year + "-" + month + "-" + day);
+        Call<List<Event>> call = retrofitService.getCalendarDay(userId, year + "-" + month + "-" + day);
         call.enqueue(new Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
@@ -622,15 +627,20 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                     Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
                 } else {
                     event = response.body();
+
                     if (event != null) {
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                         rv_day.setLayoutManager(linearLayoutManager);
-                        rv_day.setAdapter(new calenderDayHostAdapter(getActivity(), event, "a"));
+                        rv_day.setAdapter(new calenderDayHostAdapter(getActivity(), event));
                         LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(getActivity());
                         linearLayoutManager2.setOrientation(LinearLayoutManager.VERTICAL);
                         rv_day2.setLayoutManager(linearLayoutManager2);
-                        rv_day2.setAdapter(new calenderDayNoHostAdapter(getActivity(), event, "a"));
+                        rv_day2.setAdapter(new calenderDayNoHostAdapter(getActivity(), event));
+                    } else {
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
                     }
                 }
             }
@@ -645,7 +655,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
     private void getRedPoint(String month, int year) {
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-        Call<List<String>> call = retrofitService.getCalendarMonth("a", year + "-" + month);
+        Call<List<String>> call = retrofitService.getCalendarMonth(userId, year + "-" + month);
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
@@ -653,12 +663,17 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                     Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
                 } else {
                     List<String> monthEvent = response.body();
+                    if (monthEvent == null) {
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
                     View[] mday = customCalendar.getAllViews();
                     System.out.println("mday.length: " + mday.length);
                     if (monthEvent != null) {
                         for (int i = 0; i < monthEvent.size(); i++) {
                             int da = Integer.parseInt(monthEvent.get(i).substring(8, 10));
-                            View view = mday[da];
+                            View view = mday[da - 1];
                             ImageView mcycle = view.findViewById(R.id.cycle);
                             mcycle.setVisibility(View.VISIBLE);
                             //System.out.println(da);

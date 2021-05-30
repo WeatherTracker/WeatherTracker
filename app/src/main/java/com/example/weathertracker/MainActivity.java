@@ -42,9 +42,9 @@ public class MainActivity extends AppCompatActivity {
 
         sNavigationDrawer = findViewById(R.id.nagivation_drawer);
         List<com.shrikanthravi.customnavigationdrawer2.data.MenuItem> menuItems = new ArrayList<>();
-        menuItems.add(new MenuItem("Main", R.drawable.giwawa));
-        menuItems.add(new MenuItem("Profile", R.drawable.giwawa));
-        menuItems.add(new MenuItem("recommend", R.drawable.giwawa));
+        menuItems.add(new MenuItem("Main", R.drawable.home));
+        menuItems.add(new MenuItem("Profile", R.drawable.profile));
+        menuItems.add(new MenuItem("recommend", R.drawable.search));
         sNavigationDrawer.setMenuItemList(menuItems);
         sNavigationDrawer.setAppbarTitleTV("main");
 
