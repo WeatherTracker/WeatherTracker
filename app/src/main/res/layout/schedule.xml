@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/round_corner">
@@ -28,23 +29,12 @@
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:gravity="center"
+        android:text="每日"
         android:textSize="18sp"
-        android:text="起始時間"
-        app:layout_constraintEnd_toStartOf="@+id/tvScheduleStartDate"
+        app:layout_constraintEnd_toStartOf="@+id/tvScheduleStartTime"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/blackWhiteToggle" />
 
-    <TextView
-        android:id="@+id/tvScheduleStartDate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:gravity="center"
-        android:text="起始日期"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/tvScheduleStartTime"
-        app:layout_constraintStart_toEndOf="@+id/textView20"
-        app:layout_constraintTop_toBottomOf="@+id/blackWhiteToggle" />
 
     <TextView
         android:id="@+id/tvScheduleStartTime"
@@ -54,33 +44,10 @@
         android:gravity="center"
         android:text="起始時間"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvScheduleStartDate"
+        app:layout_constraintEnd_toStartOf="@+id/tvScheduleEndTime"
+        app:layout_constraintStart_toEndOf="@+id/textView20"
         app:layout_constraintTop_toBottomOf="@+id/blackWhiteToggle" />
 
-
-    <TextView
-        android:id="@+id/textView21"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:gravity="center"
-        android:textSize="18sp"
-        android:text="結束時間"
-        app:layout_constraintEnd_toStartOf="@+id/tvScheduleEndDate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView20" />
-    <TextView
-        android:id="@+id/tvScheduleEndDate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:gravity="center"
-        android:text="起始日期"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/tvScheduleEndTime"
-        app:layout_constraintStart_toEndOf="@+id/textView21"
-        app:layout_constraintTop_toBottomOf="@+id/tvScheduleStartDate" />
 
     <TextView
         android:id="@+id/tvScheduleEndTime"
@@ -88,21 +55,21 @@
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:gravity="center"
-        android:text="起始時間"
+        android:text="結束時間"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvScheduleEndDate"
-        app:layout_constraintTop_toBottomOf="@+id/tvScheduleStartTime" />
+        app:layout_constraintStart_toEndOf="@+id/tvScheduleStartTime"
+        app:layout_constraintTop_toBottomOf="@+id/blackWhiteToggle" />
 
     <TextView
         android:id="@+id/textView17"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="黑名單"
         android:layout_margin="15dp"
+        android:text="黑名單"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvScheduleEndDate" />
+        app:layout_constraintTop_toBottomOf="@+id/textView20" />
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/blackChipGroup"
@@ -117,8 +84,8 @@
         android:id="@+id/textView18"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="白名單"
         android:layout_margin="15dp"
+        android:text="白名單"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/blackChipGroup" />
@@ -137,8 +104,8 @@
         android:id="@+id/textView19"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="結果"
         android:layout_margin="15dp"
+        android:text="結果"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/whiteChipGroup" />

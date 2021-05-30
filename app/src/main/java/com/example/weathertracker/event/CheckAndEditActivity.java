@@ -27,10 +27,12 @@ import android.widget.ToggleButton;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weathertracker.R;
+import com.example.weathertracker.retrofit.Ack;
 import com.example.weathertracker.retrofit.Event;
 import com.example.weathertracker.retrofit.RetrofitManager;
 import com.example.weathertracker.retrofit.RetrofitService;
@@ -50,9 +52,12 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -82,6 +87,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private int year, month, day;
     private ToggleButton isOutDoor, isPublic;
     private TextInputLayout hobbyClass, hobbies;
+    private SwitchCompat isAllDay;
     private RecyclerView eventToSight;
     private ArrayList<Sight> sights;
 
@@ -98,9 +104,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         Event event0 = gson.fromJson(json, Event.class);
 
         userId = getSharedPreferences("sharedPreferences", MODE_PRIVATE).getString("userId", "");
-        userId = "a";
 
-        //todo:
         event = event0;
         System.out.println(event.getHosts().get(0));
         //event = new Event(event0.getEventName(), event0.getHostRemark(), event0.getStartTime(),event0.getEndTime(), event0.getStaticHobbyClass(), event0.getStaticHobbyTag(), event0.getLatitude(), event0.getLongitude(), event0.getHosts(), event0.isPublic(), event0.isOutDoor());
@@ -163,6 +167,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         etHobbyClass = findViewById(R.id.etHobbyClass);
         isOutDoor = findViewById(R.id.isOutDoor);
         isPublic = findViewById(R.id.isPublic);
+        isAllDay = findViewById(R.id.isAllDay);
         hobbyClass = findViewById(R.id.hobbyClass);
         hobbies = findViewById(R.id.hobbies);
         eventToSight = findViewById(R.id.eventToSight);
@@ -185,27 +190,49 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 setNonEditable();
                 btnDone.setVisibility(View.INVISIBLE);
                 btnEdit.setVisibility(View.VISIBLE);
-//                Call<Ack> call = retrofitService.editEvent(event);
-//                call.enqueue(new Callback<Ack>() {
-//                    @Override
-//                    public void onResponse(Call<Ack> call, Response<Ack> response) {
-//                        if (!response.isSuccessful()) {
-//                            Toast.makeText(CheckAndEditActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
-//                        } else {
-//                            Ack ack = response.body();
-//                            if (ack.getCode() == 200) {
-//                                Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
-//                            } else {
-//                                Toast.makeText(CheckAndEditActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
-//                            }
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<Ack> call, Throwable t) {
-//                        Toast.makeText(CheckAndEditActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-//                    }
-//                });
+                Event e = null;
+                String endDateString;
+                if (isAllDay.isChecked()) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    try {
+                        Date date = sdf.parse(tvEndDate.getText().toString());
+                        Calendar c = Calendar.getInstance();
+                        c.setTime(date);
+                        c.add(Calendar.DATE, 1);
+                        date = c.getTime();
+                        endDateString = sdf.format(date);
+                        e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " 00:00", endDateString + " 00:00", etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
+                    } catch (ParseException parseException) {
+                        parseException.printStackTrace();
+                    }
+                } else {
+                    e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(), tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
+                }
+                e.setEventId(event.getEventId());
+                if (Event.isTimeValid(e.getStartTime(), e.getEndTime())) {
+                    RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+                    Call<Ack> call = retrofitService.editEvent(e);
+                    call.enqueue(new Callback<Ack>() {
+                        @Override
+                        public void onResponse(Call<Ack> call, Response<Ack> response) {
+                            if (!response.isSuccessful()) {
+                                Toast.makeText(CheckAndEditActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Ack ack = response.body();
+                                if (ack.getCode() == 200) {
+                                    Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(CheckAndEditActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Ack> call, Throwable t) {
+                            Toast.makeText(CheckAndEditActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
         });
 
@@ -218,29 +245,15 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 LayoutInflater inflater = getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.schedule, null);
                 dialogBuilder.setView(dialogView);
-                TextView tvScheduleStartDate = dialogView.findViewById(R.id.tvScheduleStartDate);
                 TextView tvScheduleStartTime = dialogView.findViewById(R.id.tvScheduleStartTime);
-                TextView tvScheduleEndDate = dialogView.findViewById(R.id.tvScheduleEndDate);
                 TextView tvScheduleEndTime = dialogView.findViewById(R.id.tvScheduleEndTime);
                 Button btnAddList = dialogView.findViewById(R.id.btnAddList);
                 ToggleButton blackWhiteToggle = dialogView.findViewById(R.id.blackWhiteToggle);
-                ChipGroup whiteChipGroup, blackChipGroup;
-                whiteChipGroup = dialogView.findViewById(R.id.whiteChipGroup);
-                blackChipGroup = dialogView.findViewById(R.id.blackChipGroup);
-                DatePickerDialog datePickerDialog, datePickerDialog2;
+                ChipGroup whiteChipGroup = dialogView.findViewById(R.id.whiteChipGroup);
+                ChipGroup blackChipGroup = dialogView.findViewById(R.id.blackChipGroup);
                 TimePickerDialog timePickerDialog, timePickerDialog2;
-                tvScheduleStartDate.setText(event.getStartTime().split(" ")[0]);
                 tvScheduleStartTime.setText(event.getStartTime().split(" ")[1]);
-                tvScheduleEndDate.setText(event.getEndTime().split(" ")[0]);
                 tvScheduleEndTime.setText(event.getEndTime().split(" ")[1]);
-                datePickerDialog = new DatePickerDialog(CheckAndEditActivity.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        String s = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d", dayOfMonth);
-                        tvScheduleStartDate.setText(s);
-                    }
-                }, year, month, day);
-                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
                 timePickerDialog = new TimePickerDialog(CheckAndEditActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -248,14 +261,6 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                         tvScheduleStartTime.setText(s);
                     }
                 }, 12, 0, false);
-                datePickerDialog2 = new DatePickerDialog(CheckAndEditActivity.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        String s = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d", dayOfMonth);
-                        tvScheduleEndDate.setText(s);
-                    }
-                }, year, month, day);
-                datePickerDialog2.getDatePicker().setMinDate(System.currentTimeMillis());
                 timePickerDialog2 = new TimePickerDialog(CheckAndEditActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -263,23 +268,10 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                         tvScheduleEndTime.setText(s);
                     }
                 }, 12, 0, false);
-                tvScheduleStartDate.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        System.out.println("test dia");
-                        datePickerDialog.show();
-                    }
-                });
                 tvScheduleStartTime.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         timePickerDialog.show();
-                    }
-                });
-                tvScheduleEndDate.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        datePickerDialog2.show();
                     }
                 });
                 tvScheduleEndTime.setOnClickListener(new View.OnClickListener() {
@@ -291,7 +283,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 btnAddList.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String str = tvScheduleStartDate.getText().toString() + " " + tvScheduleStartTime.getText().toString() + " 至 " + tvScheduleEndDate.getText().toString() + " " + tvScheduleEndTime.getText().toString();
+                        String str = tvScheduleStartTime.getText().toString() + " 至 " + tvScheduleEndTime.getText().toString();
                         if (blackWhiteToggle.isChecked() && !whiteSet.contains(str)) {//白名單
                             whiteSet.add(str);
                             Chip chip = new Chip(CheckAndEditActivity.this);
@@ -371,7 +363,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 popupWindow.setBackgroundDrawable(new ColorDrawable(0x00000000));
                 popupWindow.setOutsideTouchable(false);
                 popupWindow.setFocusable(true);
-                popupWindow.showAsDropDown(btnTags,-100,0);
+                popupWindow.showAsDropDown(btnTags, -100, 0);
             }
         });
 
@@ -505,7 +497,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         etHostRemark.setText(event.getHostRemark());
         etHobbyClass.setText(event.getStaticHobbyClass(), false);
         etHobbies.setText(event.getStaticHobbyTag(), false);
-        if (event.isHost(userId)) {
+        if (event.isAuth()) {
             btnEdit.setVisibility(View.VISIBLE);
         }
     }
