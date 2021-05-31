@@ -26,7 +26,6 @@ import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -87,7 +86,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     private View root;
     private String userId;
     private List<String> icon;
-    private int iconFlag=7,monthFlag=0;
+    private int iconFlag = 7, monthFlag = 0;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -100,7 +99,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         // Inflate the layout for this fragment
         root = inflater.inflate(R.layout.fragment_home, container, false);
         userId = getContext().getSharedPreferences("sharedPreferences", getContext().MODE_PRIVATE).getString("userId", "");
-
+        System.out.println("userId in home: " + userId);
         findId();
         initCalendar();
 
@@ -166,16 +165,16 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), response.code(), Toast.LENGTH_SHORT).show();
                 } else {
-                    int iconTime=7,iconDay=today-1;
+                    int iconTime = 7, iconDay = today - 1;
                     View[] month_days = customCalendar.getAllViews();
-                    if((month_days.length-today)<8){
-                        iconTime=(month_days.length-today)+1;
-                        iconFlag=7-iconTime-1;
+                    if ((month_days.length - today) < 8) {
+                        iconTime = (month_days.length - today) + 1;
+                        iconFlag = 7 - iconTime - 1;
                     }
                     icon = response.body();
-                    if (flag==today_month) {
+                    if (flag == today_month) {
                         System.out.println("this month");
                         for (int i = 0; i < iconTime; i++) {
                             String uri = icon.get(i); //圖片路徑和名稱
@@ -186,9 +185,8 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                             temp_view.findViewById(R.id.icon).setBackgroundResource(imageResource);
                             iconDay++;
                         }
-                    }
-                    else if(flag==(today_month+1)) {
-                        int j =  7-iconFlag;
+                    } else if (flag == (today_month + 1)) {
+                        int j = 7 - iconFlag;
                         System.out.println("Next month" + flag);
                         for (int i = 0; i < iconFlag; i++) {
                             String uri = icon.get(i); //圖片路徑和名稱
@@ -199,7 +197,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                             j++;
                             iconDay++;
                         }
-                        iconFlag=7;
+                        iconFlag = 7;
 
                     }
                 }
@@ -221,6 +219,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 date = selectedDate.get(Calendar.DATE);
                 month = (selectedDate.get(Calendar.MONTH) + 1);
                 year = selectedDate.get(Calendar.YEAR);
+                System.out.println("my test " + date + " " + month + " " + year);
                 if (pickDate != date) {
                     View temp_view = month_days[date - 1];
                     //todo:
@@ -338,8 +337,9 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 lastPickedDate.set(Calendar.DATE, selectedDate.get(Calendar.DATE));
             }
         });
-        customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.PREVIOUS, (OnNavigationButtonClickedListener) this);
-        customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.NEXT, (OnNavigationButtonClickedListener) this);
+        customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.PREVIOUS, this);
+        customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.NEXT, this);
+
         etWeatherElement.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -540,16 +540,16 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     //換月
     public Map<Integer, Object>[] onNavigationButtonClicked(int whichButton, Calendar Mcalendar) {
         Map<Integer, Object>[] arr = new Map[2];
-        pickDate=0;
-        int month=0;
-        month=Mcalendar.get(Calendar.MONTH);
+        pickDate = 0;
+        int month = 0;
+        month = Mcalendar.get(Calendar.MONTH);
         System.out.println("month +" + month + whichButton);
         switch (month) {
             case Calendar.JANUARY:
                 arr[0] = new HashMap<>();
                 getRedPoint("01", Mcalendar.getWeekYear());
                 getWeatherIcon(1);
-                if (today_month==1){
+                if (today_month == 1) {
                     arr[0].put(today, "current");
                 }
                 break;
@@ -557,7 +557,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 arr[0] = new HashMap<>();
                 getRedPoint("02", Mcalendar.getWeekYear());
                 getWeatherIcon(2);
-                if (today_month==2){
+                if (today_month == 2) {
                     arr[0].put(today, "current");
                 }
                 break;
@@ -565,7 +565,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 arr[0] = new HashMap<>();
                 getRedPoint("03", Mcalendar.getWeekYear());
                 getWeatherIcon(3);
-                if (today_month==3){
+                if (today_month == 3) {
                     arr[0].put(today, "current");
                 }
                 break;
@@ -573,7 +573,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 arr[0] = new HashMap<>();
                 getRedPoint("04", Mcalendar.getWeekYear());
                 getWeatherIcon(4);
-                if (today_month==4){
+                if (today_month == 4) {
                     arr[0].put(today, "current");
                 }
                 break;
@@ -581,7 +581,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 getRedPoint("05", Mcalendar.getWeekYear());
                 arr[0] = new HashMap<>();
                 getWeatherIcon(5);
-                if (today_month==5){
+                if (today_month == 5) {
                     arr[0].put(today, "current");
                 }
                 break;
@@ -589,7 +589,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 arr[0] = new HashMap<>();
                 getRedPoint("06", Mcalendar.getWeekYear());
                 getWeatherIcon(6);
-                if (today_month==6){
+                if (today_month == 6) {
                     arr[0].put(today, "current");
                 }
                 System.out.println("88888");
@@ -598,7 +598,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 arr[0] = new HashMap<>();
                 getRedPoint("07", Mcalendar.getWeekYear());
                 getWeatherIcon(7);
-                if (today_month==7){
+                if (today_month == 7) {
                     arr[0].put(today, "current");
                 }
                 break;
@@ -606,7 +606,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 arr[0] = new HashMap<>();
                 getRedPoint("08", Mcalendar.getWeekYear());
                 getWeatherIcon(8);
-                if (today_month==8){
+                if (today_month == 8) {
                     arr[0].put(today, "current");
                 }
                 break;
@@ -614,7 +614,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 arr[0] = new HashMap<>();
                 getRedPoint("09", Mcalendar.getWeekYear());
                 getWeatherIcon(9);
-                if (today_month==9){
+                if (today_month == 9) {
                     arr[0].put(today, "current");
                 }
                 break;
@@ -622,7 +622,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 arr[0] = new HashMap<>();
                 getRedPoint("10", Mcalendar.getWeekYear());
                 getWeatherIcon(10);
-                if (today_month==10){
+                if (today_month == 10) {
                     arr[0].put(today, "current");
                 }
                 break;
@@ -630,7 +630,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 arr[0] = new HashMap<>();
                 getRedPoint("11", Mcalendar.getWeekYear());
                 getWeatherIcon(11);
-                if (today_month==11){
+                if (today_month == 11) {
                     arr[0].put(today, "current");
                 }
                 break;
@@ -638,7 +638,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 arr[0] = new HashMap<>();
                 getRedPoint("12", Mcalendar.getWeekYear());
                 getWeatherIcon(12);
-                if (today_month==12){
+                if (today_month == 12) {
                     arr[0].put(today, "current");
                 }
                 break;
@@ -661,7 +661,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), response.code(), Toast.LENGTH_SHORT).show();
                 } else {
                     data = response.body();
                     makeChart(date, month - 1, etWeatherElement.getEditableText().toString());
@@ -697,7 +697,11 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
+                    if (response.code() == 401) {
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
                 } else {
                     event = response.body();
 
@@ -710,10 +714,6 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                         linearLayoutManager2.setOrientation(LinearLayoutManager.VERTICAL);
                         rv_day2.setLayoutManager(linearLayoutManager2);
                         rv_day2.setAdapter(new calenderDayNoHostAdapter(getActivity(), event));
-                    } else {
-                        Intent intent = new Intent(getActivity(), LoginActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
                     }
                 }
             }
@@ -733,24 +733,20 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
-                } else {
-                    List<String> monthEvent = response.body();
-                    if (monthEvent == null) {
+                    if (response.code() == 401) {
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                     }
+                } else {
+                    List<String> monthEvent = response.body();
                     View[] mday = customCalendar.getAllViews();
-                    System.out.println("mday.length: " + mday.length);
-                    if (monthEvent != null) {
-                        for (int i = 0; i < monthEvent.size(); i++) {
-                            int da = Integer.parseInt(monthEvent.get(i).substring(8, 10));
-                            View view = mday[da - 1];
-                            ImageView mcycle = view.findViewById(R.id.cycle);
-                            mcycle.setVisibility(View.VISIBLE);
-                            //System.out.println(da);
-                        }
+                    for (int i = 0; i < monthEvent.size(); i++) {
+                        int da = Integer.parseInt(monthEvent.get(i).substring(8, 10));
+                        View view = mday[da - 1];
+                        ImageView mcycle = view.findViewById(R.id.cycle);
+                        mcycle.setVisibility(View.VISIBLE);
+                        //System.out.println(da);
                     }
                 }
             }

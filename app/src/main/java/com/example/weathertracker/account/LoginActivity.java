@@ -108,6 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                                         pref.edit()
                                                 .putString("userId", ack.getMsg())
                                                 .apply();
+                                        System.out.println( ack.getMsg());
                                         btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND, new TransitionButton.OnAnimationStopEndListener() {
                                             @Override
                                             public void onAnimationStopEnd() {

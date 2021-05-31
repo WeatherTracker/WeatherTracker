@@ -1,6 +1,7 @@
 package com.example.weathertracker.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.example.weathertracker.R;
+import com.example.weathertracker.account.LoginActivity;
 import com.example.weathertracker.retrofit.Ack;
 import com.example.weathertracker.retrofit.RetrofitManager;
 import com.example.weathertracker.retrofit.RetrofitService;
@@ -116,7 +118,11 @@ public class ProfileFragment extends Fragment {
                         @Override
                         public void onResponse(Call<Ack> call, Response<Ack> response) {
                             if (!response.isSuccessful()) {
-                                Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
+                                if (response.code() == 401) {
+                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                }
                             } else {
                                 Ack ack = response.body();
                                 if (ack.getCode() == 200) {

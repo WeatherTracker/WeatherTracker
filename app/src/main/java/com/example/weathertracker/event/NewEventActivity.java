@@ -175,14 +175,13 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                     @Override
                     public void onResponse(Call<Ack> call, Response<Ack> response) {
                         if (!response.isSuccessful()) {
-                            Toast.makeText(NewEventActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Ack ack = response.body();
-                            if (ack == null) {
+                            if (response.code() == 401) {
                                 Intent intent = new Intent(NewEventActivity.this, LoginActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(intent);
                             }
+                        } else {
+                            Ack ack = response.body();
                             if (ack.getCode() == 200) {
                                 Toast.makeText(NewEventActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//去信箱收信
                             } else {
