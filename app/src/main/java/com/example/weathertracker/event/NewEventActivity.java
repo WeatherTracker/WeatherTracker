@@ -48,6 +48,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -168,36 +169,36 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                 } else {
                     e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(), tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
                 }
-//                if (Event.isTimeValid(e.getStartTime(), e.getEndTime())) {
-                RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-                Call<Ack> call = retrofitService.newEvent(e);
-                call.enqueue(new Callback<Ack>() {
-                    @Override
-                    public void onResponse(Call<Ack> call, Response<Ack> response) {
-                        if (!response.isSuccessful()) {
-                            if (response.code() == 401) {
-                                Intent intent = new Intent(NewEventActivity.this, LoginActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                startActivity(intent);
-                            }
-                        } else {
-                            Ack ack = response.body();
-                            if (ack.getCode() == 200) {
-                                Toast.makeText(NewEventActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//去信箱收信
+                if(checkValid(e)){
+                    RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+                    Call<Ack> call = retrofitService.newEvent(e);
+                    call.enqueue(new Callback<Ack>() {
+                        @Override
+                        public void onResponse(Call<Ack> call, Response<Ack> response) {
+                            if (!response.isSuccessful()) {
+                                if (response.code() == 401) {
+                                    Intent intent = new Intent(NewEventActivity.this, LoginActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                }
                             } else {
-                                Toast.makeText(NewEventActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                Ack ack = response.body();
+                                if (ack.getCode() == 200) {
+                                    Toast.makeText(NewEventActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//去信箱收信
+                                } else {
+                                    Toast.makeText(NewEventActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<Ack> call, Throwable t) {
-                        Toast.makeText(NewEventActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<Ack> call, Throwable t) {
+                            Toast.makeText(NewEventActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
 //                System.out.println(e.toString());
-//            }
         });
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -310,6 +311,22 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                 }
             }
         });
+    }
+
+    private boolean checkValid(Event e) {
+        if (etEventName.getText().toString().equals("") || staticHobbyTag.equals("")){
+            new SweetAlertDialog(NewEventActivity.this, SweetAlertDialog.ERROR_TYPE)
+                    .setTitleText("活動名稱與類別不得為空")
+                    .show();
+            return false;
+        }
+        if(!Event.isTimeValid(e.getStartTime(),e.getEndTime())){
+            new SweetAlertDialog(NewEventActivity.this, SweetAlertDialog.ERROR_TYPE)
+                    .setTitleText("時間錯誤")
+                    .show();
+            return false;
+        }
+        return true;
     }
 
     @Override
