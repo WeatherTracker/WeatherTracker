@@ -89,7 +89,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginStart="15dp"
                 android:text="每日時間"
                 android:textSize="18sp" />
 
@@ -294,7 +296,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:background="@color/float_transparent"
-            app:layout_constraintEnd_toStartOf="@+id/btnSchedule"
+            app:layout_constraintEnd_toStartOf="@+id/btnEdit"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_baseline_label_24" />
 
@@ -304,9 +306,19 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:background="@color/float_transparent"
-            app:layout_constraintEnd_toStartOf="@+id/btnEdit"
+            app:layout_constraintEnd_toStartOf="@+id/btnTags"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_baseline_schedule_24" />
+
+        <ImageButton
+            android:id="@+id/btnDeletee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:background="@color/float_transparent"
+            app:layout_constraintEnd_toStartOf="@+id/btnSchedule"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_delete_24" />
 
         <TextView
             android:id="@+id/textView15"
@@ -327,6 +339,8 @@
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView15" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

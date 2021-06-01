@@ -1,15 +1,15 @@
 package com.example.weathertracker.retrofit;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class User {
-    private String userId, FCMToken, userName;
+    private String userId,FCMToken, userName;
     private List<String> currentEvents, pastEvents, hobbies;
     private List<Double> AHPPreference;
-    private List<Integer> freeTime;
+    private List<Float> barValue;
+    private List<List<Boolean>> freeTime;
 
-    public User(String FCMToken, String userName, List<String> hobbies, List<Double> AHPPreference, List<Integer> freeTime) {
+    public User(String FCMToken, String userName, List<String> hobbies, List<Double> AHPPreference, List<List<Boolean>> freeTime) {
         this.FCMToken = FCMToken;
         this.userName = userName;
         this.hobbies = hobbies;
@@ -17,8 +17,13 @@ public class User {
         this.freeTime = freeTime;
     }
 
-    public String getUserId() {
-        return userId;
+    public User(String userId, String userName, List<String> hobbies, List<Double> AHPPreference, List<Float> barValue, List<List<Boolean>> freeTime) {
+        this.userId = userId;
+        this.userName = userName;
+        this.hobbies = hobbies;
+        this.AHPPreference = AHPPreference;
+        this.barValue = barValue;
+        this.freeTime = freeTime;
     }
 
     public String getFCMToken() {
@@ -45,7 +50,11 @@ public class User {
         return AHPPreference;
     }
 
-    public List<Integer> getFreeTime() {
+    public List<List<Boolean>> getFreeTime() {
         return freeTime;
+    }
+
+    public List<Float> getBarValue() {
+        return barValue;
     }
 }

@@ -165,7 +165,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(getActivity(), response.code(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "" + response.code(), Toast.LENGTH_SHORT).show();
                 } else {
                     int iconTime = 7, iconDay = today - 1;
                     View[] month_days = customCalendar.getAllViews();
@@ -661,7 +661,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(getActivity(), response.code(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "" + response.code(), Toast.LENGTH_SHORT).show();
                 } else {
                     data = response.body();
                     makeChart(date, month - 1, etWeatherElement.getEditableText().toString());

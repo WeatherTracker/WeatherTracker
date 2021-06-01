@@ -25,6 +25,20 @@ public class Event {
         this.isOutDoor = isOutDoor;
     }
 
+    public Event(String eventName, String eventId, String hostRemark, String startTime, String endTime, String staticHobbyClass, String staticHobbyTag, double latitude, double longitude, Boolean isPublic, Boolean isOutDoor) {
+        this.eventName = eventName;
+        this.eventId = eventId;
+        this.hostRemark = hostRemark;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.staticHobbyClass = staticHobbyClass;
+        this.staticHobbyTag = staticHobbyTag;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.isPublic = isPublic;
+        this.isOutDoor = isOutDoor;
+    }
+
     public String getEventName() {
         return eventName;
     }
@@ -132,7 +146,7 @@ public class Event {
             Date sdate = sdf.parse(startDate);
             Date edate = sdf.parse(endDate);
             if (sdate.compareTo(edate) < 0) {//開始時間要比結束時間早
-                return nowDate.compareTo(sdate) < 0;//未來的活動
+                return true;
             }
             return false;
         } catch (Exception e) {
