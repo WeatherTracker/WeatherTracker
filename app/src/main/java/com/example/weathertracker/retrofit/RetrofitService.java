@@ -46,13 +46,13 @@ public interface RetrofitService {
                                      @Query("day") String day);
 
     @GET("getChart")
-    Call<chartList> getChart(@Query("latitude") Double latitude,
-                             @Query("longitude") Double longitude,
+    Call<chartList> getChart(@Query("latitude") float latitude,
+                             @Query("longitude") float longitude,
                              @Query("day") String day);
 
     @GET("getWeatherIcon")
-    Call<List<String>> getWeatherIcon(@Query("latitude") Double latitude,
-                                      @Query("longitude") Double longitude);
+    Call<List<String>> getWeatherIcon(@Query("latitude") float latitude,
+                                      @Query("longitude") float longitude);
 
     @POST("newEvent")
     Call<Ack> newEvent(@Body Event e);

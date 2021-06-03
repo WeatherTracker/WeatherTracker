@@ -160,8 +160,11 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
     //todo:
     private void getWeatherIcon(int flag) {
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("data" , Context.MODE_PRIVATE);
+        float Longitude =sharedPreferences.getFloat("Longitude" , 0);
+        float Latitude =sharedPreferences.getFloat("Latitude" , 0);
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-        Call<List<String>> call = retrofitService.getWeatherIcon(25.1505447, 121.7735869);
+        Call<List<String>> call = retrofitService.getWeatherIcon(Latitude, Longitude);
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
@@ -190,7 +193,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                     else if(flag==(today_month+1)) {
                         int j =  7-iconFlag;
                         System.out.println("Next month" + flag);
-                        for (int i = 0; i < iconFlag; i++) {
+                        for (int i = 0; i < j; i++) {
                             String uri = icon.get(i); //圖片路徑和名稱
                             int imageResource = getContext().getResources().getIdentifier(uri, "drawable", getContext().getPackageName());
                             //System.out.println("image+" + imageResource + "+" + uri);
@@ -655,8 +658,14 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     }
 
     private void getData(String pickDay) {
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("data" , Context.MODE_PRIVATE);
+        float Longitude =sharedPreferences.getFloat("Longitude" , 0);
+        float Latitude =sharedPreferences.getFloat("Latitude" , 0);
+
+        System.out.println("Longitude"+Longitude+"Latitude"+Latitude);
+
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-        Call<chartList> call = retrofitService.getChart(22.074033, 120.716073, pickDay);
+        Call<chartList> call = retrofitService.getChart(Latitude, Longitude, pickDay);
         call.enqueue(new Callback<chartList>() {
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {

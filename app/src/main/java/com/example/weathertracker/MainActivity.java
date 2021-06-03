@@ -1,12 +1,18 @@
 package com.example.weathertracker;
 
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.weathertracker.fragment.MainFragment;
@@ -19,11 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LocationListener {
 
     SNavigationDrawer sNavigationDrawer;
     Class aClass;
-    public static Double latitude=0.0,longitude=0.0;
+    public static Double latitude = 0.0, longitude = 0.0;
     private LocationManager locationManager;
 
     @Override
@@ -31,14 +37,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-//        //
-//        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-//            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                return;
-//            }
-//        }
-//        //
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if(Build.VERSION.SDK_INT>Build.VERSION_CODES.M){
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
 
         sNavigationDrawer = findViewById(R.id.nagivation_drawer);
         List<com.shrikanthravi.customnavigationdrawer2.data.MenuItem> menuItems = new ArrayList<>();
@@ -110,4 +115,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        Toast.makeText(MainActivity.this,location.getLatitude()+"+"+location.getLongitude(),Toast.LENGTH_SHORT).show();
+        SharedPreferences sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+        sharedPreferences.edit().putFloat("Longitude" , (float) location.getLongitude()).apply();
+        sharedPreferences.edit().putFloat("Latitude" , (float) location.getLatitude()).apply();
+    }
 }
