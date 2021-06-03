@@ -70,7 +70,7 @@ public interface RetrofitService {
     @GET("getRecommendEvents")
     Call<List<Event>> getRecommendEvents(@Query("userId") String userId);
 
-    @GET("getRecommendSights")
+    @GET("recommendScene")
     Call<List<Sight>> getRecommendSights(@Query("longitude") double longitude,
                                          @Query("latitude") double latitude);
 

@@ -52,6 +52,7 @@ import org.naishadhparmar.zcustomcalendar.OnDateSelectedListener;
 import org.naishadhparmar.zcustomcalendar.OnNavigationButtonClickedListener;
 import org.naishadhparmar.zcustomcalendar.Property;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -81,7 +82,6 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     private ArrayAdapter<CharSequence> adapter = null;
     private HashMap<Integer, Object> dateHashMap = new HashMap<>();
     private ArrayList<String> xLabels = new ArrayList<>();
-    private LinearLayout ll;
     private AutoCompleteTextView etWeatherElement;
     private View root;
     private String userId;
@@ -159,9 +159,9 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
     //todo:
     private void getWeatherIcon(int flag) {
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("data" , Context.MODE_PRIVATE);
-        float Longitude =sharedPreferences.getFloat("Longitude" , 0);
-        float Latitude =sharedPreferences.getFloat("Latitude" , 0);
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("data", Context.MODE_PRIVATE);
+        float Longitude = sharedPreferences.getFloat("Longitude", 0);
+        float Latitude = sharedPreferences.getFloat("Latitude", 0);
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
         Call<List<String>> call = retrofitService.getWeatherIcon(Latitude, Longitude);
         call.enqueue(new Callback<List<String>>() {
@@ -258,6 +258,9 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                             @Override
                             public void onClick(View v) {
                                 Intent intent = new Intent(getActivity(), NewEventActivity.class);
+                                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+                                Date foo = lastPickedDate.getTime();
+                                intent.putExtra("pickedDay", dateFormatter.format(foo));
                                 startActivity(intent);
                             }
                         });
@@ -354,7 +357,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s != null) {
-                    makeChart(date, month - 1, s.toString());
+                    makeChart(s.toString());
                 }
             }
 
@@ -366,7 +369,6 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     }
 
     private void findId() {
-        ll = root.findViewById(R.id.ll);
         customCalendar = root.findViewById(R.id.custom_calender);
         etWeatherElement = root.findViewById(R.id.etWeatherElement);
         lineChart = root.findViewById(R.id.lineChart);
@@ -486,7 +488,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 //    }
 
     //折線圖
-    public void makeChart(int date, int month, String s) {
+    public void makeChart(String s) {
         LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(s), s);
         ArrayList<ILineDataSet> iLineDataSets = new ArrayList<>();
         iLineDataSets.add(lineDataSet);
@@ -660,11 +662,11 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     }
 
     private void getData(String pickDay) {
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("data" , Context.MODE_PRIVATE);
-        float Longitude =sharedPreferences.getFloat("Longitude" , 0);
-        float Latitude =sharedPreferences.getFloat("Latitude" , 0);
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("data", Context.MODE_PRIVATE);
+        float Longitude = sharedPreferences.getFloat("Longitude", 0);
+        float Latitude = sharedPreferences.getFloat("Latitude", 0);
 
-        System.out.println("Longitude"+Longitude+"Latitude"+Latitude);
+        System.out.println("Longitude" + Longitude + "Latitude" + Latitude);
 
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
         Call<chartList> call = retrofitService.getChart(Latitude, Longitude, pickDay);
@@ -675,7 +677,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                     Toast.makeText(getActivity(), "" + response.code(), Toast.LENGTH_SHORT).show();
                 } else {
                     data = response.body();
-                    makeChart(date, month - 1, etWeatherElement.getEditableText().toString());
+                    makeChart(etWeatherElement.getEditableText().toString());
 
 //                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 //                        @Override

@@ -39,10 +39,20 @@ import com.example.weathertracker.retrofit.Event;
 import com.example.weathertracker.retrofit.RetrofitManager;
 import com.example.weathertracker.retrofit.RetrofitService;
 import com.example.weathertracker.retrofit.Sight;
+import com.example.weathertracker.retrofit.chartList;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -74,11 +84,11 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
     private RetrofitService retrofitService;
     private Event event;
-    private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnRemovePlace, btnSchedule, btnTags, btnDelete;
+    private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnSchedule, btnTags, btnDelete;
     private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime;
     private EditText etEventName, etHostRemark;
     private SupportMapFragment mapFragment;
-    private double latitude, longitude;
+    private Double latitude, longitude;
     private DatePickerDialog datePickerDialog, datePickerDialog2;
     private TimePickerDialog timePickerDialog, timePickerDialog2;
     private GoogleMap mMap;
@@ -94,6 +104,9 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private RecyclerView eventToSight;
     private ArrayList<Sight> sights;
     private LinearLayout timeLayout;
+    private ArrayList<String> xLabels = new ArrayList<>();
+    private LineChart lineChart;
+    private chartList data = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,7 +140,9 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         Places.initialize(getApplicationContext(), getString(R.string.maps_api_key));
         mapFragment.getMapAsync(this);
         mapFragment.getView().setVisibility(View.GONE);
+
         initField();
+        callChart();
     }
 
     private void getEventToSight() {
@@ -155,7 +170,6 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         btnEdit = findViewById(R.id.btnEdit);
         btnBack = findViewById(R.id.btnBack);
         btnAddPlace = findViewById(R.id.btnAddPlace);
-        btnRemovePlace = findViewById(R.id.btnRemovePlace);
         btnTags = findViewById(R.id.btnTags);
         btnDelete = findViewById(R.id.btnDeletee);
         btnSchedule = findViewById(R.id.btnSchedule);
@@ -174,6 +188,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         hobbyClass = findViewById(R.id.hobbyClass);
         hobbies = findViewById(R.id.hobbies);
         eventToSight = findViewById(R.id.eventToSight);
+        lineChart = findViewById(R.id.checkEventChart);
         timeLayout = findViewById(R.id.timeLayout);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapView);
@@ -373,16 +388,6 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 startActivityForResult(intent, 200);
             }
         });
-        btnRemovePlace.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mapFragment.getView().setVisibility(View.GONE);
-                btnAddPlace.setVisibility(View.VISIBLE);
-                btnRemovePlace.setVisibility(View.INVISIBLE);
-                tvPlaceDescribe.setText("");
-                //todo:
-            }
-        });
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -440,6 +445,9 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 String s = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d", dayOfMonth);
                 tvStartDate.setText(s);
+                if (latitude != 0.0 && longitude != 0.0) {
+                    callChart();
+                }
             }
         }, year, month, day);
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
@@ -531,11 +539,18 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                     .show();
             return false;
         }
+        if (latitude == 0.0 && longitude == 0.0) {
+            new SweetAlertDialog(CheckAndEditActivity.this, SweetAlertDialog.ERROR_TYPE)
+                    .setTitleText("請選擇地點")
+                    .show();
+            return false;
+        }
         return true;
     }
 
     private void initField() {
         setNonEditable();
+        mapFragment.getView().setVisibility(View.VISIBLE);
         etEventName.setText(event.getEventName());
         tvStartDate.setText(event.strSplit(event.getStartTime())[0]);
         tvStartTime.setText(event.strSplit(event.getStartTime())[1]);
@@ -543,7 +558,8 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         tvEndTime.setText(event.strSplit(event.getEndTime())[1]);
         isOutDoor.setChecked(event.isOutDoor());
         isPublic.setChecked(event.isPublic());
-//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.getLatitude(), event.getLongitude()), 15));
+        latitude = event.getLatitude();
+        longitude = event.getLongitude();
         etHostRemark.setText(event.getHostRemark());
         etHobbyClass.setText(event.getStaticHobbyClass(), false);
         etHobbies.setText(event.getStaticHobbyTag(), false);
@@ -587,7 +603,6 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         tvEndTime.setEnabled(false);
         isAllDay.setEnabled(false);
         btnAddPlace.setVisibility(View.INVISIBLE);
-        btnRemovePlace.setVisibility(View.INVISIBLE);
         btnSchedule.setVisibility(View.INVISIBLE);
         btnDelete.setVisibility(View.INVISIBLE);
 
@@ -606,16 +621,20 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.mMap = googleMap;
+        mMap.clear();
+        LatLng latLng = new LatLng(event.getLatitude(), event.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(latLng));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 200 && resultCode == RESULT_OK) {
-            mapFragment.getView().setVisibility(View.VISIBLE);
-            btnAddPlace.setVisibility(View.INVISIBLE);
-            btnRemovePlace.setVisibility(View.VISIBLE);
             Place place = Autocomplete.getPlaceFromIntent(data);
+            latitude = place.getLatLng().latitude;
+            longitude = place.getLatLng().longitude;
+            callChart();
             mMap.clear();
             mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15));
@@ -623,5 +642,151 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
             Toast.makeText(CheckAndEditActivity.this, "fuck", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private String xLabelFormatter(String x) {
+        try {
+            SimpleDateFormat std = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = std.parse(x);
+            SimpleDateFormat dts = new SimpleDateFormat("MM/dd HH:mm");
+            return dts.format(date);
+        } catch (Exception e) {
+            System.out.println("error format");
+            return "";
+        }
+    }
+
+    private ArrayList<Entry> lineChartDataSet(String s) {
+        ArrayList<Entry> dataSet = new ArrayList<>();
+        String x;
+        Double y;
+        if (s.equals("溫度")) {
+            xLabels.clear();
+            for (int i = 0; i < data.getTemperature().size(); i++) {
+                x = data.getTemperature().get(i).getTime();
+                y = data.getTemperature().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        } else if (s.equals("AQI")) {
+            xLabels.clear();
+            for (int i = 0; i < data.getAQI().size(); i++) {
+                x = data.getAQI().get(i).getTime();
+                y = data.getAQI().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        } else if (s.equals("紫外線")) {
+            xLabels.clear();
+            for (int i = 0; i < data.getUV().size(); i++) {
+                x = data.getUV().get(i).getTime();
+                y = data.getUV().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        } else if (s.equals("風速")) {
+            xLabels.clear();
+            for (int i = 0; i < data.getWindSpeed().size(); i++) {
+                x = data.getWindSpeed().get(i).getTime();
+                y = data.getWindSpeed().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        } else if (s.equals("濕度")) {
+            xLabels.clear();
+            for (int i = 0; i < data.getHumidity().size(); i++) {
+                x = data.getHumidity().get(i).getTime();
+                y = data.getHumidity().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        } else if (s.equals("降雨機率")) {
+            xLabels.clear();
+            for (int i = 0; i < data.getPOP().size(); i++) {
+                x = data.getPOP().get(i).getTime();
+                y = data.getPOP().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        }
+        return dataSet;
+    }
+
+    //折線圖
+    public void makeChart(String s) {
+        LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(s), s);
+        ArrayList<ILineDataSet> iLineDataSets = new ArrayList<>();
+        iLineDataSets.add(lineDataSet);
+
+        LineData lineData = new LineData(iLineDataSets);
+        lineChart.setData(lineData);
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                try {
+                    String i = xLabels.get((int) value);
+                    return i;
+                } catch (Exception e) {
+                    return "N/A";
+                }
+            }
+        });
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setLabelCount(5, true);
+        xAxis.setDrawGridLines(false);
+        lineChart.getAxisRight().setEnabled(false);
+        lineChart.getAxisLeft().setEnabled(false);
+        Description description = lineChart.getDescription();
+        description.setText("");
+        lineChart.setVisibleXRange(0, 4);
+        lineChart.setScaleEnabled(false);
+
+        lineChart.invalidate();
+//
+//        lineChart.setNoDataText("Data not Available");
+//
+//        //you can modify your line chart graph according to your requirement there are lots of method available in this library
+//
+//        //now customize line chart
+//        Description description = lineChart.getDescription();
+//        description.setText(String.valueOf(month * 100 + date));//顯示文字名稱
+//        description.setTextSize(14);//字體大小
+//        description.setTextColor(Color.BLUE);//字體顏色
+//        description.setPosition(900, 100);
+//
+//        //設定沒資料時顯示的內容
+//        lineChart.setNoDataText("暫時沒有數據");
+//        lineChart.setNoDataTextColor(Color.BLUE);
+        lineDataSet.setColor(Color.WHITE);
+        lineDataSet.setCircleColor(Color.BLACK);
+        lineDataSet.setDrawCircles(true);
+        lineDataSet.setDrawCircleHole(true);
+        lineDataSet.setLineWidth(2);
+        lineDataSet.setCircleRadius(5);
+        lineDataSet.setCircleHoleRadius(2);
+        lineDataSet.setValueTextSize(10);
+        lineDataSet.setValueTextColor(Color.BLACK);
+    }
+
+    private void callChart() {
+        RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+        Call<chartList> call = retrofitService.getChart(latitude.floatValue(), longitude.floatValue(), tvStartDate.getText().toString());
+        call.enqueue(new Callback<chartList>() {
+            @Override
+            public void onResponse(Call<chartList> call, Response<chartList> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(CheckAndEditActivity.this, "" + response.code(), Toast.LENGTH_SHORT).show();
+                } else {
+                    data = response.body();
+                    makeChart("溫度");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<chartList> call, Throwable t) {
+
+            }
+        });
     }
 }

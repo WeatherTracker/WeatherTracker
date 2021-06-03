@@ -3,6 +3,7 @@ package com.example.weathertracker.event;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -29,6 +30,15 @@ import com.example.weathertracker.retrofit.Ack;
 import com.example.weathertracker.retrofit.Event;
 import com.example.weathertracker.retrofit.RetrofitManager;
 import com.example.weathertracker.retrofit.RetrofitService;
+import com.example.weathertracker.retrofit.chartList;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -42,6 +52,7 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -55,11 +66,11 @@ import retrofit2.Response;
 
 public class NewEventActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private ImageButton btnBack, btnDone, btnAddPlace, btnRemovePlace;
+    private ImageButton btnBack, btnDone, btnAddPlace;
     private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime;
     private EditText etEventName, etHostRemark;
     private SupportMapFragment mapFragment;
-    private double latitude, longitude;
+    private Double latitude = 0.0, longitude = 0.0;
     private DatePickerDialog datePickerDialog, datePickerDialog2;
     private TimePickerDialog timePickerDialog, timePickerDialog2;
     private GoogleMap mMap;
@@ -71,6 +82,9 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
     private ToggleButton isOutDoor, isPublic;
     private SwitchCompat isAllDay;
     private LinearLayout timeLayout;
+    private ArrayList<String> xLabels = new ArrayList<>();
+    private LineChart lineChart;
+    private chartList data = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,11 +109,10 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
 
         findId();
         setListener();
-
-        //todo:改成點擊時間
-        tvStartDate.setText(dateFormatter.format(now.getTime()));
+        String pickedDay = getIntent().getStringExtra("pickedDay");
+        tvStartDate.setText(pickedDay);
         tvStartTime.setText(timeFormatter.format(now.getTime()));
-        tvEndDate.setText(dateFormatter.format(now.getTime()));
+        tvEndDate.setText(pickedDay);
         tvEndTime.setText(timeFormatter.format(now.getTime()));
 
         Places.initialize(getApplicationContext(), getString(R.string.maps_api_key));
@@ -111,7 +124,6 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
         btnBack = findViewById(R.id.btnBack);
         btnDone = findViewById(R.id.btnDone);
         btnAddPlace = findViewById(R.id.btnAddPlace);
-        btnRemovePlace = findViewById(R.id.btnRemovePlace);
         etEventName = findViewById(R.id.etEventName);
         tvStartDate = findViewById(R.id.tvStartDate);
         tvStartTime = findViewById(R.id.tvStartTime);
@@ -124,6 +136,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
         isOutDoor = findViewById(R.id.isOutDoor);
         isPublic = findViewById(R.id.isPublic);
         isAllDay = findViewById(R.id.isAllDay);
+        lineChart = findViewById(R.id.newEventChart);
         timeLayout = findViewById(R.id.timeLayout);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapView);
@@ -136,16 +149,6 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                 List<Place.Field> fieldList = Arrays.asList(Place.Field.ADDRESS, Place.Field.LAT_LNG, Place.Field.NAME);
                 Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fieldList).build(NewEventActivity.this);
                 startActivityForResult(intent, 200);
-            }
-        });
-        btnRemovePlace.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mapFragment.getView().setVisibility(View.GONE);
-                btnAddPlace.setVisibility(View.VISIBLE);
-                btnRemovePlace.setVisibility(View.INVISIBLE);
-                tvPlaceDescribe.setText("");
-                //todo:
             }
         });
         btnDone.setOnClickListener(new View.OnClickListener() {
@@ -169,7 +172,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                 } else {
                     e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(), tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
                 }
-                if(checkValid(e)){
+                if (checkValid(e)) {
                     RetrofitService retrofitService = RetrofitManager.getInstance().getService();
                     Call<Ack> call = retrofitService.newEvent(e);
                     call.enqueue(new Callback<Ack>() {
@@ -235,6 +238,9 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 String s = year + "-" + String.format("%02d", month + 1) + "-" + String.format("%02d", dayOfMonth);
                 tvStartDate.setText(s);
+                if (latitude != 0.0 && longitude != 0.0) {
+                    callChart();
+                }
             }
         }, year, month, day);
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
@@ -314,15 +320,21 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     private boolean checkValid(Event e) {
-        if (etEventName.getText().toString().equals("") || staticHobbyTag.equals("")){
+        if (etEventName.getText().toString().equals("") || staticHobbyTag.equals("")) {
             new SweetAlertDialog(NewEventActivity.this, SweetAlertDialog.ERROR_TYPE)
                     .setTitleText("活動名稱與類別不得為空")
                     .show();
             return false;
         }
-        if(!Event.isTimeValid(e.getStartTime(),e.getEndTime())){
+        if (!Event.isTimeValid(e.getStartTime(), e.getEndTime())) {
             new SweetAlertDialog(NewEventActivity.this, SweetAlertDialog.ERROR_TYPE)
                     .setTitleText("時間錯誤")
+                    .show();
+            return false;
+        }
+        if (latitude == 0.0 && longitude == 0.0) {
+            new SweetAlertDialog(NewEventActivity.this, SweetAlertDialog.ERROR_TYPE)
+                    .setTitleText("請選擇地點")
                     .show();
             return false;
         }
@@ -339,11 +351,10 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 200 && resultCode == RESULT_OK) {
             mapFragment.getView().setVisibility(View.VISIBLE);
-            btnAddPlace.setVisibility(View.INVISIBLE);
-            btnRemovePlace.setVisibility(View.VISIBLE);
             Place place = Autocomplete.getPlaceFromIntent(data);
             latitude = place.getLatLng().latitude;
             longitude = place.getLatLng().longitude;
+            callChart();
             mMap.clear();
             mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15));
@@ -351,5 +362,151 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
         } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
             Toast.makeText(NewEventActivity.this, "" + resultCode, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private String xLabelFormatter(String x) {
+        try {
+            SimpleDateFormat std = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = std.parse(x);
+            SimpleDateFormat dts = new SimpleDateFormat("MM/dd HH:mm");
+            return dts.format(date);
+        } catch (Exception e) {
+            System.out.println("error format");
+            return "";
+        }
+    }
+
+    private ArrayList<Entry> lineChartDataSet(String s) {
+        ArrayList<Entry> dataSet = new ArrayList<>();
+        String x;
+        Double y;
+        if (s.equals("溫度")) {
+            xLabels.clear();
+            for (int i = 0; i < data.getTemperature().size(); i++) {
+                x = data.getTemperature().get(i).getTime();
+                y = data.getTemperature().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        } else if (s.equals("AQI")) {
+            xLabels.clear();
+            for (int i = 0; i < data.getAQI().size(); i++) {
+                x = data.getAQI().get(i).getTime();
+                y = data.getAQI().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        } else if (s.equals("紫外線")) {
+            xLabels.clear();
+            for (int i = 0; i < data.getUV().size(); i++) {
+                x = data.getUV().get(i).getTime();
+                y = data.getUV().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        } else if (s.equals("風速")) {
+            xLabels.clear();
+            for (int i = 0; i < data.getWindSpeed().size(); i++) {
+                x = data.getWindSpeed().get(i).getTime();
+                y = data.getWindSpeed().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        } else if (s.equals("濕度")) {
+            xLabels.clear();
+            for (int i = 0; i < data.getHumidity().size(); i++) {
+                x = data.getHumidity().get(i).getTime();
+                y = data.getHumidity().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        } else if (s.equals("降雨機率")) {
+            xLabels.clear();
+            for (int i = 0; i < data.getPOP().size(); i++) {
+                x = data.getPOP().get(i).getTime();
+                y = data.getPOP().get(i).getValue();
+                xLabels.add(xLabelFormatter(x));
+                dataSet.add(new Entry(i, y.floatValue()));
+            }
+        }
+        return dataSet;
+    }
+
+    //折線圖
+    public void makeChart(String s) {
+        LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(s), s);
+        ArrayList<ILineDataSet> iLineDataSets = new ArrayList<>();
+        iLineDataSets.add(lineDataSet);
+
+        LineData lineData = new LineData(iLineDataSets);
+        lineChart.setData(lineData);
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                try {
+                    String i = xLabels.get((int) value);
+                    return i;
+                } catch (Exception e) {
+                    return "N/A";
+                }
+            }
+        });
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setLabelCount(5, true);
+        xAxis.setDrawGridLines(false);
+        lineChart.getAxisRight().setEnabled(false);
+        lineChart.getAxisLeft().setEnabled(false);
+        Description description = lineChart.getDescription();
+        description.setText("");
+        lineChart.setVisibleXRange(0, 4);
+        lineChart.setScaleEnabled(false);
+
+        lineChart.invalidate();
+//
+//        lineChart.setNoDataText("Data not Available");
+//
+//        //you can modify your line chart graph according to your requirement there are lots of method available in this library
+//
+//        //now customize line chart
+//        Description description = lineChart.getDescription();
+//        description.setText(String.valueOf(month * 100 + date));//顯示文字名稱
+//        description.setTextSize(14);//字體大小
+//        description.setTextColor(Color.BLUE);//字體顏色
+//        description.setPosition(900, 100);
+//
+//        //設定沒資料時顯示的內容
+//        lineChart.setNoDataText("暫時沒有數據");
+//        lineChart.setNoDataTextColor(Color.BLUE);
+        lineDataSet.setColor(Color.WHITE);
+        lineDataSet.setCircleColor(Color.BLACK);
+        lineDataSet.setDrawCircles(true);
+        lineDataSet.setDrawCircleHole(true);
+        lineDataSet.setLineWidth(2);
+        lineDataSet.setCircleRadius(5);
+        lineDataSet.setCircleHoleRadius(2);
+        lineDataSet.setValueTextSize(10);
+        lineDataSet.setValueTextColor(Color.BLACK);
+    }
+
+    private void callChart() {
+        RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+        Call<chartList> call = retrofitService.getChart(latitude.floatValue(), longitude.floatValue(), tvStartDate.getText().toString());
+        call.enqueue(new Callback<chartList>() {
+            @Override
+            public void onResponse(Call<chartList> call, Response<chartList> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(NewEventActivity.this, "" + response.code(), Toast.LENGTH_SHORT).show();
+                } else {
+                    data = response.body();
+                    makeChart("溫度");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<chartList> call, Throwable t) {
+
+            }
+        });
     }
 }

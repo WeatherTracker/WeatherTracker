@@ -35,7 +35,11 @@ public class eventToSightAdapter extends RecyclerView.Adapter<eventToSightAdapte
 
     @Override
     public int getItemCount() {
-        return mSights.size();
+        try{
+            return mSights.size();
+        }catch (Exception e){
+            return 0;
+        }
     }
     class viewHolder extends RecyclerView.ViewHolder{
 
