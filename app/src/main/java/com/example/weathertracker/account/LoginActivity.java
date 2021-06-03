@@ -1,11 +1,16 @@
 package com.example.weathertracker.account;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -35,6 +40,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.royrodriguez.transitionbutton.TransitionButton;
 
+import java.io.IOException;
+import java.util.Locale;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -60,9 +68,42 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         findID();
         setListener();
-        System.out.println("hi");
+
+
+        SharedPreferences sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+        sharedPreferences.edit().putFloat("Longitude" , 24).apply();
+        sharedPreferences.edit().putFloat("Latitude" , 121).apply();
+
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        getLocatuon();
+
+        if (ActivityCompat.checkSelfPermission(LoginActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            getLocation();
+        } else {
+            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+        }
+
+
+        System.out.println("hi");
+    }
+
+    private void getLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                Location location = task.getResult();
+                if(location!=null){
+                    System.out.println("123321"+location.getLongitude()+location.getLatitude());
+                    SharedPreferences sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+                    sharedPreferences.edit().putFloat("Longitude" , (float) location.getLongitude()).apply();
+                    sharedPreferences.edit().putFloat("Latitude" , (float) location.getLatitude()).apply();
+                }
+
+            }
+        });
     }
 
     private void findID() {
@@ -202,25 +243,4 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void getLocatuon() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                Location location = task.getResult();
-                if (location != null) {
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
-                    System.out.println(longitude + "+" + latitude);
-                    SharedPreferences sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("longitude", String.valueOf(longitude));
-                    editor.putString("latitude", String.valueOf(latitude));
-                    //todo:
-                }
-            }
-        });
-    }
 }

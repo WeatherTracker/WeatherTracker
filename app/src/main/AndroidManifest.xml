@@ -60,7 +60,6 @@
             <!-- android:host="my_test.app" -->
             <!-- android:scheme="https" /> -->
             <!-- </intent-filter> -->
-
         </activity>
 
         <service
