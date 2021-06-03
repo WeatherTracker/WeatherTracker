@@ -15,9 +15,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -91,6 +93,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private SwitchCompat isAllDay;
     private RecyclerView eventToSight;
     private ArrayList<Sight> sights;
+    private LinearLayout timeLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,6 +174,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         hobbyClass = findViewById(R.id.hobbyClass);
         hobbies = findViewById(R.id.hobbies);
         eventToSight = findViewById(R.id.eventToSight);
+        timeLayout = findViewById(R.id.timeLayout);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapView);
     }
@@ -502,6 +506,16 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
             }
         });
+        isAllDay.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    timeLayout.setVisibility(View.INVISIBLE);
+                } else {
+                    timeLayout.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     private boolean checkValid(Event e) {
@@ -551,6 +565,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         tvStartTime.setEnabled(true);
         tvEndDate.setEnabled(true);
         tvEndTime.setEnabled(true);
+        isAllDay.setEnabled(true);
         btnAddPlace.setVisibility(View.VISIBLE);
         btnSchedule.setVisibility(View.VISIBLE);
         btnDelete.setVisibility(View.VISIBLE);
@@ -570,6 +585,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         tvStartTime.setEnabled(false);
         tvEndDate.setEnabled(false);
         tvEndTime.setEnabled(false);
+        isAllDay.setEnabled(false);
         btnAddPlace.setVisibility(View.INVISIBLE);
         btnRemovePlace.setVisibility(View.INVISIBLE);
         btnSchedule.setVisibility(View.INVISIBLE);

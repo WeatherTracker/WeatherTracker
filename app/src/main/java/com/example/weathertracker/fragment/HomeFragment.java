@@ -185,7 +185,9 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                             int imageResource = getContext().getResources().getIdentifier(uri, "drawable", getContext().getPackageName());
                             //System.out.println("image+" + imageResource + "+" + uri);
                             View temp_view = month_days[iconDay];
-                            temp_view.findViewById(R.id.icon).setBackgroundResource(imageResource);
+//                            temp_view.findViewById(R.id.icon).setBackgroundResource(imageResource);
+                            temp_view.findViewById(R.id.text_view).setBackgroundResource(imageResource);
+                            temp_view.findViewById(R.id.cycle).bringToFront();
                             iconDay++;
                         }
                     } else if (flag == (today_month + 1)) {

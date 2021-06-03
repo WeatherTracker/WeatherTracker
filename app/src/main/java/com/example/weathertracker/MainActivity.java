@@ -117,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        Toast.makeText(MainActivity.this,location.getLatitude()+"+"+location.getLongitude(),Toast.LENGTH_SHORT).show();
         SharedPreferences sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
         sharedPreferences.edit().putFloat("Longitude" , (float) location.getLongitude()).apply();
         sharedPreferences.edit().putFloat("Latitude" , (float) location.getLatitude()).apply();
