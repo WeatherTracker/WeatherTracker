@@ -1,6 +1,7 @@
 package com.example.weathertracker.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,9 +17,11 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.example.weathertracker.R;
+import com.example.weathertracker.account.LoginActivity;
 import com.example.weathertracker.retrofit.Ack;
 import com.example.weathertracker.retrofit.RetrofitManager;
 import com.example.weathertracker.retrofit.RetrofitService;
+import com.example.weathertracker.retrofit.User;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -57,7 +60,7 @@ public class ProfileFragment extends Fragment {
     private FloatingActionButton fab;
     private TextInputEditText etUserName;
     private List<Double> AHPPreference;
-    private ArrayList<ArrayList<Boolean>> freeTime = new ArrayList<>();//todo:確認型態
+    private List<List<Boolean>> freeTime = new ArrayList<>();//todo:確認型態
     private List<String> hobbies = new ArrayList<>();
     private ArrayList<List<CheckBox>> checkBoxList = new ArrayList<>();
 
@@ -80,6 +83,7 @@ public class ProfileFragment extends Fragment {
         idMap.put("其它類", R.array.hobbies_others);
         findId();
         setListener();
+        initProfile();
         return view;
     }
 
@@ -93,13 +97,13 @@ public class ProfileFragment extends Fragment {
         reasonableVsKeepParticipants = view.findViewById(R.id.reasonableVsKeepParticipants);
         keepParticipantsVsWeather = view.findViewById(R.id.keepParticipantsVsWeather);
         fab = view.findViewById(R.id.floatingActionButton);
-        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_11), view.findViewById(R.id.cb_11), view.findViewById(R.id.cb_11)));
-        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_21), view.findViewById(R.id.cb_21), view.findViewById(R.id.cb_21)));
-        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_31), view.findViewById(R.id.cb_31), view.findViewById(R.id.cb_31)));
-        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_41), view.findViewById(R.id.cb_41), view.findViewById(R.id.cb_41)));
-        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_51), view.findViewById(R.id.cb_51), view.findViewById(R.id.cb_51)));
-        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_61), view.findViewById(R.id.cb_61), view.findViewById(R.id.cb_61)));
-        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_71), view.findViewById(R.id.cb_71), view.findViewById(R.id.cb_71)));
+        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_11), view.findViewById(R.id.cb_12), view.findViewById(R.id.cb_13)));
+        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_21), view.findViewById(R.id.cb_22), view.findViewById(R.id.cb_23)));
+        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_31), view.findViewById(R.id.cb_32), view.findViewById(R.id.cb_33)));
+        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_41), view.findViewById(R.id.cb_42), view.findViewById(R.id.cb_43)));
+        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_51), view.findViewById(R.id.cb_52), view.findViewById(R.id.cb_53)));
+        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_61), view.findViewById(R.id.cb_62), view.findViewById(R.id.cb_63)));
+        checkBoxList.add(Arrays.asList(view.findViewById(R.id.cb_71), view.findViewById(R.id.cb_72), view.findViewById(R.id.cb_73)));
     }
 
     private void setListener() {
@@ -110,17 +114,26 @@ public class ProfileFragment extends Fragment {
                 if (AHPPreference != null) {
                     RetrofitService retrofitService = RetrofitManager.getInstance().getService();
                     hobbies = new ArrayList<>(chipSet);
+                    List<Float> barValue = new ArrayList<>();
+                    barValue.add(weatherVsReasonable.getValue());
+                    barValue.add(reasonableVsKeepParticipants.getValue());
+                    barValue.add(keepParticipantsVsWeather.getValue());
                     findFreeTime();
-                    Call<Ack> call = retrofitService.editProfile(userId, etUserName.getText().toString(), AHPPreference, freeTime, hobbies);
+                    User u = new User(userId, etUserName.getText().toString(), hobbies, AHPPreference, barValue, freeTime);
+                    Call<Ack> call = retrofitService.editProfile(u);
                     call.enqueue(new Callback<Ack>() {
                         @Override
                         public void onResponse(Call<Ack> call, Response<Ack> response) {
                             if (!response.isSuccessful()) {
-                                Toast.makeText(getActivity(), "server沒啦", Toast.LENGTH_SHORT).show();
+                                if (response.code() == 401) {
+                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                }
                             } else {
                                 Ack ack = response.body();
                                 if (ack.getCode() == 200) {
-                                    Toast.makeText(getActivity(), ack.getMsg(), Toast.LENGTH_SHORT).show();//去信箱收信
+                                    Toast.makeText(getActivity(), ack.getMsg(), Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(getActivity(), "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
                                 }
@@ -215,6 +228,57 @@ public class ProfileFragment extends Fragment {
                 if (oldScrollY - scrollY > 0) {
                     fab.show();
                 }
+            }
+        });
+    }
+
+    private void initProfile() {
+        RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+        Call<User> call = retrofitService.getProfile(userId);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (!response.isSuccessful()) {
+                    if (response.code() == 401) {
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
+                } else {
+                    User user = response.body();
+                    etUserName.setText(user.getUserName());
+                    weatherVsReasonable.setValue(user.getBarValue().get(0));
+                    reasonableVsKeepParticipants.setValue(user.getBarValue().get(1));
+                    keepParticipantsVsWeather.setValue(user.getBarValue().get(2));
+                    System.out.println(user.getFreeTime());
+                    for (int i = 0; i < 7; i++) {
+                        for (int j = 0; j < 3; j++) {
+                            checkBoxList.get(i).get(j).setChecked(user.getFreeTime().get(i).get(j));
+                        }
+                    }
+                    for (String s : user.getHobbies()) {
+                        chipSet.add(s);
+                        Chip chip = new Chip(getActivity());
+                        chip.setText(s);
+                        chip.setChipBackgroundColorResource(R.color.black);
+                        chip.setCloseIconVisible(true);
+                        chip.setTextColor(getResources().getColor(R.color.white));
+                        chip.setTextAppearance(R.style.ChipTextAppearance);
+                        chip.setOnCloseIconClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                chipSet.remove(((Chip) v).getText());
+                                chipGroup.removeView(v);
+                            }
+                        });
+                        chipGroup.addView(chip);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
             }
         });
     }

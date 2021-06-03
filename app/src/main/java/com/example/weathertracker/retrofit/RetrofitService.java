@@ -11,6 +11,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface RetrofitService {
@@ -29,13 +30,8 @@ public interface RetrofitService {
     @POST("sendResetMail")
     Call<Ack> sendResetMail(@Field("email") String email);
 
-    @FormUrlEncoded
     @PUT("editProfile")
-    Call<Ack> editProfile(@Field("userId") String userId,
-                          @Field("userName") String userName,
-                          @Field("AHPPreference") List<Double> AHPPreference,
-                          @Field("freeTime") ArrayList<ArrayList<Boolean>> freeTime,
-                          @Field("hobbies") List<String> hobbies);
+    Call<Ack> editProfile(@Body User user);
 
     @GET("getCalendarMonth")
     Call<List<String>> getCalendarMonth(@Query("userId") String userId,
@@ -57,9 +53,9 @@ public interface RetrofitService {
     @POST("newEvent")
     Call<Ack> newEvent(@Body Event e);
 
-    @FormUrlEncoded
-    @DELETE("deleteEvent")
-    Call<Ack> deleteEvent(@Field("eventId") String eventId);
+
+    @DELETE("deleteEvent/{eventId}")
+    Call<Ack> deleteEvent(@Path("eventId") String eventId);
 
 
     @PUT("editEvent")
@@ -88,7 +84,7 @@ public interface RetrofitService {
                                         @Query("blackList") List<String> blackList);
 
     @GET("getProfile")
-    Call<List<String>> getProfile(@Query("userId") String userId);
+    Call<User> getProfile(@Query("userId") String userId);
 
     @FormUrlEncoded
     @PUT("changeTime")

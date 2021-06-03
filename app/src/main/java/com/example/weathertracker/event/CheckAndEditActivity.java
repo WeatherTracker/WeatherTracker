@@ -63,6 +63,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -71,7 +72,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
     private RetrofitService retrofitService;
     private Event event;
-    private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnRemovePlace, btnSchedule, btnTags;
+    private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnRemovePlace, btnSchedule, btnTags, btnDelete;
     private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime;
     private EditText etEventName, etHostRemark;
     private SupportMapFragment mapFragment;
@@ -101,11 +102,10 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         System.out.println("Event:" + json);
 
         Gson gson = new Gson();
-        Event event0 = gson.fromJson(json, Event.class);
-
+        event = gson.fromJson(json, Event.class);
         userId = getSharedPreferences("sharedPreferences", MODE_PRIVATE).getString("userId", "");
+        retrofitService = RetrofitManager.getInstance().getService();
 
-        event = event0;
         System.out.println(event.getHosts().get(0));
         //event = new Event(event0.getEventName(), event0.getHostRemark(), event0.getStartTime(),event0.getEndTime(), event0.getStaticHobbyClass(), event0.getStaticHobbyTag(), event0.getLatitude(), event0.getLongitude(), event0.getHosts(), event0.isPublic(), event0.isOutDoor());
 
@@ -128,7 +128,6 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     }
 
     private void getEventToSight() {
-        RetrofitService retrofitService = RetrofitManager.getInstance().getService();
         Call<List<Sight>> call = retrofitService.getRecommendSights(event.getLongitude(), event.getLatitude());
         call.enqueue(new Callback<List<Sight>>() {
             @Override
@@ -155,6 +154,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         btnAddPlace = findViewById(R.id.btnAddPlace);
         btnRemovePlace = findViewById(R.id.btnRemovePlace);
         btnTags = findViewById(R.id.btnTags);
+        btnDelete = findViewById(R.id.btnDeletee);
         btnSchedule = findViewById(R.id.btnSchedule);
         etEventName = findViewById(R.id.etEventName);
         tvStartDate = findViewById(R.id.tvStartDate);
@@ -201,16 +201,14 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                         c.add(Calendar.DATE, 1);
                         date = c.getTime();
                         endDateString = sdf.format(date);
-                        e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " 00:00", endDateString + " 00:00", etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
+                        e = new Event(etEventName.getText().toString(), event.getEventId(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " 00:00", endDateString + " 00:00", etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, isPublic.isChecked(), isOutDoor.isChecked());
                     } catch (ParseException parseException) {
                         parseException.printStackTrace();
                     }
                 } else {
-                    e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(), tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
+                    e = new Event(etEventName.getText().toString(), event.getEventId(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(), tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, isPublic.isChecked(), isOutDoor.isChecked());
                 }
-                e.setEventId(event.getEventId());
-                if (Event.isTimeValid(e.getStartTime(), e.getEndTime())) {
-                    RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+                if (checkValid(e)) {
                     Call<Ack> call = retrofitService.editEvent(e);
                     call.enqueue(new Callback<Ack>() {
                         @Override
@@ -235,7 +233,6 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 }
             }
         });
-
         btnSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -323,7 +320,6 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 dialogBuilder.setPositiveButton("開始排程", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        RetrofitService retrofitService = RetrofitManager.getInstance().getService();
                         ArrayList<String> whiteList = new ArrayList<>(whiteSet);
                         ArrayList<String> blackList = new ArrayList<>(blackSet);
                         Call<List<String>> call = retrofitService.getRecommendTime(userId, event.getEventId(), whiteList, blackList);
@@ -352,7 +348,6 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 alertDialog.show();
             }
         });
-
         btnTags.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -366,7 +361,6 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 popupWindow.showAsDropDown(btnTags, -100, 0);
             }
         });
-
         btnAddPlace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -383,6 +377,32 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 btnRemovePlace.setVisibility(View.INVISIBLE);
                 tvPlaceDescribe.setText("");
                 //todo:
+            }
+        });
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Call<Ack> call = retrofitService.deleteEvent(event.getEventId());
+                call.enqueue(new Callback<Ack>() {
+                    @Override
+                    public void onResponse(Call<Ack> call, Response<Ack> response) {
+                        if (!response.isSuccessful()) {
+                            Toast.makeText(CheckAndEditActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Ack ack = response.body();
+                            if (ack.getCode() == 200) {
+                                Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(CheckAndEditActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Ack> call, Throwable t) {
+                        Toast.makeText(CheckAndEditActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
         tvStartDate.setOnClickListener(new View.OnClickListener() {
@@ -484,6 +504,22 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         });
     }
 
+    private boolean checkValid(Event e) {
+        if (etEventName.getText().toString().equals("") || staticHobbyTag.equals("")) {
+            new SweetAlertDialog(CheckAndEditActivity.this, SweetAlertDialog.ERROR_TYPE)
+                    .setTitleText("活動名稱與類別不得為空")
+                    .show();
+            return false;
+        }
+        if (!Event.isTimeValid(e.getStartTime(), e.getEndTime())) {
+            new SweetAlertDialog(CheckAndEditActivity.this, SweetAlertDialog.ERROR_TYPE)
+                    .setTitleText("時間錯誤")
+                    .show();
+            return false;
+        }
+        return true;
+    }
+
     private void initField() {
         setNonEditable();
         etEventName.setText(event.getEventName());
@@ -517,7 +553,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         tvEndTime.setEnabled(true);
         btnAddPlace.setVisibility(View.VISIBLE);
         btnSchedule.setVisibility(View.VISIBLE);
-
+        btnDelete.setVisibility(View.VISIBLE);
 
     }
 
@@ -537,6 +573,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         btnAddPlace.setVisibility(View.INVISIBLE);
         btnRemovePlace.setVisibility(View.INVISIBLE);
         btnSchedule.setVisibility(View.INVISIBLE);
+        btnDelete.setVisibility(View.INVISIBLE);
 
         etEventName.setTextColor(getResources().getColor(R.color.white));
         etHobbyClass.setTextColor(getResources().getColor(R.color.white));
