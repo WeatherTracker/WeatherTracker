@@ -29,7 +29,7 @@ public class calenderDayHostAdapter extends RecyclerView.Adapter<calenderDayHost
 
     @Override
     public calenderDayHostAdapter.LinearViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new LinearViewHolder(LayoutInflater.from(mContext).inflate(R.layout.calenderday_item, parent, false));
+        return new calenderDayHostAdapter.LinearViewHolder(LayoutInflater.from(mContext).inflate(R.layout.calenderday_item, parent, false));
     }
 
     @Override
@@ -56,7 +56,11 @@ public class calenderDayHostAdapter extends RecyclerView.Adapter<calenderDayHost
 
     @Override
     public int getItemCount() {
-        return event.size();
+        try {
+            return event.size();
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     class LinearViewHolder extends RecyclerView.ViewHolder {
@@ -68,18 +72,22 @@ public class calenderDayHostAdapter extends RecyclerView.Adapter<calenderDayHost
             super(itemView);
             calenderday_item = itemView.findViewById(R.id.calenderday_item);
             tv_1 = itemView.findViewById(R.id.tv_1);
-
             calenderday_item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Gson gson = new Gson();
-                    String json = gson.toJson(event.get(0));
-                    System.out.println("json" + json);
+                    try {
+                        final int position = getAdapterPosition();
+                        Gson gson = new Gson();
+                        String json = gson.toJson(event.get(position));
+                        System.out.println("json" + json);
 
-                    Intent intent = new Intent(mContext, CheckAndEditActivity.class);
-                    intent.putExtra("json", json);
+                        Intent intent = new Intent(mContext, CheckAndEditActivity.class);
+                        intent.putExtra("json", json);
 
-                    mContext.startActivity(intent);
+                        mContext.startActivity(intent);
+                    } catch (Exception e) {
+
+                    }
                 }
             });
         }

@@ -720,14 +720,14 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                     event = response.body();
 
                     if (event != null) {
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                         rv_day.setLayoutManager(linearLayoutManager);
-                        rv_day.setAdapter(new calenderDayHostAdapter(getActivity(), event));
-                        LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(getActivity());
+                        rv_day.setAdapter(new calenderDayHostAdapter(getContext(), event));
+                        LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(getContext());
                         linearLayoutManager2.setOrientation(LinearLayoutManager.VERTICAL);
                         rv_day2.setLayoutManager(linearLayoutManager2);
-                        rv_day2.setAdapter(new calenderDayNoHostAdapter(getActivity(), event));
+                        rv_day2.setAdapter(new calenderDayNoHostAdapter(getContext(), event));
                     }
                 }
             }

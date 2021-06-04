@@ -154,6 +154,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                     Toast.makeText(CheckAndEditActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
                 } else {
                     sights = response.body();
+                    System.out.println(sights);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(CheckAndEditActivity.this);
                     linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
                     eventToSight.setLayoutManager(linearLayoutManager);

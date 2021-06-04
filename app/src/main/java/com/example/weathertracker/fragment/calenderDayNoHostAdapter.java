@@ -68,6 +68,7 @@ public class calenderDayNoHostAdapter extends RecyclerView.Adapter<calenderDayNo
         private TextView tv_1;
         private LinearLayout calenderday_item;
 
+
         public LinearViewHolder(View itemView) {
             super(itemView);
             calenderday_item = itemView.findViewById(R.id.calenderday_item);
@@ -75,14 +76,20 @@ public class calenderDayNoHostAdapter extends RecyclerView.Adapter<calenderDayNo
             calenderday_item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Gson gson = new Gson();
-                    String json = gson.toJson(event.get(0));
-                    System.out.println("json" + json);
+                    try{
+                        final int position = getAdapterPosition();
+                        Gson gson = new Gson();
+                        String json = gson.toJson(event.get(position));
+                        System.out.println("json" + json);
 
-                    Intent intent = new Intent(mContext, CheckAndEditActivity.class);
-                    intent.putExtra("json", json);
+                        Intent intent = new Intent(mContext, CheckAndEditActivity.class);
+                        intent.putExtra("json", json);
 
-                    mContext.startActivity(intent);
+                        mContext.startActivity(intent);
+                    }catch (Exception e){
+
+                    }
+
                 }
             });
         }
