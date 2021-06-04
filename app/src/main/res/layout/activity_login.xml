@@ -14,8 +14,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:hint="@string/account"
-        app:hintTextColor="@color/white"
         app:endIconMode="clear_text"
+        app:hintTextColor="@color/white"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
         app:startIconDrawable="@drawable/ic_baseline_email_24">
 
@@ -23,9 +23,9 @@
             android:id="@+id/etLoginEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
             android:inputType="textEmailAddress"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:textColor="@color/white" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -36,8 +36,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:hint="@string/password"
-        app:hintTextColor="@color/white"
         app:endIconMode="password_toggle"
+        app:hintTextColor="@color/white"
         app:layout_constraintTop_toBottomOf="@+id/etEmailLayout"
         app:startIconDrawable="@drawable/ic_baseline_vpn_key_24"
         tools:layout_editor_absoluteX="15dp">
@@ -46,8 +46,8 @@
             android:id="@+id/etLoginPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:textColor="@color/white" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -55,7 +55,7 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_launcher_foreground"
+        android:src="@mipmap/ic_launcher_round"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -85,8 +85,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:text="@string/register"
-        android:textSize="12sp"
         android:textColor="@color/white"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etPassword" />
 
@@ -96,8 +96,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/forget"
-        android:textSize="12sp"
         android:textColor="@color/white"
+        android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@+id/btnSignUp"
         app:layout_constraintTop_toBottomOf="@+id/etPassword" />
 

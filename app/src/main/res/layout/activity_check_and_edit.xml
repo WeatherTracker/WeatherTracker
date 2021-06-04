@@ -88,9 +88,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
-                android:layout_marginStart="15dp"
                 android:text="每日時間"
                 android:textSize="18sp" />
 
@@ -266,7 +266,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:scrollbars="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/etHostRemark" />
+            app:layout_constraintTop_toBottomOf="@+id/textView21" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/isAllDay"
@@ -327,6 +327,16 @@
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView15" />
+
+        <TextView
+            android:id="@+id/textView21"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="附近的景點"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etHostRemark" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

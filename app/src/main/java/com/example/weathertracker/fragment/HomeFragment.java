@@ -20,7 +20,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -52,7 +52,6 @@ import org.naishadhparmar.zcustomcalendar.OnDateSelectedListener;
 import org.naishadhparmar.zcustomcalendar.OnNavigationButtonClickedListener;
 import org.naishadhparmar.zcustomcalendar.Property;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -87,6 +86,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     private String userId;
     private List<String> icon;
     private int iconFlag = 7, monthFlag = 0;
+    private TextView tvUserLocation;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -373,6 +373,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         etWeatherElement = root.findViewById(R.id.etWeatherElement);
         lineChart = root.findViewById(R.id.lineChart);
         etWeatherElement = root.findViewById(R.id.etWeatherElement);
+        tvUserLocation = root.findViewById(R.id.tvUserLocation);
     }
 
     private void Reload() {
@@ -678,7 +679,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 } else {
                     data = response.body();
                     makeChart(etWeatherElement.getEditableText().toString());
-
+                    tvUserLocation.setText("目前位置: " + data.getCity() + data.getArea() + "\n測站: " + data.getSiteName());
 //                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 //                        @Override
 //                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
