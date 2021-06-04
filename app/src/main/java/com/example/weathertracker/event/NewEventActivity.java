@@ -92,6 +92,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
         setContentView(R.layout.activity_new_event);
 
         userId = getSharedPreferences("sharedPreferences", MODE_PRIVATE).getString("userId", "");
+        staticHobbyTag = "";
         Calendar now = Calendar.getInstance();
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm");

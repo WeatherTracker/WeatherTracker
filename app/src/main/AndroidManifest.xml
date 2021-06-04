@@ -31,9 +31,9 @@
         <activity
             android:name=".account.ResetPasswordActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".account.ProfileActivity"
-            android:screenOrientation="portrait" />
+        <!--        <activity-->
+        <!--            android:name=".account.ProfileActivity"-->
+        <!--            android:screenOrientation="portrait" />-->
         <activity
             android:name=".account.ForgetPasswordActivity"
             android:screenOrientation="portrait" />
@@ -42,12 +42,14 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".account.LoginActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity
             android:name=".MainActivity"

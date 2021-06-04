@@ -362,7 +362,7 @@ public class ProfileFragment extends Fragment {
             for (double i : vector) {
                 AHPPreference.add(Math.abs(i) / sum);
             }
-            Toast.makeText(getActivity(), AHPPreference.toString(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(), AHPPreference.toString(), Toast.LENGTH_SHORT).show();
         } else {
             AHPPreference = null;
         }

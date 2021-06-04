@@ -102,7 +102,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private TextInputLayout hobbyClass, hobbies;
     private SwitchCompat isAllDay;
     private RecyclerView eventToSight;
-    private ArrayList<Sight> sights;
+    private List<Sight> sights;
     private LinearLayout timeLayout;
     private ArrayList<String> xLabels = new ArrayList<>();
     private LineChart lineChart;
@@ -153,8 +153,12 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 if (!response.isSuccessful()) {
                     Toast.makeText(CheckAndEditActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
                 } else {
-                    eventToSight.setLayoutManager(new LinearLayoutManager(CheckAndEditActivity.this));
+                    sights = response.body();
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(CheckAndEditActivity.this);
+                    linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+                    eventToSight.setLayoutManager(linearLayoutManager);
                     eventToSight.setAdapter(new eventToSightAdapter(CheckAndEditActivity.this, sights));
+
                 }
             }
 
