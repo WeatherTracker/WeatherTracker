@@ -151,68 +151,69 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         descHashMap.put("disabled", disableProperty);
 
         customCalendar.setMapDescToProp(descHashMap);
-        dateHashMap.put(today, "current");
         customCalendar.setDate(calendar, dateHashMap);
 
-        getWeatherIcon(today_month);
+        getWeatherIcon(today_month,today_year);
     }
 
     //todo:
-    private void getWeatherIcon(int flag) {
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("data", Context.MODE_PRIVATE);
-        float Longitude = sharedPreferences.getFloat("Longitude", 0);
-        float Latitude = sharedPreferences.getFloat("Latitude", 0);
-        RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-        Call<List<String>> call = retrofitService.getWeatherIcon(Latitude, Longitude);
-        call.enqueue(new Callback<List<String>>() {
-            @Override
-            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                if (!response.isSuccessful()) {
-                    Toast.makeText(getActivity(), "" + response.code(), Toast.LENGTH_SHORT).show();
-                } else {
-                    int iconTime = 7, iconDay = today - 1;
-                    View[] month_days = customCalendar.getAllViews();
-                    if ((month_days.length - today) < 8) {
-                        iconTime = (month_days.length - today) + 1;
-                        iconFlag = 7 - iconTime - 1;
-                    }
-                    icon = response.body();
-                    if (flag == today_month) {
-                        System.out.println("this month");
-                        for (int i = 0; i < iconTime; i++) {
-                            String uri = icon.get(i); //圖片路徑和名稱
+    private void getWeatherIcon(int flag, int year) {
+        if(year==today_year) {
+            SharedPreferences sharedPreferences = getContext().getSharedPreferences("data", Context.MODE_PRIVATE);
+            float Longitude = sharedPreferences.getFloat("Longitude", 0);
+            float Latitude = sharedPreferences.getFloat("Latitude", 0);
+            RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+            Call<List<String>> call = retrofitService.getWeatherIcon(Latitude, Longitude);
+            call.enqueue(new Callback<List<String>>() {
+                @Override
+                public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                    if (!response.isSuccessful()) {
+                        Toast.makeText(getActivity(), "" + response.code(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        int iconTime = 7, iconDay = today - 1;
+                        View[] month_days = customCalendar.getAllViews();
+                        if ((month_days.length - today) < 8) {
+                            iconTime = (month_days.length - today) + 1;
+                            iconFlag = 7 - iconTime - 1;
+                        }
+                        icon = response.body();
+                        if (flag == today_month) {
+                            System.out.println("this month");
+                            for (int i = 0; i < iconTime; i++) {
+                                String uri = icon.get(i); //圖片路徑和名稱
 
-                            int imageResource = getContext().getResources().getIdentifier(uri, "drawable", getContext().getPackageName());
-                            //System.out.println("image+" + imageResource + "+" + uri);
-                            View temp_view = month_days[iconDay];
+                                int imageResource = getContext().getResources().getIdentifier(uri, "drawable", getContext().getPackageName());
+                                //System.out.println("image+" + imageResource + "+" + uri);
+                                View temp_view = month_days[iconDay];
 //                            temp_view.findViewById(R.id.icon).setBackgroundResource(imageResource);
-                            temp_view.findViewById(R.id.text_view).setBackgroundResource(imageResource);
-                            temp_view.findViewById(R.id.cycle).bringToFront();
-                            iconDay++;
-                        }
-                    } else if (flag == (today_month + 1)) {
-                        int j = 7 - iconFlag;
-                        System.out.println("Next month" + flag);
-                        for (int i = 0; i < j; i++) {
-                            String uri = icon.get(i); //圖片路徑和名稱
-                            int imageResource = getContext().getResources().getIdentifier(uri, "drawable", getContext().getPackageName());
-                            //System.out.println("image+" + imageResource + "+" + uri);
-                            View temp_view = month_days[i];
-                            temp_view.findViewById(R.id.icon).setBackgroundResource(imageResource);
-                            j++;
-                            iconDay++;
-                        }
-                        iconFlag = 7;
+                                temp_view.findViewById(R.id.text_view).setBackgroundResource(imageResource);
+                                temp_view.findViewById(R.id.cycle).bringToFront();
+                                iconDay++;
+                            }
+                        } else if (flag == (today_month + 1)) {
+                            int j = 7 - iconFlag;
+                            System.out.println("Next month" + flag);
+                            for (int i = 0; i < j; i++) {
+                                String uri = icon.get(i); //圖片路徑和名稱
+                                int imageResource = getContext().getResources().getIdentifier(uri, "drawable", getContext().getPackageName());
+                                //System.out.println("image+" + imageResource + "+" + uri);
+                                View temp_view = month_days[i];
+                                temp_view.findViewById(R.id.icon).setBackgroundResource(imageResource);
+                                j++;
+                                iconDay++;
+                            }
+                            iconFlag = 7;
 
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<List<String>> call, Throwable t) {
-                System.out.println("onFailure:icon" + t);
-            }
-        });
+                @Override
+                public void onFailure(Call<List<String>> call, Throwable t) {
+                    System.out.println("onFailure:icon" + t);
+                }
+            });
+        }
     }
 
     private void setListener() {
@@ -551,104 +552,71 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         pickDate = 0;
         int month = 0;
         month = Mcalendar.get(Calendar.MONTH);
+        int year = Mcalendar.get(Calendar.YEAR);
         System.out.println("month +" + month + whichButton);
         switch (month) {
             case Calendar.JANUARY:
                 arr[0] = new HashMap<>();
                 getRedPoint("01", Mcalendar.getWeekYear());
-                getWeatherIcon(1);
-                if (today_month == 1) {
-                    arr[0].put(today, "current");
-                }
+                getWeatherIcon(1, year);
+//                if (today_month == 1) {
+//                    arr[0].put(today, "current");
+//                }
                 break;
             case Calendar.FEBRUARY:
                 arr[0] = new HashMap<>();
                 getRedPoint("02", Mcalendar.getWeekYear());
-                getWeatherIcon(2);
-                if (today_month == 2) {
-                    arr[0].put(today, "current");
-                }
+                getWeatherIcon(2, year);
                 break;
             case Calendar.MARCH:
                 arr[0] = new HashMap<>();
                 getRedPoint("03", Mcalendar.getWeekYear());
-                getWeatherIcon(3);
-                if (today_month == 3) {
-                    arr[0].put(today, "current");
-                }
+                getWeatherIcon(3, year);
                 break;
             case Calendar.APRIL:
                 arr[0] = new HashMap<>();
                 getRedPoint("04", Mcalendar.getWeekYear());
-                getWeatherIcon(4);
-                if (today_month == 4) {
-                    arr[0].put(today, "current");
-                }
+                getWeatherIcon(4, year);
                 break;
             case Calendar.MAY:
                 getRedPoint("05", Mcalendar.getWeekYear());
                 arr[0] = new HashMap<>();
-                getWeatherIcon(5);
-                if (today_month == 5) {
-                    arr[0].put(today, "current");
-                }
+                getWeatherIcon(5, year);
                 break;
             case Calendar.JUNE:
                 arr[0] = new HashMap<>();
                 getRedPoint("06", Mcalendar.getWeekYear());
-                getWeatherIcon(6);
-                if (today_month == 6) {
-                    arr[0].put(today, "current");
-                }
+                getWeatherIcon(6, year);
                 System.out.println("88888");
                 break;
             case Calendar.JULY:
                 arr[0] = new HashMap<>();
                 getRedPoint("07", Mcalendar.getWeekYear());
-                getWeatherIcon(7);
-                if (today_month == 7) {
-                    arr[0].put(today, "current");
-                }
-                break;
+                getWeatherIcon(7, year);
             case Calendar.AUGUST:
                 arr[0] = new HashMap<>();
                 getRedPoint("08", Mcalendar.getWeekYear());
-                getWeatherIcon(8);
-                if (today_month == 8) {
-                    arr[0].put(today, "current");
-                }
+                getWeatherIcon(8, year);
                 break;
             case Calendar.SEPTEMBER:
                 arr[0] = new HashMap<>();
                 getRedPoint("09", Mcalendar.getWeekYear());
-                getWeatherIcon(9);
-                if (today_month == 9) {
-                    arr[0].put(today, "current");
-                }
+                getWeatherIcon(9, year);
                 break;
             case Calendar.OCTOBER:
                 arr[0] = new HashMap<>();
                 getRedPoint("10", Mcalendar.getWeekYear());
-                getWeatherIcon(10);
-                if (today_month == 10) {
-                    arr[0].put(today, "current");
-                }
+                getWeatherIcon(10, year);
                 break;
             case Calendar.NOVEMBER:
                 arr[0] = new HashMap<>();
                 getRedPoint("11", Mcalendar.getWeekYear());
-                getWeatherIcon(11);
-                if (today_month == 11) {
-                    arr[0].put(today, "current");
-                }
+                getWeatherIcon(11, year);
                 break;
             case Calendar.DECEMBER:
                 arr[0] = new HashMap<>();
                 getRedPoint("12", Mcalendar.getWeekYear());
-                getWeatherIcon(12);
-                if (today_month == 12) {
-                    arr[0].put(today, "current");
-                }
+                getWeatherIcon(12, year);
                 break;
 
         }
