@@ -2,7 +2,6 @@ package com.example.weathertracker.event;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -116,13 +115,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         Intent intent = this.getIntent();
         String json = intent.getStringExtra("json");
         String where = intent.getStringExtra("where");
-        if (where.equals("recommend")) {
-            btnOutEvent.setVisibility(View.INVISIBLE);
-            btnParticipateEvent.setVisibility(View.VISIBLE);
-        } else {
-            btnOutEvent.setVisibility(View.VISIBLE);
-            btnParticipateEvent.setVisibility(View.INVISIBLE);
-        }
+
         System.out.println("Event:" + json);
 
         Gson gson = new Gson();
@@ -149,6 +142,13 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         mapFragment.getMapAsync(this);
         mapFragment.getView().setVisibility(View.GONE);
 
+        if (where.equals("recommend")) {
+            btnOutEvent.setVisibility(View.INVISIBLE);
+            btnParticipateEvent.setVisibility(View.VISIBLE);
+        } else {
+            btnOutEvent.setVisibility(View.VISIBLE);
+            btnParticipateEvent.setVisibility(View.INVISIBLE);
+        }
         initField();
         callChart();
     }
@@ -330,7 +330,9 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 dialogBuilder.setView(dialogView);
                 TextView tvScheduleStartTime = dialogView.findViewById(R.id.tvScheduleStartTime);
                 TextView tvScheduleEndTime = dialogView.findViewById(R.id.tvScheduleEndTime);
+                TextView tvRecommendResult = dialogView.findViewById(R.id.recommendResult);
                 Button btnAddList = dialogView.findViewById(R.id.btnAddList);
+                Button btnStartSchedule = dialogView.findViewById(R.id.startSchedule);
                 ToggleButton blackWhiteToggle = dialogView.findViewById(R.id.blackWhiteToggle);
                 ChipGroup whiteChipGroup = dialogView.findViewById(R.id.whiteChipGroup);
                 ChipGroup blackChipGroup = dialogView.findViewById(R.id.blackChipGroup);
@@ -366,7 +368,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 btnAddList.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String str = tvScheduleStartTime.getText().toString() + " 至 " + tvScheduleEndTime.getText().toString();
+                        String str = tvScheduleStartTime.getText().toString() + " " + tvScheduleEndTime.getText().toString();
                         if (blackWhiteToggle.isChecked() && !whiteSet.contains(str)) {//白名單
                             whiteSet.add(str);
                             Chip chip = new Chip(CheckAndEditActivity.this);
@@ -403,16 +405,26 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                         }
                     }
                 });
-                dialogBuilder.setPositiveButton("開始排程", new DialogInterface.OnClickListener() {
+                btnStartSchedule.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ArrayList<String> whiteList = new ArrayList<>(whiteSet);
-                        ArrayList<String> blackList = new ArrayList<>(blackSet);
+                    public void onClick(View v) {
+                        List<String> whiteList = new ArrayList<>(whiteSet);
+                        List<String> blackList = new ArrayList<>(blackSet);
                         Call<List<String>> call = retrofitService.getRecommendTime(userId, event.getEventId(), whiteList, blackList);
                         call.enqueue(new Callback<List<String>>() {
                             @Override
                             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-
+                                if (!response.isSuccessful()) {
+                                    Toast.makeText(CheckAndEditActivity.this, "錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    List<String> recommendTime = response.body();
+                                    StringBuilder foo = new StringBuilder();
+                                    foo.append("結果\n");
+                                    for (int i = 0; i < recommendTime.size(); i += 2) {
+                                        foo.append(recommendTime.get(i)).append(" ~ ").append(recommendTime.get(i + 1)).append("\n");
+                                    }
+                                    tvRecommendResult.setText(foo.toString());
+                                }
                             }
 
                             @Override
@@ -422,21 +434,15 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                         });
                     }
                 });
-                dialogBuilder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
                 AlertDialog alertDialog = dialogBuilder.create();
                 alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                alertDialog.setCanceledOnTouchOutside(false);
                 alertDialog.show();
             }
         });
         btnTags.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println(event.getDynamicTags());
                 PopupWindow popupWindow = new PopupWindow(CheckAndEditActivity.this);
                 popupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
                 popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);

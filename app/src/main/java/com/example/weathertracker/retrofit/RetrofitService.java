@@ -62,7 +62,7 @@ public interface RetrofitService {
     Call<Ack> editEvent(@Body Event event);
 
     @FormUrlEncoded
-    @PUT("inOrOutEvent")
+    @POST("inOrOutEvent")
     Call<Ack> inOrOutEvent(@Field("eventId") String eventId,
                            @Field("userId") String userId,
                            @Field("action") Boolean action);
@@ -77,11 +77,12 @@ public interface RetrofitService {
     @GET("searchEvent")
     Call<List<Event>> searchEvent(@Query("input") String input);
 
-    @GET("getRecommendTime")
-    Call<List<String>> getRecommendTime(@Query("userId") String userId,
-                                        @Query("eventId") String eventId,
-                                        @Query("whiteList") List<String> whiteList,
-                                        @Query("blackList") List<String> blackList);
+    @FormUrlEncoded
+    @POST("getRecommendTime")
+    Call<List<String>> getRecommendTime(@Field("userId") String userId,
+                                        @Field("eventId") String eventId,
+                                        @Field("whiteList") List<String> whiteList,
+                                        @Field("blackList") List<String> blackList);
 
     @GET("getProfile")
     Call<User> getProfile(@Query("userId") String userId);
