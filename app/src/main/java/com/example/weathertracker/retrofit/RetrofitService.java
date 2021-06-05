@@ -62,7 +62,7 @@ public interface RetrofitService {
     Call<Ack> editEvent(@Body Event event);
 
     @FormUrlEncoded
-    @PUT("inOrOutEvent")
+    @POST("inOrOutEvent")
     Call<Ack> inOrOutEvent(@Field("eventId") String eventId,
                            @Field("userId") String userId,
                            @Field("action") Boolean action);
