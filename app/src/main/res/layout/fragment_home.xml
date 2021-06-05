@@ -28,7 +28,8 @@
         app:hintTextColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/ll"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginRight="150dp">
 
         <AutoCompleteTextView
             android:id="@+id/etWeatherElement"
