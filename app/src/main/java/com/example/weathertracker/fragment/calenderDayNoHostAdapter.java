@@ -84,6 +84,7 @@ public class calenderDayNoHostAdapter extends RecyclerView.Adapter<calenderDayNo
 
                         Intent intent = new Intent(mContext, CheckAndEditActivity.class);
                         intent.putExtra("json", json);
+                        intent.putExtra("where","home");
 
                         mContext.startActivity(intent);
                     }catch (Exception e){

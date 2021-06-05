@@ -84,7 +84,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
     private RetrofitService retrofitService;
     private Event event;
-    private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnSchedule, btnTags, btnDelete;
+    private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnSchedule, btnTags, btnDelete, btnParticipateEvent, btnOutEvent;
     private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime;
     private EditText etEventName, etHostRemark;
     private SupportMapFragment mapFragment;
@@ -115,6 +115,14 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
         Intent intent = this.getIntent();
         String json = intent.getStringExtra("json");
+        String where = intent.getStringExtra("where");
+        if (where.equals("recommend")) {
+            btnOutEvent.setVisibility(View.INVISIBLE);
+            btnParticipateEvent.setVisibility(View.VISIBLE);
+        } else {
+            btnOutEvent.setVisibility(View.VISIBLE);
+            btnParticipateEvent.setVisibility(View.INVISIBLE);
+        }
         System.out.println("Event:" + json);
 
         Gson gson = new Gson();
@@ -178,6 +186,8 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         btnTags = findViewById(R.id.btnTags);
         btnDelete = findViewById(R.id.btnDeletee);
         btnSchedule = findViewById(R.id.btnSchedule);
+        btnParticipateEvent = findViewById(R.id.participateEvent);
+        btnOutEvent = findViewById(R.id.outEvent);
         etEventName = findViewById(R.id.etEventName);
         tvStartDate = findViewById(R.id.tvStartDate);
         tvStartTime = findViewById(R.id.tvStartTime);
@@ -200,6 +210,58 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     }
 
     private void setListener() {
+        btnParticipateEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Call<Ack> call = retrofitService.inOrOutEvent(event.getEventId(), userId, true);
+                call.enqueue(new Callback<Ack>() {
+                    @Override
+                    public void onResponse(Call<Ack> call, Response<Ack> response) {
+                        if (!response.isSuccessful()) {
+                            Toast.makeText(CheckAndEditActivity.this, "錯誤，請稍後再試\n" + response.message(), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Ack ack = response.body();
+                            if (ack.getCode() == 200) {
+                                Toast.makeText(CheckAndEditActivity.this, "成功參加", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Ack> call, Throwable t) {
+
+                    }
+                });
+            }
+        });
+        btnOutEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Call<Ack> call = retrofitService.inOrOutEvent(event.getEventId(), userId, false);
+                call.enqueue(new Callback<Ack>() {
+                    @Override
+                    public void onResponse(Call<Ack> call, Response<Ack> response) {
+                        if (!response.isSuccessful()) {
+                            Toast.makeText(CheckAndEditActivity.this, "錯誤，請稍後再試\n" + response.message(), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Ack ack = response.body();
+                            if (ack.getCode() == 200) {
+                                Toast.makeText(CheckAndEditActivity.this, "成功參加", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Ack> call, Throwable t) {
+
+                    }
+                });
+            }
+        });
         btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -568,9 +630,15 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         etHostRemark.setText(event.getHostRemark());
         etHobbyClass.setText(event.getStaticHobbyClass(), false);
         etHobbies.setText(event.getStaticHobbyTag(), false);
-        if (event.isAuth()) {
-            btnEdit.setVisibility(View.VISIBLE);
+        try {
+            if (event.isAuth()) {
+                btnOutEvent.setVisibility(View.INVISIBLE);
+                btnEdit.setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            System.out.println("from recommend");
         }
+
     }
 
     private void setEditable() {
@@ -610,6 +678,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         btnAddPlace.setVisibility(View.INVISIBLE);
         btnSchedule.setVisibility(View.INVISIBLE);
         btnDelete.setVisibility(View.INVISIBLE);
+        btnOutEvent.setVisibility(View.INVISIBLE);
 
         etEventName.setTextColor(getResources().getColor(R.color.white));
         etHobbyClass.setTextColor(getResources().getColor(R.color.white));

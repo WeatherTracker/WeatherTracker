@@ -357,7 +357,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s != null) {
-//                    makeChart(s.toString());
+                    makeChart(s.toString());
                 }
             }
 
