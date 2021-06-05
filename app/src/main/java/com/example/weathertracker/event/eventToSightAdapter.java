@@ -81,37 +81,37 @@ public class eventToSightAdapter extends RecyclerView.Adapter<eventToSightAdapte
                     if (mSights.get(position).getTel() != null) {
                         tvSightTel.setText("電話: " + mSights.get(position).getTel());
                     } else {
-                        tvSightTel.setText("電話: N/A");
+                        tvSightTel.setText("電話: 無");
 
                     }
-                    if (mSights.get(position).getTel() != null) {
+                    if (mSights.get(position).getAdd() != null) {
                         tvSightAdd.setText("地址: " + mSights.get(position).getAdd());
                     } else {
-                        tvSightAdd.setText("地址: N/A");
+                        tvSightAdd.setText("地址: 無");
 
                     }
-                    if (mSights.get(position).getTel() != null) {
+                    if (mSights.get(position).getTicketinfo() != null) {
                         tvSightTicketInfo.setText("門票: " + mSights.get(position).getTicketinfo());
                     } else {
-                        tvSightTicketInfo.setText("門票: N/A");
+                        tvSightTicketInfo.setText("門票: 無");
 
                     }
-                    if (mSights.get(position).getTel() != null) {
+                    if (mSights.get(position).getDescription() != null) {
                         tvSightDescribe.setText("描述:\n\t\t\t\t" + mSights.get(position).getDescription());
                     } else {
-                        tvSightDescribe.setText("描述: N/A");
+                        tvSightDescribe.setText("描述: 無");
 
                     }
-                    if (mSights.get(position).getTel() != null) {
+                    if (mSights.get(position).getRemarks() != null) {
                         tvSightNote.setText("備註:\n\t\t\t\t" + mSights.get(position).getRemarks());
                     } else {
-                        tvSightNote.setText("備註: N/A");
+                        tvSightNote.setText("備註: 無");
 
                     }
-                    if (mSights.get(position).getTel() != null) {
+                    if (mSights.get(position).getOrgclass() != null) {
                         tvSightClass.setText("分類: " + mSights.get(position).getOrgclass());
                     } else {
-                        tvSightClass.setText("分類: N/A");
+                        tvSightClass.setText("分類: 無");
 
                     }
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

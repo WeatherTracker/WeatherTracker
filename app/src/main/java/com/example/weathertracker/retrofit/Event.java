@@ -10,6 +10,7 @@ public class Event {
     private double latitude, longitude;
     private List<String> participants, hosts, dynamicTags;
     private Boolean isPublic, isOutDoor;
+    private Suggestions suggestions;
 
     public Event(String eventName, String hostRemark, String startTime, String endTime, String staticHobbyClass, String staticHobbyTag, double latitude, double longitude, List<String> hosts, Boolean isPublic, Boolean isOutDoor) {
         this.eventName = eventName;
@@ -111,6 +112,26 @@ public class Event {
         this.eventId = eventId;
     }
 
+
+    public Suggestions getSuggestions() {
+        return suggestions;
+    }
+
+    public class Suggestions {
+        private String all, hosts, participants;
+
+        public String getAll() {
+            return all;
+        }
+
+        public String getHosts() {
+            return hosts;
+        }
+
+        public String getParticipants() {
+            return participants;
+        }
+    }
 
     @Override
     public String toString() {
