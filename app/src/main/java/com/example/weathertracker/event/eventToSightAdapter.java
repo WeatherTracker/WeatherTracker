@@ -63,8 +63,8 @@ public class eventToSightAdapter extends RecyclerView.Adapter<eventToSightAdapte
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final int position = getAdapterPosition();
                     //create dialog
+                    final int position = getAdapterPosition();
                     dialogBuilder = new AlertDialog.Builder(mContext);
                     layoutView = LayoutInflater.from(mContext).inflate(R.layout.sight_detail_layout, null);
                     tvSightName = layoutView.findViewById(R.id.sightName);
@@ -78,15 +78,41 @@ public class eventToSightAdapter extends RecyclerView.Adapter<eventToSightAdapte
                     btnNavigation = layoutView.findViewById(R.id.btnNavigation);
                     //init Field
                     tvSightName.setText(mSights.get(position).getName());
-                    tvSightTel.setText("電話: " + mSights.get(position).getTel());
-                    tvSightAdd.setText("地址: " + mSights.get(position).getAdd());
-                    tvSightTicketInfo.setText("門票: " + mSights.get(position).getTicketinfo());
-                    tvSightDescribe.setText("描述:\n\t\t\t\t" + mSights.get(position).getDescription());
-                    tvSightNote.setText("備註:\n\t\t\t\t" + mSights.get(position).getRemarks());
-                    if(!mSights.get(position).getOrgclass().equals("")){
-                        tvSightClass.setText("(" + mSights.get(position).getOrgclass() + ")");
-                    }else{
-                        tvSightClass.setText("");
+                    if (mSights.get(position).getTel() != null) {
+                        tvSightTel.setText("電話: " + mSights.get(position).getTel());
+                    } else {
+                        tvSightTel.setText("電話: N/A");
+
+                    }
+                    if (mSights.get(position).getTel() != null) {
+                        tvSightAdd.setText("地址: " + mSights.get(position).getAdd());
+                    } else {
+                        tvSightAdd.setText("地址: N/A");
+
+                    }
+                    if (mSights.get(position).getTel() != null) {
+                        tvSightTicketInfo.setText("門票: " + mSights.get(position).getTicketinfo());
+                    } else {
+                        tvSightTicketInfo.setText("門票: N/A");
+
+                    }
+                    if (mSights.get(position).getTel() != null) {
+                        tvSightDescribe.setText("描述:\n\t\t\t\t" + mSights.get(position).getDescription());
+                    } else {
+                        tvSightDescribe.setText("描述: N/A");
+
+                    }
+                    if (mSights.get(position).getTel() != null) {
+                        tvSightNote.setText("備註:\n\t\t\t\t" + mSights.get(position).getRemarks());
+                    } else {
+                        tvSightNote.setText("備註: N/A");
+
+                    }
+                    if (mSights.get(position).getTel() != null) {
+                        tvSightClass.setText("分類: " + mSights.get(position).getOrgclass());
+                    } else {
+                        tvSightClass.setText("分類: N/A");
+
                     }
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     try {
