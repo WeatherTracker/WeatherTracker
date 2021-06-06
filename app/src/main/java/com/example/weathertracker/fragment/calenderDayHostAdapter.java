@@ -2,6 +2,7 @@ package com.example.weathertracker.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,10 +48,11 @@ public class calenderDayHostAdapter extends RecyclerView.Adapter<calenderDayHost
 //        } else {
 //            holder.calenderday_item.setVisibility(View.GONE);
 //        }
+        holder.tv_1.setText(event.get(position).getEventName());
         if (event.get(position).isAuth()) {
-            holder.tv_1.setText(event.get(position).getEventName());
+            holder.calenderday_item.setBackground(mContext.getDrawable(R.drawable.favoritem));
         } else {
-            holder.calenderday_item.setVisibility(View.GONE);
+            holder.calenderday_item.setBackground(mContext.getDrawable(R.drawable.nohost));
         }
     }
 

@@ -16,8 +16,9 @@
         android:hint="@string/account"
         app:endIconMode="clear_text"
         app:hintTextColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
-        app:startIconDrawable="@drawable/ic_baseline_email_24">
+        app:layout_constraintTop_toBottomOf="@+id/textView19"
+        app:startIconDrawable="@drawable/ic_baseline_email_24"
+        tools:layout_editor_absoluteX="15dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etLoginEmail"
@@ -118,5 +119,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view" />
+
+    <TextView
+        android:id="@+id/textView19"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Weather Tracker"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
