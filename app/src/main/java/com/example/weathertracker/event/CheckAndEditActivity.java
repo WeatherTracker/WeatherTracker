@@ -166,7 +166,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(CheckAndEditActivity.this);
                     linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
                     eventToSight.setLayoutManager(linearLayoutManager);
-                    eventToSight.setAdapter(new eventToSightAdapter(CheckAndEditActivity.this, sights));
+                    eventToSight.setAdapter(new EventToSightAdapter(CheckAndEditActivity.this, sights));
 
                 }
             }
@@ -443,14 +443,25 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
             @Override
             public void onClick(View v) {
                 System.out.println(event.getDynamicTags());
-                PopupWindow popupWindow = new PopupWindow(CheckAndEditActivity.this);
-                popupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
-                popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-                popupWindow.setContentView(LayoutInflater.from(CheckAndEditActivity.this).inflate(R.layout.card_item, null));
-                popupWindow.setBackgroundDrawable(new ColorDrawable(0x00000000));
-                popupWindow.setOutsideTouchable(false);
-                popupWindow.setFocusable(true);
-                popupWindow.showAsDropDown(btnTags, -100, 0);
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(CheckAndEditActivity.this);
+                View layoutView = getLayoutInflater().inflate(R.layout.tag_popup_layout, null);
+                TextView tv = layoutView.findViewById(R.id.dTags);
+                StringBuilder s= new StringBuilder();
+                for (String tag : event.getDynamicTags()) {
+                    s.append(tag).append("\n");
+                }
+                tv.setText(s);
+                dialogBuilder.setView(layoutView);
+                AlertDialog alertDialog = dialogBuilder.create();
+                alertDialog.show();
+//                PopupWindow popupWindow = new PopupWindow(CheckAndEditActivity.this);
+//                popupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+//                popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+//                popupWindow.setContentView(LayoutInflater.from(CheckAndEditActivity.this).inflate(R.layout.tag_popup_layout, null));
+//                popupWindow.setBackgroundDrawable(new ColorDrawable(0x00000000));
+//                popupWindow.setOutsideTouchable(false);
+//                popupWindow.setFocusable(true);
+//                popupWindow.showAsDropDown(btnTags, -100, 0);
             }
         });
         btnAddPlace.setOnClickListener(new View.OnClickListener() {
@@ -633,7 +644,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         isPublic.setChecked(event.isPublic());
         latitude = event.getLatitude();
         longitude = event.getLongitude();
-        etHostRemark.setText(event.getHostRemark());
+        etHostRemark.setText(event.getHostRemark()+"\n"+event.getSuggestions().getAll()+"\n"+event.getSuggestions().getHost()+"\n"+event.getSuggestions().getParticipant());
         etHobbyClass.setText(event.getStaticHobbyClass(), false);
         etHobbies.setText(event.getStaticHobbyTag(), false);
         try {

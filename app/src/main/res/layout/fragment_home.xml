@@ -16,7 +16,7 @@
         app:day_of_week_length="3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvUserLocation"
         app:month_year_format="full_month__with_year" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -28,8 +28,7 @@
         app:hintTextColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/ll"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginRight="150dp">
+        app:layout_constraintStart_toStartOf="parent">
 
         <AutoCompleteTextView
             android:id="@+id/etWeatherElement"
@@ -60,9 +59,12 @@
         android:id="@+id/tvUserLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/sightInfoStyle"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/custom_calender" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

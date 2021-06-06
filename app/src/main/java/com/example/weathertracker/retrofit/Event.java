@@ -118,18 +118,18 @@ public class Event {
     }
 
     public class Suggestions {
-        private String all, hosts, participants;
+        private String all, host, participant;
 
         public String getAll() {
             return all;
         }
 
-        public String getHosts() {
-            return hosts;
+        public String getHost() {
+            return host;
         }
 
-        public String getParticipants() {
-            return participants;
+        public String getParticipant() {
+            return participant;
         }
     }
 

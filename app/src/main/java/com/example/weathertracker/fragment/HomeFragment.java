@@ -647,7 +647,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 } else {
                     data = response.body();
                     makeChart(etWeatherElement.getEditableText().toString());
-                    tvUserLocation.setText("目前位置: " + data.getCity() + data.getArea() + "\n測站: " + data.getSiteName());
+                    tvUserLocation.setText("目前位置: " + data.getCity() + data.getArea() + " 測站: " + data.getSiteName());
 //                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 //                        @Override
 //                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

@@ -1,6 +1,5 @@
 package com.example.weathertracker.retrofit;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -67,8 +66,11 @@ public interface RetrofitService {
                            @Field("userId") String userId,
                            @Field("action") Boolean action);
 
-    @GET("getRecommendEvents")
-    Call<List<Event>> getRecommendEvents(@Query("userId") String userId);
+    @FormUrlEncoded
+    @POST("recommendEvent")
+    Call<List<Event>> getRecommendEvents(@Field("userId") String userId,
+                                         @Field("longitude") float longitude,
+                                         @Field("latitude") float latitude);
 
     @GET("recommendScene")
     Call<List<Sight>> getRecommendSights(@Query("longitude") double longitude,

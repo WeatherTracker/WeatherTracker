@@ -21,23 +21,23 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class eventToSightAdapter extends RecyclerView.Adapter<eventToSightAdapter.viewHolder> {
+public class EventToSightAdapter extends RecyclerView.Adapter<EventToSightAdapter.viewHolder> {
     private Context mContext;
     private List<Sight> mSights;
 
-    public eventToSightAdapter(Context mContext, List<Sight> sights) {
+    public EventToSightAdapter(Context mContext, List<Sight> sights) {
         this.mContext = mContext;
         this.mSights = sights;
     }
 
     @NonNull
     @Override
-    public eventToSightAdapter.viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new eventToSightAdapter.viewHolder(LayoutInflater.from(mContext).inflate(R.layout.card_item, parent, false));
+    public EventToSightAdapter.viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new EventToSightAdapter.viewHolder(LayoutInflater.from(mContext).inflate(R.layout.card_item, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull eventToSightAdapter.viewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull EventToSightAdapter.viewHolder holder, int position) {
         holder.tvSightCard.setText(mSights.get(position).getName());
     }
 
