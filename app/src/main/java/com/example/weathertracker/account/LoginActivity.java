@@ -120,7 +120,8 @@ public class LoginActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signIn();
+                Toast.makeText(LoginActivity.this, "此功能將日後實裝", Toast.LENGTH_SHORT).show();
+//                signIn();
             }
         });
         btnLogin.setOnClickListener(new View.OnClickListener() {
