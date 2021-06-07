@@ -214,7 +214,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //todo:
+                onBackPressed();
             }
         });
         tvStartDate.setOnClickListener(new View.OnClickListener() {
@@ -516,5 +516,10 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                 Toast.makeText(NewEventActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

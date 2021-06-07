@@ -210,6 +210,12 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     }
 
     private void setListener() {
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         btnParticipateEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -920,5 +926,10 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 Toast.makeText(CheckAndEditActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }
