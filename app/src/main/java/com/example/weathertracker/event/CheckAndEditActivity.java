@@ -141,15 +141,21 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         mapFragment.getMapAsync(this);
         mapFragment.getView().setVisibility(View.GONE);
 
+
+        initField();
+        callChart();
         if (where.equals("recommend")) {
             btnOutEvent.setVisibility(View.INVISIBLE);
             btnParticipateEvent.setVisibility(View.VISIBLE);
         } else {
-            btnOutEvent.setVisibility(View.VISIBLE);
-            btnParticipateEvent.setVisibility(View.INVISIBLE);
+            if (!event.isAuth()) {
+                btnOutEvent.setVisibility(View.VISIBLE);
+                btnParticipateEvent.setVisibility(View.INVISIBLE);
+            }else{
+                btnOutEvent.setVisibility(View.INVISIBLE);
+                btnParticipateEvent.setVisibility(View.INVISIBLE);
+            }
         }
-        initField();
-        callChart();
     }
 
     private void getEventToSight() {
@@ -249,7 +255,10 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                             Toast.makeText(CheckAndEditActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                         } else {
                             Ack ack = response.body();
-                            Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//成功新增事件
+                            Intent intent = new Intent(CheckAndEditActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
                         }
                     }
 
@@ -923,7 +932,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
             @Override
             public void onFailure(Call<chartList> call, Throwable t) {
-                Toast.makeText(CheckAndEditActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(CheckAndEditActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
             }
         });
     }

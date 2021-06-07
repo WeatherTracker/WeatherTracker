@@ -254,6 +254,8 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                         isOpen = true;
                         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
                         View layoutView = getLayoutInflater().inflate(R.layout.pop_up_layout, null);
+                        TextView tvDate = layoutView.findViewById(R.id.date);
+
                         ImageButton btnNewEvent = layoutView.findViewById(R.id.btnNewEvent);
                         btnNewEvent.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -279,7 +281,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                         RecyclerView rv_day = layoutView.findViewById(R.id.rv_day);
                         RecyclerView rv_day2 = layoutView.findViewById(R.id.rv_day2);
                         getCalenderDay(year, X, Y, rv_day, rv_day2);
-
+                        tvDate.setText(sharedPreferencesPickDay);
                         SharedPreferences sharedPreferences = getContext().getSharedPreferences("favorite", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
 
@@ -647,7 +649,13 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 } else {
                     data = response.body();
                     makeChart(etWeatherElement.getEditableText().toString());
-                    tvUserLocation.setText("目前位置: " + data.getCity() + data.getArea() + " 測站: " + data.getSiteName());
+                    String s3;
+                    if (data.getSiteName() == null) {
+                        s3 = "";
+                    } else {
+                        s3 = data.getSiteName();
+                    }
+                    tvUserLocation.setText("目前位置: " + data.getCity() + data.getArea() + " 測站: " + s3);
 //                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 //                        @Override
 //                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -666,7 +674,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
             @Override
             public void onFailure(Call<chartList> call, Throwable t) {
-                Toast.makeText(getActivity(), "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
             }
         });
 

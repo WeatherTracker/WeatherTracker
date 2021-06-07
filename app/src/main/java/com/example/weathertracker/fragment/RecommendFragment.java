@@ -64,7 +64,7 @@ public class RecommendFragment extends Fragment {
                 } else {
                     List<Event> events = response.body();
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-                    linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+                    linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                     rvRecommendEvents.setLayoutManager(linearLayoutManager);
                     rvRecommendEvents.setAdapter(new SightToEventAdapter(getContext(), events));
                 }
@@ -87,7 +87,6 @@ public class RecommendFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(getContext(), query, Toast.LENGTH_SHORT).show();
                 Call<List<Event>> call = retrofitService.searchEvent(query);
                 call.enqueue(new Callback<List<Event>>() {
                     @Override
@@ -98,7 +97,7 @@ public class RecommendFragment extends Fragment {
                         }else{
                             List<Event> events = response.body();
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-                            linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+                            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                             rvRecommendEvents.setLayoutManager(linearLayoutManager);
                             rvRecommendEvents.setAdapter(new SightToEventAdapter(getContext(), events));
                         }
