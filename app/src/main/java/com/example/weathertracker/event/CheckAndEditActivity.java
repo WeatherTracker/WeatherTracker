@@ -234,6 +234,10 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                         } else {
                             Ack ack = response.body();
                             Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(CheckAndEditActivity.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
                         }
                     }
 
@@ -257,6 +261,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                             Ack ack = response.body();
                             Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//成功新增事件
                             Intent intent = new Intent(CheckAndEditActivity.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
                             finish();
                         }
@@ -318,6 +323,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                                         if (ack.getCode() == 200) {
                                             Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
                                             Intent intent = new Intent(CheckAndEditActivity.this, MainActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                             startActivity(intent);
                                             finish();
                                         } else {
@@ -527,6 +533,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                                     if (ack.getCode() == 200) {
                                         Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(CheckAndEditActivity.this, MainActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intent);
                                         finish();
                                     } else {
@@ -923,7 +930,11 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(CheckAndEditActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                    if(response.code()==503){
+                        Toast.makeText(CheckAndEditActivity.this, "抱歉，非7日內資料暫時不可用，日後即將更新", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(CheckAndEditActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     data = response.body();
                     makeChart("溫度");

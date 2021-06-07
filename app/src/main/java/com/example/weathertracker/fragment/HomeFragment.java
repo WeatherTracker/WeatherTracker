@@ -645,7 +645,11 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(getActivity(), "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                    if (response.code() == 503) {
+                        Toast.makeText(getActivity(), "抱歉，非7日內資料暫時不可用，日後即將更新", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     data = response.body();
                     makeChart(etWeatherElement.getEditableText().toString());
