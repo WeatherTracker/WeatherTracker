@@ -182,9 +182,12 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                         public void onResponse(Call<Ack> call, Response<Ack> response) {
                             if (!response.isSuccessful()) {
                                 if (response.code() == 401) {
+                                    Toast.makeText(NewEventActivity.this, "未經授權，請重新登入", Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(NewEventActivity.this, LoginActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivity(intent);
+                                }else{
+                                    Toast.makeText(NewEventActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                                 }
                             } else {
                                 Ack ack = response.body();
@@ -194,14 +197,14 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                                     startActivity(intent);
                                     finish();
                                 } else {
-                                    Toast.makeText(NewEventActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(NewEventActivity.this, "錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
 
                         @Override
                         public void onFailure(Call<Ack> call, Throwable t) {
-                            Toast.makeText(NewEventActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(NewEventActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -501,7 +504,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(NewEventActivity.this, "" + response.code(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NewEventActivity.this, "伺服器錯誤，請稍後再試" , Toast.LENGTH_SHORT).show();
                 } else {
                     data = response.body();
                     makeChart("溫度");
@@ -510,7 +513,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
 
             @Override
             public void onFailure(Call<chartList> call, Throwable t) {
-
+                Toast.makeText(NewEventActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
             }
         });
     }

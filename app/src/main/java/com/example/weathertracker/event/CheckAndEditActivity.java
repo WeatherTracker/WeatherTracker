@@ -158,7 +158,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
             @Override
             public void onResponse(Call<List<Sight>> call, Response<List<Sight>> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(CheckAndEditActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CheckAndEditActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                 } else {
                     sights = response.body();
                     System.out.println(sights);
@@ -172,7 +172,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
             @Override
             public void onFailure(Call<List<Sight>> call, Throwable t) {
-                Toast.makeText(CheckAndEditActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CheckAndEditActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -218,20 +218,16 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                     @Override
                     public void onResponse(Call<Ack> call, Response<Ack> response) {
                         if (!response.isSuccessful()) {
-                            Toast.makeText(CheckAndEditActivity.this, "錯誤，請稍後再試\n" + response.message(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CheckAndEditActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                         } else {
                             Ack ack = response.body();
-                            if (ack.getCode() == 200) {
-                                Toast.makeText(CheckAndEditActivity.this, "成功參加", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
-                            }
+                            Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Ack> call, Throwable t) {
-
+                        Toast.makeText(CheckAndEditActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -244,20 +240,16 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                     @Override
                     public void onResponse(Call<Ack> call, Response<Ack> response) {
                         if (!response.isSuccessful()) {
-                            Toast.makeText(CheckAndEditActivity.this, "錯誤，請稍後再試\n" + response.message(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CheckAndEditActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                         } else {
                             Ack ack = response.body();
-                            if (ack.getCode() == 200) {
-                                Toast.makeText(CheckAndEditActivity.this, "成功參加", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
-                            }
+                            Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Ack> call, Throwable t) {
-
+                        Toast.makeText(CheckAndEditActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -276,71 +268,72 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(CheckAndEditActivity.this, SweetAlertDialog.WARNING_TYPE);
                 sweetAlertDialog.setTitleText("確定修改?");
                 sweetAlertDialog.setConfirmButton("確定", new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                setNonEditable();
-                                btnDone.setVisibility(View.INVISIBLE);
-                                btnEdit.setVisibility(View.VISIBLE);
-                                Event e = null;
-                                String endDateString;
-                                if (isAllDay.isChecked()) {
-                                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                                    try {
-                                        Date date = sdf.parse(tvEndDate.getText().toString());
-                                        Calendar c = Calendar.getInstance();
-                                        c.setTime(date);
-                                        c.add(Calendar.DATE, 1);
-                                        date = c.getTime();
-                                        endDateString = sdf.format(date);
-                                        e = new Event(etEventName.getText().toString(), event.getEventId(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " 00:00", endDateString + " 00:00", etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, isPublic.isChecked(), isOutDoor.isChecked());
-                                    } catch (ParseException parseException) {
-                                        parseException.printStackTrace();
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        setNonEditable();
+                        btnDone.setVisibility(View.INVISIBLE);
+                        btnEdit.setVisibility(View.VISIBLE);
+                        Event e = null;
+                        String endDateString;
+                        if (isAllDay.isChecked()) {
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            try {
+                                Date date = sdf.parse(tvEndDate.getText().toString());
+                                Calendar c = Calendar.getInstance();
+                                c.setTime(date);
+                                c.add(Calendar.DATE, 1);
+                                date = c.getTime();
+                                endDateString = sdf.format(date);
+                                e = new Event(etEventName.getText().toString(), event.getEventId(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " 00:00", endDateString + " 00:00", etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, isPublic.isChecked(), isOutDoor.isChecked());
+                            } catch (ParseException parseException) {
+                                parseException.printStackTrace();
+                            }
+                        } else {
+                            e = new Event(etEventName.getText().toString(), event.getEventId(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(), tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, isPublic.isChecked(), isOutDoor.isChecked());
+                        }
+                        if (checkValid(e)) {
+                            Call<Ack> call = retrofitService.editEvent(e);
+                            call.enqueue(new Callback<Ack>() {
+                                @Override
+                                public void onResponse(Call<Ack> call, Response<Ack> response) {
+                                    if (!response.isSuccessful()) {
+                                        Toast.makeText(CheckAndEditActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Ack ack = response.body();
+                                        if (ack.getCode() == 200) {
+                                            Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                            Intent intent = new Intent(CheckAndEditActivity.this, MainActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        } else {
+                                            Toast.makeText(CheckAndEditActivity.this, "錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                } else {
-                                    e = new Event(etEventName.getText().toString(), event.getEventId(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(), tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, isPublic.isChecked(), isOutDoor.isChecked());
                                 }
-                                if (checkValid(e)) {
-                                    Call<Ack> call = retrofitService.editEvent(e);
-                                    call.enqueue(new Callback<Ack>() {
-                                        @Override
-                                        public void onResponse(Call<Ack> call, Response<Ack> response) {
-                                            if (!response.isSuccessful()) {
-                                                Toast.makeText(CheckAndEditActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                Ack ack = response.body();
-                                                if (ack.getCode() == 200) {
-                                                    Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
-                                                    Intent intent = new Intent(CheckAndEditActivity.this, MainActivity.class);
-                                                    startActivity(intent);
-                                                    finish();
-                                                } else {
-                                                    Toast.makeText(CheckAndEditActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        }
 
-                                        @Override
-                                        public void onFailure(Call<Ack> call, Throwable t) {
-                                            Toast.makeText(CheckAndEditActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
+                                @Override
+                                public void onFailure(Call<Ack> call, Throwable t) {
+                                    Toast.makeText(CheckAndEditActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+
                                 }
-                                sweetAlertDialog.dismissWithAnimation();
-                            }
-                        });
+                            });
+                        }
+                        sweetAlertDialog.dismissWithAnimation();
+                    }
+                });
                 sweetAlertDialog.setCancelButton("取消", new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                initField();
-                                callChart();
-                                setNonEditable();
-                                mMap.clear();
-                                LatLng latLng = new LatLng(event.getLatitude(), event.getLongitude());
-                                mMap.addMarker(new MarkerOptions().position(latLng));
-                                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                                sweetAlertDialog.cancel();
-                            }
-                        });
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        initField();
+                        callChart();
+                        setNonEditable();
+                        mMap.clear();
+                        LatLng latLng = new LatLng(event.getLatitude(), event.getLongitude());
+                        mMap.addMarker(new MarkerOptions().position(latLng));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                        sweetAlertDialog.cancel();
+                    }
+                });
                 sweetAlertDialog.setCancelable(false);
                 sweetAlertDialog.show();
 
@@ -442,7 +435,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                             @Override
                             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                                 if (!response.isSuccessful()) {
-                                    Toast.makeText(CheckAndEditActivity.this, "錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(CheckAndEditActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                                 } else {
                                     List<String> recommendTime = response.body();
                                     StringBuilder foo = new StringBuilder();
@@ -456,7 +449,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
                             @Override
                             public void onFailure(Call<List<String>> call, Throwable t) {
-
+                                Toast.makeText(CheckAndEditActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -513,7 +506,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                             @Override
                             public void onResponse(Call<Ack> call, Response<Ack> response) {
                                 if (!response.isSuccessful()) {
-                                    Toast.makeText(CheckAndEditActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(CheckAndEditActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                                 } else {
                                     Ack ack = response.body();
                                     if (ack.getCode() == 200) {
@@ -522,14 +515,15 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                                         startActivity(intent);
                                         finish();
                                     } else {
-                                        Toast.makeText(CheckAndEditActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(CheckAndEditActivity.this, "錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<Ack> call, Throwable t) {
-                                Toast.makeText(CheckAndEditActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(CheckAndEditActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+
                             }
                         });
                     }
@@ -914,7 +908,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(CheckAndEditActivity.this, "" + response.code(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CheckAndEditActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                 } else {
                     data = response.body();
                     makeChart("溫度");
@@ -923,7 +917,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
             @Override
             public void onFailure(Call<chartList> call, Throwable t) {
-
+                Toast.makeText(CheckAndEditActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
             }
         });
     }

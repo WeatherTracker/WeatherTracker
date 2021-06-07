@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weathertracker.R;
+import com.example.weathertracker.event.CheckAndEditActivity;
 import com.example.weathertracker.event.SightToEventAdapter;
 import com.example.weathertracker.retrofit.Event;
 import com.example.weathertracker.retrofit.RetrofitManager;
@@ -59,7 +60,7 @@ public class RecommendFragment extends Fragment {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(getContext(), "錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                 } else {
                     List<Event> events = response.body();
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -71,7 +72,7 @@ public class RecommendFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<Event>> call, Throwable t) {
-
+                Toast.makeText(getActivity(), "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
             }
         });
         return root;
@@ -92,7 +93,8 @@ public class RecommendFragment extends Fragment {
                     @Override
                     public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
                         if (!response.isSuccessful()) {
-                            Toast.makeText(getContext(), "錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+
                         }else{
                             List<Event> events = response.body();
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -104,7 +106,7 @@ public class RecommendFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<List<Event>> call, Throwable t) {
-
+                        Toast.makeText(getActivity(), "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                     }
                 });
                 return false;

@@ -134,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<Ack> call, Response<Ack> response) {
                         if (!response.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                             btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
                         } else {
                             Ack ack = response.body();
@@ -160,7 +160,7 @@ public class LoginActivity extends AppCompatActivity {
                                         });
                                     } else {
                                         btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
-                                        Toast.makeText(LoginActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(LoginActivity.this, "錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             }, 1000);
@@ -169,7 +169,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<Ack> call, Throwable t) {
-                        Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                         btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
                     }
                 });

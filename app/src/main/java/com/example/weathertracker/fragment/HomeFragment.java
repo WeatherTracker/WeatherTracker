@@ -153,12 +153,12 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         customCalendar.setMapDescToProp(descHashMap);
         customCalendar.setDate(calendar, dateHashMap);
 
-        getWeatherIcon(today_month,today_year);
+        getWeatherIcon(today_month, today_year);
     }
 
     //todo:
     private void getWeatherIcon(int flag, int year) {
-        if(year==today_year) {
+        if (year == today_year) {
             SharedPreferences sharedPreferences = getContext().getSharedPreferences("data", Context.MODE_PRIVATE);
             float Longitude = sharedPreferences.getFloat("Longitude", 0);
             float Latitude = sharedPreferences.getFloat("Latitude", 0);
@@ -168,7 +168,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 @Override
                 public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                     if (!response.isSuccessful()) {
-                        Toast.makeText(getActivity(), "" + response.code(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                     } else {
                         int iconTime = 7, iconDay = today - 1;
                         View[] month_days = customCalendar.getAllViews();
@@ -210,7 +210,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
                 @Override
                 public void onFailure(Call<List<String>> call, Throwable t) {
-                    System.out.println("onFailure:icon" + t);
+                    Toast.makeText(getActivity(), "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -643,7 +643,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(getActivity(), "" + response.code(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                 } else {
                     data = response.body();
                     makeChart(etWeatherElement.getEditableText().toString());
@@ -666,7 +666,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
             @Override
             public void onFailure(Call<chartList> call, Throwable t) {
-
+                Toast.makeText(getActivity(), "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -680,9 +680,12 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
                 if (!response.isSuccessful()) {
                     if (response.code() == 401) {
+                        Toast.makeText(getActivity(), "未經授權，請重新登入", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
+                    } else {
+                        Toast.makeText(getActivity(), "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     event = response.body();
@@ -702,7 +705,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
             @Override
             public void onFailure(Call<List<Event>> call, Throwable t) {
-                System.out.println("onFailure:event" + t);
+                Toast.makeText(getActivity(), "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -716,9 +719,12 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 if (!response.isSuccessful()) {
                     if (response.code() == 401) {
+                        Toast.makeText(getActivity(), "未經授權，請重新登入", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
+                    } else {
+                        Toast.makeText(getActivity(), "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     List<String> monthEvent = response.body();
@@ -735,7 +741,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
-                System.out.println("onFailure" + t);
+                Toast.makeText(getActivity(), "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
             }
         });
 
