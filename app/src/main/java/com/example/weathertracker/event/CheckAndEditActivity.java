@@ -10,7 +10,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -19,7 +18,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -32,6 +30,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.weathertracker.MainActivity;
 import com.example.weathertracker.R;
 import com.example.weathertracker.retrofit.Ack;
 import com.example.weathertracker.retrofit.Event;
@@ -85,7 +84,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private Event event;
     private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnSchedule, btnTags, btnDelete, btnParticipateEvent, btnOutEvent;
     private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime;
-    private EditText etEventName, etHostRemark;
+    private EditText etEventName, etHostRemark, etServerRemark;
     private SupportMapFragment mapFragment;
     private Double latitude, longitude;
     private DatePickerDialog datePickerDialog, datePickerDialog2;
@@ -194,6 +193,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         tvEndDate = findViewById(R.id.tvEndDate);
         tvEndTime = findViewById(R.id.tvEndTime);
         etHostRemark = findViewById(R.id.etHostRemark);
+        etServerRemark = findViewById(R.id.serverRemark);
         tvPlaceDescribe = findViewById(R.id.tvPlaceDescribe);
         etHobbies = findViewById(R.id.etHobbies);
         etHobbyClass = findViewById(R.id.etHobbyClass);
@@ -273,50 +273,77 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setNonEditable();
-                btnDone.setVisibility(View.INVISIBLE);
-                btnEdit.setVisibility(View.VISIBLE);
-                Event e = null;
-                String endDateString;
-                if (isAllDay.isChecked()) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    try {
-                        Date date = sdf.parse(tvEndDate.getText().toString());
-                        Calendar c = Calendar.getInstance();
-                        c.setTime(date);
-                        c.add(Calendar.DATE, 1);
-                        date = c.getTime();
-                        endDateString = sdf.format(date);
-                        e = new Event(etEventName.getText().toString(), event.getEventId(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " 00:00", endDateString + " 00:00", etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, isPublic.isChecked(), isOutDoor.isChecked());
-                    } catch (ParseException parseException) {
-                        parseException.printStackTrace();
-                    }
-                } else {
-                    e = new Event(etEventName.getText().toString(), event.getEventId(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(), tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, isPublic.isChecked(), isOutDoor.isChecked());
-                }
-                if (checkValid(e)) {
-                    Call<Ack> call = retrofitService.editEvent(e);
-                    call.enqueue(new Callback<Ack>() {
-                        @Override
-                        public void onResponse(Call<Ack> call, Response<Ack> response) {
-                            if (!response.isSuccessful()) {
-                                Toast.makeText(CheckAndEditActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Ack ack = response.body();
-                                if (ack.getCode() == 200) {
-                                    Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
+                SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(CheckAndEditActivity.this, SweetAlertDialog.WARNING_TYPE);
+                sweetAlertDialog.setTitleText("確定修改?");
+                sweetAlertDialog.setConfirmButton("確定", new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                setNonEditable();
+                                btnDone.setVisibility(View.INVISIBLE);
+                                btnEdit.setVisibility(View.VISIBLE);
+                                Event e = null;
+                                String endDateString;
+                                if (isAllDay.isChecked()) {
+                                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                    try {
+                                        Date date = sdf.parse(tvEndDate.getText().toString());
+                                        Calendar c = Calendar.getInstance();
+                                        c.setTime(date);
+                                        c.add(Calendar.DATE, 1);
+                                        date = c.getTime();
+                                        endDateString = sdf.format(date);
+                                        e = new Event(etEventName.getText().toString(), event.getEventId(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " 00:00", endDateString + " 00:00", etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, isPublic.isChecked(), isOutDoor.isChecked());
+                                    } catch (ParseException parseException) {
+                                        parseException.printStackTrace();
+                                    }
                                 } else {
-                                    Toast.makeText(CheckAndEditActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                    e = new Event(etEventName.getText().toString(), event.getEventId(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(), tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, isPublic.isChecked(), isOutDoor.isChecked());
                                 }
-                            }
-                        }
+                                if (checkValid(e)) {
+                                    Call<Ack> call = retrofitService.editEvent(e);
+                                    call.enqueue(new Callback<Ack>() {
+                                        @Override
+                                        public void onResponse(Call<Ack> call, Response<Ack> response) {
+                                            if (!response.isSuccessful()) {
+                                                Toast.makeText(CheckAndEditActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Ack ack = response.body();
+                                                if (ack.getCode() == 200) {
+                                                    Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                                    Intent intent = new Intent(CheckAndEditActivity.this, MainActivity.class);
+                                                    startActivity(intent);
+                                                    finish();
+                                                } else {
+                                                    Toast.makeText(CheckAndEditActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        }
 
-                        @Override
-                        public void onFailure(Call<Ack> call, Throwable t) {
-                            Toast.makeText(CheckAndEditActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+                                        @Override
+                                        public void onFailure(Call<Ack> call, Throwable t) {
+                                            Toast.makeText(CheckAndEditActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                                sweetAlertDialog.dismissWithAnimation();
+                            }
+                        });
+                sweetAlertDialog.setCancelButton("取消", new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                initField();
+                                callChart();
+                                setNonEditable();
+                                mMap.clear();
+                                LatLng latLng = new LatLng(event.getLatitude(), event.getLongitude());
+                                mMap.addMarker(new MarkerOptions().position(latLng));
+                                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                                sweetAlertDialog.cancel();
+                            }
+                        });
+                sweetAlertDialog.setCancelable(false);
+                sweetAlertDialog.show();
+
             }
         });
         btnSchedule.setOnClickListener(new View.OnClickListener() {
@@ -446,7 +473,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(CheckAndEditActivity.this);
                 View layoutView = getLayoutInflater().inflate(R.layout.tag_popup_layout, null);
                 TextView tv = layoutView.findViewById(R.id.dTags);
-                StringBuilder s= new StringBuilder();
+                StringBuilder s = new StringBuilder();
                 for (String tag : event.getDynamicTags()) {
                     s.append(tag).append("\n");
                 }
@@ -475,27 +502,46 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Call<Ack> call = retrofitService.deleteEvent(event.getEventId());
-                call.enqueue(new Callback<Ack>() {
+                SweetAlertDialog pDialog = new SweetAlertDialog(CheckAndEditActivity.this, SweetAlertDialog.WARNING_TYPE);
+                pDialog.setTitleText("確定刪除?");
+                pDialog.setContentText("此操作無法恢復");
+                pDialog.setConfirmButton("確定", new SweetAlertDialog.OnSweetClickListener() {
                     @Override
-                    public void onResponse(Call<Ack> call, Response<Ack> response) {
-                        if (!response.isSuccessful()) {
-                            Toast.makeText(CheckAndEditActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Ack ack = response.body();
-                            if (ack.getCode() == 200) {
-                                Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(CheckAndEditActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        Call<Ack> call = retrofitService.deleteEvent(event.getEventId());
+                        call.enqueue(new Callback<Ack>() {
+                            @Override
+                            public void onResponse(Call<Ack> call, Response<Ack> response) {
+                                if (!response.isSuccessful()) {
+                                    Toast.makeText(CheckAndEditActivity.this, "server沒啦", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Ack ack = response.body();
+                                    if (ack.getCode() == 200) {
+                                        Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(CheckAndEditActivity.this, MainActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Toast.makeText(CheckAndEditActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
                             }
-                        }
-                    }
 
-                    @Override
-                    public void onFailure(Call<Ack> call, Throwable t) {
-                        Toast.makeText(CheckAndEditActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                            @Override
+                            public void onFailure(Call<Ack> call, Throwable t) {
+                                Toast.makeText(CheckAndEditActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
+                pDialog.setCancelButton("取消", new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        sweetAlertDialog.cancel();
+                    }
+                });
+                pDialog.setCancelable(false);
+                pDialog.show();
             }
         });
         tvStartDate.setOnClickListener(new View.OnClickListener() {
@@ -504,7 +550,6 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 datePickerDialog.show();
             }
         });
-
         tvStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -517,7 +562,6 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 datePickerDialog2.show();
             }
         });
-
         tvEndTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -542,7 +586,6 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 tvStartTime.setText(s);
             }
         }, 12, 0, false);
-
         datePickerDialog2 = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -644,7 +687,8 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         isPublic.setChecked(event.isPublic());
         latitude = event.getLatitude();
         longitude = event.getLongitude();
-        etHostRemark.setText(event.getHostRemark()+"\n"+event.getSuggestions().getAll()+"\n"+event.getSuggestions().getHost()+"\n"+event.getSuggestions().getParticipant());
+        etHostRemark.setText(event.getHostRemark());
+        etServerRemark.setText("系統備註:\n" + event.getSuggestions().getAll() + "\n" + event.getSuggestions().getHost() + "\n" + event.getSuggestions().getParticipant());
         etHobbyClass.setText(event.getStaticHobbyClass(), false);
         etHobbies.setText(event.getStaticHobbyTag(), false);
         try {
@@ -685,6 +729,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         etHobbyClass.setEnabled(false);
         etHobbies.setEnabled(false);
         etHostRemark.setEnabled(false);
+        etServerRemark.setEnabled(false);
         isPublic.setEnabled(false);
         isOutDoor.setEnabled(false);
         tvStartDate.setEnabled(false);
@@ -692,6 +737,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         tvEndDate.setEnabled(false);
         tvEndTime.setEnabled(false);
         isAllDay.setEnabled(false);
+        btnDone.setVisibility(View.INVISIBLE);
         btnAddPlace.setVisibility(View.INVISIBLE);
         btnSchedule.setVisibility(View.INVISIBLE);
         btnDelete.setVisibility(View.INVISIBLE);
@@ -701,6 +747,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         etHobbyClass.setTextColor(getResources().getColor(R.color.white));
         etHobbies.setTextColor(getResources().getColor(R.color.white));
         etHostRemark.setTextColor(getResources().getColor(R.color.white));
+        etServerRemark.setTextColor(getResources().getColor(R.color.white));
         isPublic.setTextColor(getResources().getColor(R.color.white));
         isOutDoor.setTextColor(getResources().getColor(R.color.white));
         tvStartDate.setTextColor(getResources().getColor(R.color.white));

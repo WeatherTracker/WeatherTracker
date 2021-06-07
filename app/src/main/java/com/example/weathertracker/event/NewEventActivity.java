@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
+import com.example.weathertracker.MainActivity;
 import com.example.weathertracker.R;
 import com.example.weathertracker.account.LoginActivity;
 import com.example.weathertracker.retrofit.Ack;
@@ -188,7 +189,10 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                             } else {
                                 Ack ack = response.body();
                                 if (ack.getCode() == 200) {
-                                    Toast.makeText(NewEventActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//去信箱收信
+                                    Toast.makeText(NewEventActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//成功新增事件
+                                    Intent intent = new Intent(NewEventActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
                                 } else {
                                     Toast.makeText(NewEventActivity.this, "錯誤代碼: " + ack.getCode() + ",錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
                                 }

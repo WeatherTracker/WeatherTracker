@@ -8,7 +8,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import com.example.weathertracker.fragment.MainFragment;
 import com.example.weathertracker.fragment.ProfileFragment;
 import com.example.weathertracker.fragment.RecommendFragment;
+import com.google.android.material.snackbar.Snackbar;
 import com.shrikanthravi.customnavigationdrawer2.data.MenuItem;
 import com.shrikanthravi.customnavigationdrawer2.widget.SNavigationDrawer;
 
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     Class aClass;
     public static Double latitude = 0.0, longitude = 0.0;
     private LocationManager locationManager;
+    private boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         setContentView(R.layout.activity_main);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if(Build.VERSION.SDK_INT>Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
@@ -100,12 +102,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     private void openFragment() {
-        try{
-            Fragment fragment = (Fragment)aClass.newInstance();
+        try {
+            Fragment fragment = (Fragment) aClass.newInstance();
             getSupportFragmentManager().beginTransaction()
                     .setCustomAnimations(android.R.anim.fade_in
-                            ,android.R.anim.fade_out)
-                    .replace(R.id.frame_layout,fragment).commit();
+                            , android.R.anim.fade_out)
+                    .replace(R.id.frame_layout, fragment).commit();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
@@ -117,8 +119,25 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        SharedPreferences sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
-        sharedPreferences.edit().putFloat("Longitude" , (float) location.getLongitude()).apply();
-        sharedPreferences.edit().putFloat("Latitude" , (float) location.getLatitude()).apply();
+        SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+        sharedPreferences.edit().putFloat("Longitude", (float) location.getLongitude()).apply();
+        sharedPreferences.edit().putFloat("Latitude", (float) location.getLatitude()).apply();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+
+        } else {
+            doubleBackToExitPressedOnce = true;
+            Snackbar.make(findViewById(android.R.id.content), "再點擊一次返回鍵以退出", Snackbar.LENGTH_SHORT).show();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
+        }
     }
 }

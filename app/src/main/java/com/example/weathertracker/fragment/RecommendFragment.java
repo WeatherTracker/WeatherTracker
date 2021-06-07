@@ -86,7 +86,28 @@ public class RecommendFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return true;
+                Toast.makeText(getContext(), query, Toast.LENGTH_SHORT).show();
+                Call<List<Event>> call = retrofitService.searchEvent(query);
+                call.enqueue(new Callback<List<Event>>() {
+                    @Override
+                    public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
+                        if (!response.isSuccessful()) {
+                            Toast.makeText(getContext(), "錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                        }else{
+                            List<Event> events = response.body();
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+                            linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+                            rvRecommendEvents.setLayoutManager(linearLayoutManager);
+                            rvRecommendEvents.setAdapter(new SightToEventAdapter(getContext(), events));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Event>> call, Throwable t) {
+
+                    }
+                });
+                return false;
             }
 
             @Override
