@@ -151,7 +151,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
             if (!event.isAuth()) {
                 btnOutEvent.setVisibility(View.VISIBLE);
                 btnParticipateEvent.setVisibility(View.INVISIBLE);
-            }else{
+            } else {
                 btnOutEvent.setVisibility(View.INVISIBLE);
                 btnParticipateEvent.setVisibility(View.INVISIBLE);
             }
@@ -925,14 +925,17 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
     private void callChart() {
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-        Call<chartList> call = retrofitService.getChart(latitude.floatValue(), longitude.floatValue(), tvStartDate.getText().toString());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date now = new Date();
+        String strNow = sdf.format(now);
+        Call<chartList> call = retrofitService.getChart(latitude.floatValue(), longitude.floatValue(), strNow.compareTo(tvStartDate.getText().toString()) > 0 ? strNow : tvStartDate.getText().toString());
         call.enqueue(new Callback<chartList>() {
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {
                 if (!response.isSuccessful()) {
-                    if(response.code()==503){
+                    if (response.code() == 503) {
                         Toast.makeText(CheckAndEditActivity.this, "抱歉，非7日內資料暫時不可用，日後即將更新", Toast.LENGTH_SHORT).show();
-                    }else{
+                    } else {
                         Toast.makeText(CheckAndEditActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                     }
                 } else {
