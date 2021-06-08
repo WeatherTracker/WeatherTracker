@@ -13,7 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WeatherTracker">
-        <activity android:name=".event.CheckAndEditActivity" />
+        <activity
+            android:name=".event.CheckAndEditActivity"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.google.android.gms.version"
