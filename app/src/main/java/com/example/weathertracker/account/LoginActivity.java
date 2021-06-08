@@ -1,16 +1,10 @@
 package com.example.weathertracker.account;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -40,9 +34,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.royrodriguez.transitionbutton.TransitionButton;
 
-import java.io.IOException;
-import java.util.Locale;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -70,9 +61,9 @@ public class LoginActivity extends AppCompatActivity {
         setListener();
 
 
-        SharedPreferences sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
-        sharedPreferences.edit().putFloat("Longitude" , 24).apply();
-        sharedPreferences.edit().putFloat("Latitude" , 121).apply();
+        SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+        sharedPreferences.edit().putFloat("Longitude", (float) 25.03746).apply();
+        sharedPreferences.edit().putFloat("Latitude", (float) 121.564558).apply();
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -82,9 +73,6 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
-
-
-        System.out.println("hi");
     }
 
     private void getLocation() {
@@ -95,15 +83,23 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Location> task) {
                 Location location = task.getResult();
-                if(location!=null){
-                    System.out.println("123321"+location.getLongitude()+location.getLatitude());
-                    SharedPreferences sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
-                    sharedPreferences.edit().putFloat("Longitude" , (float) location.getLongitude()).apply();
-                    sharedPreferences.edit().putFloat("Latitude" , (float) location.getLatitude()).apply();
+                if (location != null) {
+                    System.out.println("123321" + location.getLongitude() + location.getLatitude());
+                    SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+                    sharedPreferences.edit().putFloat("Longitude", (float) location.getLongitude()).apply();
+                    sharedPreferences.edit().putFloat("Latitude", (float) location.getLatitude()).apply();
                 }
-
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 44) {
+            System.out.println("i am granted");
+            getLocation();
+        }
     }
 
     private void findID() {
@@ -127,54 +123,58 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Start the loading animation when the user tap the button
-                btnLogin.startAnimation();
-                RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-                Call<Ack> call = retrofitService.signIn(etLoginEmail.getText().toString(), etLoginPassword.getText().toString());
-                call.enqueue(new Callback<Ack>() {
-                    @Override
-                    public void onResponse(Call<Ack> call, Response<Ack> response) {
-                        if (!response.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
-                            btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
-                        } else {
-                            Ack ack = response.body();
+                if (ActivityCompat.checkSelfPermission(LoginActivity.this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    // Start the loading animation when the user tap the button
+                    btnLogin.startAnimation();
+                    RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+                    Call<Ack> call = retrofitService.signIn(etLoginEmail.getText().toString(), etLoginPassword.getText().toString());
+                    call.enqueue(new Callback<Ack>() {
+                        @Override
+                        public void onResponse(Call<Ack> call, Response<Ack> response) {
+                            if (!response.isSuccessful()) {
+                                Toast.makeText(LoginActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                                btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
+                            } else {
+                                Ack ack = response.body();
 
-                            // Choose a stop animation if your call was successful or not
-                            final Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (ack.getCode() == 200) {
-                                        SharedPreferences pref = getSharedPreferences("sharedPreferences", MODE_PRIVATE);
-                                        pref.edit()
-                                                .putString("userId", ack.getMsg())
-                                                .apply();
-                                        System.out.println( ack.getMsg());
-                                        btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND, new TransitionButton.OnAnimationStopEndListener() {
-                                            @Override
-                                            public void onAnimationStopEnd() {
-                                                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                                                startActivity(intent);
-                                                finish();
-                                            }
-                                        });
-                                    } else {
-                                        btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
-                                        Toast.makeText(LoginActivity.this, "錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                // Choose a stop animation if your call was successful or not
+                                final Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (ack.getCode() == 200) {
+                                            SharedPreferences pref = getSharedPreferences("sharedPreferences", MODE_PRIVATE);
+                                            pref.edit()
+                                                    .putString("userId", ack.getMsg())
+                                                    .apply();
+                                            System.out.println(ack.getMsg());
+                                            btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND, new TransitionButton.OnAnimationStopEndListener() {
+                                                @Override
+                                                public void onAnimationStopEnd() {
+                                                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                                                    startActivity(intent);
+                                                    finish();
+                                                }
+                                            });
+                                        } else {
+                                            btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
+                                            Toast.makeText(LoginActivity.this, "錯誤訊息: " + ack.getMsg(), Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                }
-                            }, 1000);
+                                }, 1000);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<Ack> call, Throwable t) {
-                        Toast.makeText(LoginActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
-                        btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
-                    }
-                });
-
+                        @Override
+                        public void onFailure(Call<Ack> call, Throwable t) {
+                            Toast.makeText(LoginActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                            btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
+                        }
+                    });
+                }else{
+                    Toast.makeText(LoginActivity.this, "請允許取得定位功能，否則應用程式無法執行", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         btnForget.setOnClickListener(new View.OnClickListener() {
