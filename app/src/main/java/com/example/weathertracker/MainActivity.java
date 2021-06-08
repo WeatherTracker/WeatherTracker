@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         List<com.shrikanthravi.customnavigationdrawer2.data.MenuItem> menuItems = new ArrayList<>();
         menuItems.add(new MenuItem("Main", R.drawable.home));
         menuItems.add(new MenuItem("Profile", R.drawable.profile));
-        menuItems.add(new MenuItem("recommend", R.drawable.search));
+        menuItems.add(new MenuItem("Recommendation", R.drawable.search));
         sNavigationDrawer.setMenuItemList(menuItems);
-        sNavigationDrawer.setAppbarTitleTV("main");
+        sNavigationDrawer.setAppbarTitleTV("Weather Tracker");
 
         aClass = MainFragment.class;
         openFragment();
