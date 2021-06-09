@@ -32,6 +32,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.royrodriguez.transitionbutton.TransitionButton;
 
 import retrofit2.Call;
@@ -50,6 +51,7 @@ public class LoginActivity extends AppCompatActivity {
     public static Double latitude = 0.0, longitude = 0.0;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private TextInputEditText etLoginEmail, etLoginPassword;
+    private String FCMToken = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,18 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.d("FCMToken", "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+                        Log.d("FCMToken", task.getResult(), task.getException());
+                        FCMToken = task.getResult();
+                    }
+                });
         findID();
         setListener();
 
@@ -128,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
                     // Start the loading animation when the user tap the button
                     btnLogin.startAnimation();
                     RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-                    Call<Ack> call = retrofitService.signIn(etLoginEmail.getText().toString(), etLoginPassword.getText().toString());
+                    Call<Ack> call = retrofitService.signIn(etLoginEmail.getText().toString(), etLoginPassword.getText().toString(), FCMToken);
                     call.enqueue(new Callback<Ack>() {
                         @Override
                         public void onResponse(Call<Ack> call, Response<Ack> response) {
@@ -172,7 +186,7 @@ public class LoginActivity extends AppCompatActivity {
                             btnLogin.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
                         }
                     });
-                }else{
+                } else {
                     Toast.makeText(LoginActivity.this, "請允許取得定位功能，否則應用程式無法執行", Toast.LENGTH_SHORT).show();
                 }
             }

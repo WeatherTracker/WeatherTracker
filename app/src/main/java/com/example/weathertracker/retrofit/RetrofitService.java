@@ -17,7 +17,8 @@ public interface RetrofitService {
     @FormUrlEncoded
     @POST("signIn")
     Call<Ack> signIn(@Field("email") String email,
-                     @Field("password") String password);
+                     @Field("password") String password,
+                     @Field("FCMToken") String FCMToken);
 
     @FormUrlEncoded
     @POST("signUp")
