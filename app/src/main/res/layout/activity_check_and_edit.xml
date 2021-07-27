@@ -311,7 +311,7 @@
             app:srcCompat="@drawable/ic_baseline_schedule_24" />
 
         <ImageButton
-            android:id="@+id/btnDeletee"
+            android:id="@+id/btnDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
@@ -369,6 +369,16 @@
             app:layout_constraintStart_toEndOf="@+id/btnBack"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_baseline_bookmark_remove_24" />
+
+        <ImageButton
+            android:id="@+id/eventLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/float_transparent"
+            android:layout_margin="15dp"
+            app:layout_constraintStart_toEndOf="@+id/participateEvent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_link_24" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

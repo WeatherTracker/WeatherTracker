@@ -15,7 +15,19 @@
         android:theme="@style/Theme.WeatherTracker">
         <activity
             android:name=".event.CheckAndEditActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="weather_tracker"
+                    android:pathPrefix="/link"
+                    android:scheme="http" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -55,14 +67,17 @@
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.VIEW" /> -->
-            <!-- <category android:name="android.intent.category.DEFAULT" /> -->
-            <!-- <category android:name="android.intent.category.BROWSABLE" /> -->
-            <!-- <data -->
-            <!-- android:host="my_test.app" -->
-            <!-- android:scheme="https" /> -->
-            <!-- </intent-filter> -->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+
+<!--                <data-->
+<!--                    android:host="weather_tracker"-->
+<!--                    android:pathPrefix="/link"-->
+<!--                    android:scheme="http" />-->
+<!--            </intent-filter>-->
 
 
         </activity>

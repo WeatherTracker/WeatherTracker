@@ -99,7 +99,8 @@ public interface RetrofitService {
     @POST("googleSignIn")
     Call<Ack> googleSignIn(@Field("email") String email);
 
-    @GET("getProfile")
-    Call<List<Event>> getProfile(@Query("longitude") double longitude,
-                                 @Query("latitude") double latitude);
+    @GET("FPRecommendEvent")
+    Call<List<Event>> FPRecommendEvent(@Query("longitude") double longitude,
+                                       @Query("latitude") double latitude);
+
 }
