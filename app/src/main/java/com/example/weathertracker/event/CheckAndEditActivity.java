@@ -2,13 +2,18 @@ package com.example.weathertracker.event;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -83,7 +88,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
     private RetrofitService retrofitService;
     private Event event;
-    private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnSchedule, btnTags, btnDelete, btnParticipateEvent, btnOutEvent;
+    private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnSchedule, btnTags, btnDelete, btnParticipateEvent, btnOutEvent, btnLink;
     private Button btnCalender;
     private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime;
     private EditText etEventName, etHostRemark, etServerRemark;
@@ -118,6 +123,12 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         String where = intent.getStringExtra("where");
 
         System.out.println("Event:" + json);
+        if(json==null){
+            Uri uri = getIntent().getData();
+            String query = uri.getQuery(); //type=url&from=web
+            System.out.println("eventId = " + query);
+            where = "recommend";
+        }
 
         Gson gson = new Gson();
         event = gson.fromJson(json, Event.class);
@@ -152,11 +163,11 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         } else {
             if (!event.isAuth()) {
                 btnOutEvent.setVisibility(View.VISIBLE);
-                btnParticipateEvent.setVisibility(View.INVISIBLE);
             } else {
                 btnOutEvent.setVisibility(View.INVISIBLE);
-                btnParticipateEvent.setVisibility(View.INVISIBLE);
             }
+            btnLink.setVisibility(View.VISIBLE);
+            btnParticipateEvent.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -191,10 +202,11 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         btnBack = findViewById(R.id.btnBack);
         btnAddPlace = findViewById(R.id.btnAddPlace);
         btnTags = findViewById(R.id.btnTags);
-        btnDelete = findViewById(R.id.btnDeletee);
+        btnDelete = findViewById(R.id.btnDelete);
         btnSchedule = findViewById(R.id.btnSchedule);
         btnParticipateEvent = findViewById(R.id.participateEvent);
         btnOutEvent = findViewById(R.id.outEvent);
+        btnLink = findViewById(R.id.eventLink);
         etEventName = findViewById(R.id.etEventName);
         tvStartDate = findViewById(R.id.tvStartDate);
         tvStartTime = findViewById(R.id.tvStartTime);
@@ -219,6 +231,15 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     }
 
     private void setListener() {
+        btnLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("WeatherTracker", "http://weather_tracker/link?"+event.getEventId());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(CheckAndEditActivity.this, "分享連結已複製至剪貼簿", Toast.LENGTH_SHORT).show();
+            }
+        });
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -756,6 +777,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         tvEndDate.setEnabled(false);
         tvEndTime.setEnabled(false);
         isAllDay.setEnabled(false);
+        btnLink.setVisibility(View.INVISIBLE);
         btnDone.setVisibility(View.INVISIBLE);
         btnAddPlace.setVisibility(View.INVISIBLE);
         btnSchedule.setVisibility(View.INVISIBLE);

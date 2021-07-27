@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weathertracker.R;
-import com.example.weathertracker.event.CheckAndEditActivity;
 import com.example.weathertracker.event.SightToEventAdapter;
 import com.example.weathertracker.retrofit.Event;
 import com.example.weathertracker.retrofit.RetrofitManager;
@@ -34,7 +33,7 @@ public class RecommendFragment extends Fragment {
     private View root;
     private String userId;
     private SearchView searchView;
-    private RecyclerView rvRecommendEvents;
+    private RecyclerView rvRecommendEvents, FPRecommend, searchResult;
     private RetrofitService retrofitService;
 
     public RecommendFragment() {
@@ -64,9 +63,30 @@ public class RecommendFragment extends Fragment {
                 } else {
                     List<Event> events = response.body();
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-                    linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                    linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
                     rvRecommendEvents.setLayoutManager(linearLayoutManager);
                     rvRecommendEvents.setAdapter(new SightToEventAdapter(getContext(), events));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Event>> call, Throwable t) {
+                Toast.makeText(getActivity(), "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Call<List<Event>> call2 = retrofitService.FPRecommendEvent(Longitude, Latitude);
+        call2.enqueue(new Callback<List<Event>>() {
+            @Override
+            public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(getActivity(), "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                } else {
+                    List<Event> events = response.body();
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+                    linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+                    FPRecommend.setLayoutManager(linearLayoutManager);
+                    FPRecommend.setAdapter(new SightToEventAdapter(getContext(), events));
                 }
             }
 
@@ -80,6 +100,8 @@ public class RecommendFragment extends Fragment {
 
     private void initId() {
         searchView = root.findViewById(R.id.searchView);
+        FPRecommend = root.findViewById(R.id.FRRecommend);
+        searchResult = root.findViewById(R.id.searchResult);
         rvRecommendEvents = root.findViewById(R.id.recommendEvents);
     }
 
@@ -94,12 +116,12 @@ public class RecommendFragment extends Fragment {
                         if (!response.isSuccessful()) {
                             Toast.makeText(getActivity(), "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
 
-                        }else{
+                        } else {
                             List<Event> events = response.body();
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                            rvRecommendEvents.setLayoutManager(linearLayoutManager);
-                            rvRecommendEvents.setAdapter(new SightToEventAdapter(getContext(), events));
+                            searchResult.setLayoutManager(linearLayoutManager);
+                            searchResult.setAdapter(new SightToEventAdapter(getContext(), events));
                         }
                     }
 
