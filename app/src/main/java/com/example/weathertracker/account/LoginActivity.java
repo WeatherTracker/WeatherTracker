@@ -130,8 +130,8 @@ public class LoginActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(LoginActivity.this, "此功能將日後實裝", Toast.LENGTH_SHORT).show();
-//                signIn();
+//                Toast.makeText(LoginActivity.this, "此功能將日後實裝", Toast.LENGTH_SHORT).show();
+                signIn();
             }
         });
         btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -209,18 +209,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        account = GoogleSignIn.getLastSignedInAccount(this);
-//        if (account != null) {
-//            Intent intent = new Intent(this, MainActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }
-//
-////        updateUI(account);
-//    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        account = GoogleSignIn.getLastSignedInAccount(this);
+        if (account != null) {
+            updateUI(account.getEmail());
+        }
+
+//        updateUI(account);
+    }
 
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
@@ -245,9 +243,7 @@ public class LoginActivity extends AppCompatActivity {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             // Signed in successfully, show authenticated UI.
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            updateUI(account.getEmail());
 
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
@@ -256,6 +252,33 @@ public class LoginActivity extends AppCompatActivity {
 //            updateUI(null);
             Toast.makeText(this, "登入失敗，請稍後再試", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void updateUI(String email){
+        RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+        Call<Ack> call = retrofitService.googleSignIn(email);
+        call.enqueue(new Callback<Ack>() {
+            @Override
+            public void onResponse(Call<Ack> call, Response<Ack> response) {
+                if (response.isSuccessful()){
+                    Ack ack = response.body();
+                    SharedPreferences pref = getSharedPreferences("sharedPreferences", MODE_PRIVATE);
+                    pref.edit()
+                            .putString("userId", ack.getMsg())
+                            .apply();
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    Toast.makeText(LoginActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Ack> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }

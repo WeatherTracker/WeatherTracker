@@ -64,7 +64,7 @@ public class RecommendFragment extends Fragment {
                 } else {
                     List<Event> events = response.body();
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-                    linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                    linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
                     rvRecommendEvents.setLayoutManager(linearLayoutManager);
                     rvRecommendEvents.setAdapter(new SightToEventAdapter(getContext(), events));
                 }
@@ -97,7 +97,7 @@ public class RecommendFragment extends Fragment {
                         }else{
                             List<Event> events = response.body();
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-                            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                            linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
                             rvRecommendEvents.setLayoutManager(linearLayoutManager);
                             rvRecommendEvents.setAdapter(new SightToEventAdapter(getContext(), events));
                         }

@@ -94,4 +94,12 @@ public interface RetrofitService {
     @PUT("changeTime")
     Call<Ack> changeTime(@Field("eventId") String eventId,
                          @Field("pickTime") String pickTime);
+
+    @FormUrlEncoded
+    @POST("googleSignIn")
+    Call<Ack> googleSignIn(@Field("email") String email);
+
+    @GET("getProfile")
+    Call<List<Event>> getProfile(@Query("longitude") double longitude,
+                                 @Query("latitude") double latitude);
 }

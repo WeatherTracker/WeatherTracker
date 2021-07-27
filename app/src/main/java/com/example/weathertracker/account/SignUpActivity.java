@@ -2,6 +2,7 @@ package com.example.weathertracker.account;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -90,6 +91,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onFailure(Call<Ack> call, Throwable t) {
+                                    System.out.println(t.getMessage());
                                     Toast.makeText(SignUpActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                                 }
                             });
