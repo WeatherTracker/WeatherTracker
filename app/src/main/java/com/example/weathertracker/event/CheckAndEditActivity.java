@@ -966,10 +966,12 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 //        long startMillis = 0;
 //        long endMillis = 0;
 //        Calendar beginTime = Calendar.getInstance();
-//        beginTime.set(2012, 9, 14);
+//        //beginTime
+//        beginTime.set(2012, 9, 14,24,00);
 //        startMillis = beginTime.getTimeInMillis();
 //        Calendar endTime = Calendar.getInstance();
-//        endTime.set(2012, 9, 14);
+//        //endTime
+//        endTime.set(2012, 9, 14,24,00);
 //        endMillis = endTime.getTimeInMillis();
 //
 //        //判斷有無空直
@@ -979,14 +981,19 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 //
 //            Intent intent = new Intent(Intent.ACTION_INSERT);
 //            intent.setData(CalendarContract.Events.CONTENT_URI);
+//            //title
 //            intent.putExtra(CalendarContract.Events.TITLE, "title.getText().toString()");
+//            //location
 //            intent.putExtra(CalendarContract.Events.EVENT_LOCATION, "location.getText().toString()");
+//            //description
 //            intent.putExtra(CalendarContract.Events.DESCRIPTION,"description.getText().toString()");
-//            //intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,1);
+//
 //            intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis());
 //            intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis());
-//            intent.putExtra(CalendarContract.Events.ALL_DAY, true);
-//            intent.putExtra(Intent.EXTRA_EMAIL, "rockandjeter@gmail.com,jacky410456@gmail.com");
+//
+//            intent.putExtra(CalendarContract.Events.ALL_DAY, false);
+//
+//            //intent.putExtra(Intent.EXTRA_EMAIL, "rockandjeter@gmail.com,jacky410456@gmail.com");
 //
 //            if(intent.resolveActivity(getPackageManager())!=null){
 //                startActivity(intent);
