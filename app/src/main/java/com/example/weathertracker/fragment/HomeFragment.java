@@ -158,6 +158,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
     //todo:
     private void getWeatherIcon(int flag, int year) {
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         if (year == today_year) {
             SharedPreferences sharedPreferences = getContext().getSharedPreferences("data", Context.MODE_PRIVATE);
             float Longitude = sharedPreferences.getFloat("Longitude", 0);
@@ -174,7 +175,8 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                         View[] month_days = customCalendar.getAllViews();
                         if ((month_days.length - today) < 8) {
                             iconTime = (month_days.length - today) + 1;
-                            iconFlag = 7 - iconTime - 1;
+                            iconFlag = 7 - iconTime ;
+                            System.out.println("iconFlag" + iconFlag);
                         }
                         icon = response.body();
                         if (flag == today_month) {
@@ -191,15 +193,16 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                                 iconDay++;
                             }
                         } else if (flag == (today_month + 1)) {
-                            int j = 7 - iconFlag;
+                            int j = iconFlag;
                             System.out.println("Next month" + flag);
                             for (int i = 0; i < j; i++) {
                                 String uri = icon.get(i); //圖片路徑和名稱
                                 int imageResource = getContext().getResources().getIdentifier(uri, "drawable", getContext().getPackageName());
                                 //System.out.println("image+" + imageResource + "+" + uri);
                                 View temp_view = month_days[i];
-                                temp_view.findViewById(R.id.icon).setBackgroundResource(imageResource);
-                                j++;
+                                System.out.println("QQQQ"+i);
+                                temp_view.findViewById(R.id.text_view).setBackgroundResource(imageResource);
+                                //j++;
                                 iconDay++;
                             }
                             iconFlag = 7;
@@ -594,9 +597,11 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             case Calendar.JULY:
                 arr[0] = new HashMap<>();
                 getRedPoint("07", Mcalendar.getWeekYear());
+                System.out.println("BBBBBBBBBBBBBBBBB");
                 getWeatherIcon(7, year);
             case Calendar.AUGUST:
                 arr[0] = new HashMap<>();
+                System.out.println("CCCCCCCCCCCCCCCCCCCCC");
                 getRedPoint("08", Mcalendar.getWeekYear());
                 getWeatherIcon(8, year);
                 break;

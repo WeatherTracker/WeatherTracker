@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -88,6 +89,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private RetrofitService retrofitService;
     private Event event;
     private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnSchedule, btnTags, btnDelete, btnParticipateEvent, btnOutEvent, btnLink;
+    private Button btnCalender;
     private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime;
     private EditText etEventName, etHostRemark, etServerRemark;
     private SupportMapFragment mapFragment;
@@ -225,6 +227,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         timeLayout = findViewById(R.id.timeLayout);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapView);
+        btnCalender =findViewById(R.id.goCalender);
     }
 
     private void setListener() {
@@ -977,4 +980,55 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     public void onBackPressed() {
         super.onBackPressed();
     }
+
+    //todo:
+//    private void gotoCalender() {
+//
+//        //strartend time
+//        long startMillis = 0;
+//        long endMillis = 0;
+//        Calendar beginTime = Calendar.getInstance();
+//        //beginTime
+//        beginTime.set(2012, 9, 14,24,00);
+//        startMillis = beginTime.getTimeInMillis();
+//        Calendar endTime = Calendar.getInstance();
+//        //endTime
+//        endTime.set(2012, 9, 14,24,00);
+//        endMillis = endTime.getTimeInMillis();
+//
+//        //判斷有無空直
+//        if(!title.getText().toString().isEmpty() && !location.getText().toString().isEmpty()
+//                && !description.getText().toString().isEmpty()){
+//
+//
+//            Intent intent = new Intent(Intent.ACTION_INSERT);
+//            intent.setData(CalendarContract.Events.CONTENT_URI);
+//            //title
+//            intent.putExtra(CalendarContract.Events.TITLE, "title.getText().toString()");
+//            //location
+//            intent.putExtra(CalendarContract.Events.EVENT_LOCATION, "location.getText().toString()");
+//            //description
+//            intent.putExtra(CalendarContract.Events.DESCRIPTION,"description.getText().toString()");
+//
+//            intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis());
+//            intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis());
+//
+//            intent.putExtra(CalendarContract.Events.ALL_DAY, false);
+//
+//            //intent.putExtra(Intent.EXTRA_EMAIL, "rockandjeter@gmail.com,jacky410456@gmail.com");
+//
+//            if(intent.resolveActivity(getPackageManager())!=null){
+//                startActivity(intent);
+//            }else{
+//                Toast.makeText(CheckAndEditActivity.this, "There is no app can support this action",
+//                        Toast.LENGTH_SHORT).show();
+//            }
+//
+//        }else {
+//            Toast.makeText(CheckAndEditActivity.this,"Please fill all the fields",Toast.LENGTH_SHORT).show();
+//        }
+//    }
+
+
+
 }

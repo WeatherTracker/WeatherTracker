@@ -4,9 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragment.CopyrightFragment"
-    android:orientation="vertical"
-    android:background="@drawable/favor_background">
-
+    android:orientation="vertical">
     <LinearLayout
         android:id="@+id/one"
         android:layout_width="wrap_content"
@@ -17,11 +15,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="觀光景點api:"
+            android:textColor="#000000"
             android:textSize="20dp"/>
         <TextView
             android:id="@+id/link1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#000000"
             android:textSize="15dp"
             android:text="https://gis.taiwan.net.tw/XMLReleaseALL_public/scenic_spot_C_f.json"/>
     </LinearLayout>
@@ -36,6 +36,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#000000"
             android:text="環保署環境資料開放平台開放資料API:"
             android:textSize="20dp"/>
         <TextView
@@ -43,6 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15dp"
+            android:textColor="#000000"
             android:text="https://data.epa.gov.tw/api/v1"/>
     </LinearLayout>
 
@@ -56,12 +58,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#000000"
             android:text="示警訊息查詢API:"
             android:textSize="20dp"/>
         <TextView
             android:id="@+id/link3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#000000"
             android:textSize="15dp"
             android:text="https://alerts.ncdr.nat.gov.tw/api_swagger/index.html"/>
     </LinearLayout>
@@ -76,12 +80,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#000000"
             android:text="觀測資料查詢CODiS:"
             android:textSize="20dp"/>
         <TextView
             android:id="@+id/link4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#000000"
             android:textSize="15dp"
             android:text="https://e-service.cwb.gov.tw/HistoryDataQuery/index.jsp"/>
     </LinearLayout>
@@ -96,13 +102,26 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#000000"
             android:text="中央氣象局開放資料平臺之資料擷取API:"
             android:textSize="20dp"/>
         <TextView
             android:id="@+id/link5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#000000"
             android:textSize="15dp"
             android:text="https://opendata.cwb.gov.tw/dist/opendata-swagger.html"/>
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="27dp"
+        android:gravity="bottom"
+        android:text="點擊網址進入網站"
+        android:textColor="#000000"
+        android:textSize="20dp" />
 </RelativeLayout>
