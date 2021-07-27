@@ -231,6 +231,12 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     }
 
     private void setListener() {
+        btnCalender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gotoCalender();
+            }
+        });
         btnLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -982,52 +988,53 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     }
 
     //todo:
-//    private void gotoCalender() {
-//
-//        //strartend time
-//        long startMillis = 0;
-//        long endMillis = 0;
-//        Calendar beginTime = Calendar.getInstance();
-//        //beginTime
-//        beginTime.set(2012, 9, 14,24,00);
-//        startMillis = beginTime.getTimeInMillis();
-//        Calendar endTime = Calendar.getInstance();
-//        //endTime
-//        endTime.set(2012, 9, 14,24,00);
-//        endMillis = endTime.getTimeInMillis();
-//
-//        //判斷有無空直
+    private void gotoCalender() {
+
+        //strartend time
+        long startMillis = 0;
+        long endMillis = 0;
+        Calendar beginTime = Calendar.getInstance();
+        //beginTime
+//        String[] stringArr= event.getStartTime().split("-");
+        beginTime.set(2012, 9, 14,24,00);
+        startMillis = beginTime.getTimeInMillis();
+        Calendar endTime = Calendar.getInstance();
+        //endTime
+        endTime.set(2012, 9, 14,24,00);
+        endMillis = endTime.getTimeInMillis();
+
+        //判斷有無空直
 //        if(!title.getText().toString().isEmpty() && !location.getText().toString().isEmpty()
 //                && !description.getText().toString().isEmpty()){
-//
-//
-//            Intent intent = new Intent(Intent.ACTION_INSERT);
-//            intent.setData(CalendarContract.Events.CONTENT_URI);
-//            //title
-//            intent.putExtra(CalendarContract.Events.TITLE, "title.getText().toString()");
-//            //location
-//            intent.putExtra(CalendarContract.Events.EVENT_LOCATION, "location.getText().toString()");
-//            //description
-//            intent.putExtra(CalendarContract.Events.DESCRIPTION,"description.getText().toString()");
-//
-//            intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis());
-//            intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis());
-//
-//            intent.putExtra(CalendarContract.Events.ALL_DAY, false);
-//
-//            //intent.putExtra(Intent.EXTRA_EMAIL, "rockandjeter@gmail.com,jacky410456@gmail.com");
-//
-//            if(intent.resolveActivity(getPackageManager())!=null){
-//                startActivity(intent);
-//            }else{
-//                Toast.makeText(CheckAndEditActivity.this, "There is no app can support this action",
-//                        Toast.LENGTH_SHORT).show();
-//            }
-//
+
+
+            Intent intent = new Intent(Intent.ACTION_INSERT);
+            intent.setData(CalendarContract.Events.CONTENT_URI);
+            //title
+            intent.putExtra(CalendarContract.Events.TITLE, event.getEventName());
+            //location
+            intent.putExtra(CalendarContract.Events.EVENT_LOCATION, event.getLatitude());
+            //description
+            intent.putExtra(CalendarContract.Events.DESCRIPTION,event.getHostRemark()+"\n"+event.getSuggestions().getAll());
+
+            intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis());
+            intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis());
+
+            intent.putExtra(CalendarContract.Events.ALL_DAY, false);
+
+            //intent.putExtra(Intent.EXTRA_EMAIL, "rockandjeter@gmail.com,jacky410456@gmail.com");
+
+            if(intent.resolveActivity(getPackageManager())!=null){
+                startActivity(intent);
+            }else{
+                Toast.makeText(CheckAndEditActivity.this, "There is no app can support this action",
+                        Toast.LENGTH_SHORT).show();
+            }
+
 //        }else {
 //            Toast.makeText(CheckAndEditActivity.this,"Please fill all the fields",Toast.LENGTH_SHORT).show();
 //        }
-//    }
+    }
 
 
 
