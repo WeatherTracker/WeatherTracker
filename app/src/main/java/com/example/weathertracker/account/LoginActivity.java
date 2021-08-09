@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -34,6 +35,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.royrodriguez.transitionbutton.TransitionButton;
+
+import java.nio.charset.StandardCharsets;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -214,10 +217,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null) {
-            updateUI(account.getEmail());
+            myGoogleSignIn(account.getEmail());
         }
-
-//        updateUI(account);
     }
 
     private void signIn() {
@@ -243,24 +244,23 @@ public class LoginActivity extends AppCompatActivity {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             // Signed in successfully, show authenticated UI.
-            updateUI(account.getEmail());
+            myGoogleSignUp(account.getEmail());
 
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG, "signInResult:failed '''code'''=" + e.getStatusCode());
-//            updateUI(null);
             Toast.makeText(this, "登入失敗，請稍後再試", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void updateUI(String email){
+    private void myGoogleSignIn(String email) {
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
-        Call<Ack> call = retrofitService.googleSignIn(email);
+        Call<Ack> call = retrofitService.googleSignIn(encoder(email), FCMToken);
         call.enqueue(new Callback<Ack>() {
             @Override
             public void onResponse(Call<Ack> call, Response<Ack> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful()) {
                     Ack ack = response.body();
                     SharedPreferences pref = getSharedPreferences("sharedPreferences", MODE_PRIVATE);
                     pref.edit()
@@ -269,7 +269,7 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
-                }else{
+                } else {
                     Toast.makeText(LoginActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -279,6 +279,46 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void myGoogleSignUp(String email) {
+        RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+        Call<Ack> call = retrofitService.googleSignUp(encoder(email), FCMToken);
+        call.enqueue(new Callback<Ack>() {
+            @Override
+            public void onResponse(Call<Ack> call, Response<Ack> response) {
+                if (response.isSuccessful()) {
+                    Ack ack = response.body();
+                    SharedPreferences pref = getSharedPreferences("sharedPreferences", MODE_PRIVATE);
+                    pref.edit()
+                            .putString("userId", ack.getMsg())
+                            .apply();
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(LoginActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Ack> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private String encoder(String email) {
+        String fooResult = "";
+        try {
+            final byte[] textByte = email.getBytes(StandardCharsets.UTF_8);
+            String foo = Base64.encodeToString(textByte, 1);
+            final byte[] textByte2 = foo.getBytes(StandardCharsets.UTF_8);
+            fooResult = Base64.encodeToString(textByte2, 1);
+        } catch (Exception e) {
+            Toast.makeText(LoginActivity.this, "系統錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+        }
+        return fooResult;
     }
 
 }
