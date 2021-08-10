@@ -11,15 +11,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageButton
+        <LinearLayout
             android:id="@+id/btnDone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:background="@color/float_transparent"
-            app:layout_constraintEnd_toEndOf="@+id/etEventName"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_done_all_24" />
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/float_transparent"
+                app:srcCompat="@drawable/ic_baseline_done_all_24" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="創建活動"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+
 
         <ImageButton
             android:id="@+id/btnBack"

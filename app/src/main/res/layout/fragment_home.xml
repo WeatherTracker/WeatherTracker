@@ -17,7 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fooLl1"
+        app:layout_constraintTop_toBottomOf="@+id/participateEvent"
         app:month_year_format="full_month__with_year" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -63,12 +63,12 @@
         android:textColor="@color/white"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/fooLl1"
+        app:layout_constraintEnd_toStartOf="@+id/participateEvent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/fooLl1"
+        android:id="@+id/participateEvent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"

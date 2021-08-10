@@ -88,7 +88,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
     private RetrofitService retrofitService;
     private Event event;
-    private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnSchedule, btnTags, btnDelete, btnParticipateEvent, btnOutEvent, btnLink, btnCalender;
+    private ImageButton btnBack, btnAddPlace;
     private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime;
     private EditText etEventName, etHostRemark, etServerRemark;
     private SupportMapFragment mapFragment;
@@ -107,7 +107,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private SwitchCompat isAllDay;
     private RecyclerView eventToSight;
     private List<Sight> sights;
-    private LinearLayout timeLayout;
+    private LinearLayout timeLayout, btnEdit, btnDone, btnSchedule, btnTags, btnDelete, btnParticipateEvent, btnOutEvent, btnLink, btnCalender,levelUp;
     private ArrayList<String> xLabels = new ArrayList<>();
     private LineChart lineChart;
     private chartList data = null;
@@ -227,9 +227,18 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapView);
         btnCalender = findViewById(R.id.goCalender);
+        levelUp = findViewById(R.id.levelUp);
     }
 
     private void setListener() {
+        levelUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Todo: 彈出alert dialog顯示所有參加者
+                //Todo: 可點擊多位參加者送給後端後升級他們
+                //Todo: 後端API還沒建立，retrofit也是
+            }
+        });
         btnCalender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -67,7 +67,7 @@ import retrofit2.Response;
 
 public class NewEventActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private ImageButton btnBack, btnDone, btnAddPlace;
+    private ImageButton btnBack, btnAddPlace;
     private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime;
     private EditText etEventName, etHostRemark;
     private SupportMapFragment mapFragment;
@@ -82,7 +82,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
     private int year, month, day;
     private ToggleButton isOutDoor, isPublic;
     private SwitchCompat isAllDay;
-    private LinearLayout timeLayout;
+    private LinearLayout timeLayout,btnDone;
     private ArrayList<String> xLabels = new ArrayList<>();
     private LineChart lineChart;
     private chartList data = null;
