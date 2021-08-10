@@ -312,9 +312,9 @@ public class LoginActivity extends AppCompatActivity {
         String fooResult = "";
         try {
             final byte[] textByte = email.getBytes(StandardCharsets.UTF_8);
-            String foo = Base64.encodeToString(textByte, 1);
+            String foo = Base64.encodeToString(textByte, Base64.NO_WRAP);
             final byte[] textByte2 = foo.getBytes(StandardCharsets.UTF_8);
-            fooResult = Base64.encodeToString(textByte2, 1);
+            fooResult = Base64.encodeToString(textByte2, Base64.NO_WRAP);
         } catch (Exception e) {
             Toast.makeText(LoginActivity.this, "系統錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
         }
