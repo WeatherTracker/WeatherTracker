@@ -10,33 +10,66 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageButton
+
+        <LinearLayout
             android:id="@+id/btnEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:background="@color/float_transparent"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:orientation="vertical"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_edit_24" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/float_transparent"
+                app:srcCompat="@drawable/ic_baseline_edit_24" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="修改活動"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/btnDone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:background="@color/float_transparent"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:orientation="vertical"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_done_all_24" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/float_transparent"
+                app:srcCompat="@drawable/ic_baseline_done_all_24" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="修改完成"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
 
         <ImageButton
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="15dp"
             android:background="@color/float_transparent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -45,18 +78,16 @@
 
         <EditText
             android:id="@+id/etEventName"
-            android:layout_width="match_parent"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
             android:background="@null"
             android:cursorVisible="false"
             android:hint="活動名稱"
             android:inputType="text"
             android:textSize="32sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnBack" />
+            app:layout_constraintTop_toBottomOf="@+id/participateEvent" />
 
         <TextView
             android:id="@+id/tvStartDate"
@@ -123,7 +154,7 @@
             android:textOff="私人"
             android:textOn="公開"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etEventName" />
+            app:layout_constraintTop_toBottomOf="@+id/eventLink" />
 
         <ToggleButton
             android:id="@+id/isOutDoor"
@@ -290,35 +321,81 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/isOutDoor" />
 
-        <ImageButton
+        <LinearLayout
             android:id="@+id/btnTags"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:background="@color/float_transparent"
-            app:layout_constraintEnd_toStartOf="@+id/btnEdit"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_label_24" />
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@id/btnDone"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/float_transparent"
+                app:srcCompat="@drawable/ic_baseline_label_24" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="天氣標籤"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/btnSchedule"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:background="@color/float_transparent"
-            app:layout_constraintEnd_toStartOf="@+id/btnTags"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_schedule_24" />
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@id/btnTags"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/float_transparent"
+                app:srcCompat="@drawable/ic_baseline_schedule_24" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="活動排程"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
             android:id="@+id/btnDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:background="@color/float_transparent"
-            app:layout_constraintEnd_toStartOf="@+id/btnSchedule"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_delete_24" />
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@id/btnSchedule"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/float_transparent"
+                app:srcCompat="@drawable/ic_baseline_delete_24" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="刪除活動"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/textView15"
@@ -350,45 +427,132 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/serverRemark" />
 
-
-        <ImageButton
+        <LinearLayout
             android:id="@+id/participateEvent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:background="@color/float_transparent"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:orientation="vertical"
             app:layout_constraintStart_toEndOf="@+id/btnBack"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_bookmark_added_24" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/float_transparent"
+                app:layout_constraintStart_toEndOf="@+id/btnBack"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_bookmark_added_24" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="參加活動"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/outEvent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:background="@color/float_transparent"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:orientation="vertical"
             app:layout_constraintStart_toEndOf="@+id/btnBack"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_bookmark_remove_24" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/float_transparent"
+                app:srcCompat="@drawable/ic_baseline_bookmark_remove_24" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="退出活動"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/eventLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/float_transparent"
-            android:layout_margin="15dp"
-            app:layout_constraintStart_toEndOf="@+id/participateEvent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_link_24" />
+            android:gravity="center"
+            android:layout_margin="5dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnEdit">
 
-        <Button
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/float_transparent"
+                app:srcCompat="@drawable/ic_baseline_link_24" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="活動連結"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/goCalender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:layout_editor_absoluteX="137dp"
-            tools:layout_editor_absoluteY="6dp"
-            tools:ignore="MissingConstraints"
-            android:text="匯出至行事曆"/>
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintStart_toEndOf="@+id/participateEvent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_baseline_import_export_24" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="匯出活動"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/levelUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintStart_toEndOf="@+id/goCalender"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_baseline_supervised_user_circle_24" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="新增權限"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

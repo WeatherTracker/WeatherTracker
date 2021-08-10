@@ -88,8 +88,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
     private RetrofitService retrofitService;
     private Event event;
-    private ImageButton btnEdit, btnBack, btnDone, btnAddPlace, btnSchedule, btnTags, btnDelete, btnParticipateEvent, btnOutEvent, btnLink;
-    private Button btnCalender;
+    private ImageButton btnBack, btnAddPlace;
     private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime;
     private EditText etEventName, etHostRemark, etServerRemark;
     private SupportMapFragment mapFragment;
@@ -108,7 +107,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private SwitchCompat isAllDay;
     private RecyclerView eventToSight;
     private List<Sight> sights;
-    private LinearLayout timeLayout;
+    private LinearLayout timeLayout, btnEdit, btnDone, btnSchedule, btnTags, btnDelete, btnParticipateEvent, btnOutEvent, btnLink, btnCalender,levelUp;
     private ArrayList<String> xLabels = new ArrayList<>();
     private LineChart lineChart;
     private chartList data = null;
@@ -123,7 +122,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         String where = intent.getStringExtra("where");
 
         System.out.println("Event:" + json);
-        if(json==null){
+        if (json == null) {
             Uri uri = getIntent().getData();
             String query = uri.getQuery(); //type=url&from=web
             System.out.println("eventId = " + query);
@@ -227,10 +226,19 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         timeLayout = findViewById(R.id.timeLayout);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapView);
-        btnCalender =findViewById(R.id.goCalender);
+        btnCalender = findViewById(R.id.goCalender);
+        levelUp = findViewById(R.id.levelUp);
     }
 
     private void setListener() {
+        levelUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Todo: 彈出alert dialog顯示所有參加者
+                //Todo: 可點擊多位參加者送給後端後升級他們
+                //Todo: 後端API還沒建立，retrofit也是
+            }
+        });
         btnCalender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -241,7 +249,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
             @Override
             public void onClick(View v) {
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("WeatherTracker", "http://weather_tracker/link?"+event.getEventId());
+                ClipData clip = ClipData.newPlainText("WeatherTracker", "http://weather_tracker/link?" + event.getEventId());
                 clipboard.setPrimaryClip(clip);
                 Toast.makeText(CheckAndEditActivity.this, "分享連結已複製至剪貼簿", Toast.LENGTH_SHORT).show();
             }
@@ -996,11 +1004,11 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         Calendar beginTime = Calendar.getInstance();
         //beginTime
 //        String[] stringArr= event.getStartTime().split("-");
-        beginTime.set(2012, 9, 14,24,00);
+        beginTime.set(2012, 9, 14, 24, 00);
         startMillis = beginTime.getTimeInMillis();
         Calendar endTime = Calendar.getInstance();
         //endTime
-        endTime.set(2012, 9, 14,24,00);
+        endTime.set(2012, 9, 14, 24, 00);
         endMillis = endTime.getTimeInMillis();
 
         //判斷有無空直
@@ -1008,34 +1016,33 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 //                && !description.getText().toString().isEmpty()){
 
 
-            Intent intent = new Intent(Intent.ACTION_INSERT);
-            intent.setData(CalendarContract.Events.CONTENT_URI);
-            //title
-            intent.putExtra(CalendarContract.Events.TITLE, event.getEventName());
-            //location
-            intent.putExtra(CalendarContract.Events.EVENT_LOCATION, event.getLatitude());
-            //description
-            intent.putExtra(CalendarContract.Events.DESCRIPTION,event.getHostRemark()+"\n"+event.getSuggestions().getAll());
+        Intent intent = new Intent(Intent.ACTION_INSERT);
+        intent.setData(CalendarContract.Events.CONTENT_URI);
+        //title
+        intent.putExtra(CalendarContract.Events.TITLE, event.getEventName());
+        //location
+        intent.putExtra(CalendarContract.Events.EVENT_LOCATION, event.getLatitude());
+        //description
+        intent.putExtra(CalendarContract.Events.DESCRIPTION, event.getHostRemark() + "\n" + event.getSuggestions().getAll());
 
-            intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis());
-            intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis());
+        intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis());
+        intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis());
 
-            intent.putExtra(CalendarContract.Events.ALL_DAY, false);
+        intent.putExtra(CalendarContract.Events.ALL_DAY, false);
 
-            //intent.putExtra(Intent.EXTRA_EMAIL, "rockandjeter@gmail.com,jacky410456@gmail.com");
+        //intent.putExtra(Intent.EXTRA_EMAIL, "rockandjeter@gmail.com,jacky410456@gmail.com");
 
-            if(intent.resolveActivity(getPackageManager())!=null){
-                startActivity(intent);
-            }else{
-                Toast.makeText(CheckAndEditActivity.this, "There is no app can support this action",
-                        Toast.LENGTH_SHORT).show();
-            }
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Toast.makeText(CheckAndEditActivity.this, "There is no app can support this action",
+                    Toast.LENGTH_SHORT).show();
+        }
 
 //        }else {
 //            Toast.makeText(CheckAndEditActivity.this,"Please fill all the fields",Toast.LENGTH_SHORT).show();
 //        }
     }
-
 
 
 }

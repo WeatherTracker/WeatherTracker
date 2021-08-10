@@ -97,7 +97,13 @@ public interface RetrofitService {
 
     @FormUrlEncoded
     @POST("googleSignIn")
-    Call<Ack> googleSignIn(@Field("email") String email);
+    Call<Ack> googleSignIn(@Field("email") String email,
+                           @Field("FCMToken") String FCMToken);
+
+    @FormUrlEncoded
+    @POST("googleSignUp")
+    Call<Ack> googleSignUp(@Field("email") String email,
+                           @Field("FCMToken") String FCMToken);
 
     @GET("FPRecommendEvent")
     Call<List<Event>> FPRecommendEvent(@Query("longitude") double longitude,
