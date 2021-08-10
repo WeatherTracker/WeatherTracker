@@ -158,7 +158,6 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
     //todo:
     private void getWeatherIcon(int flag, int year) {
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         if (year == today_year) {
             SharedPreferences sharedPreferences = getContext().getSharedPreferences("data", Context.MODE_PRIVATE);
             float Longitude = sharedPreferences.getFloat("Longitude", 0);
@@ -172,11 +171,16 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                         Toast.makeText(getActivity(), "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                     } else {
                         int iconTime = 7, iconDay = today - 1;
+                        System.out.println("iconTime" + iconTime);
+                        System.out.println("iconDay" + iconDay);
+
                         View[] month_days = customCalendar.getAllViews();
                         if ((month_days.length - today) < 8) {
                             iconTime = (month_days.length - today) + 1;
-                            iconFlag = 7 - iconTime ;
+                            iconFlag = 7 - iconTime;
                             System.out.println("iconFlag" + iconFlag);
+                        } else {
+                            iconFlag = 0;
                         }
                         icon = response.body();
                         if (flag == today_month) {
@@ -195,12 +199,14 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                         } else if (flag == (today_month + 1)) {
                             int j = iconFlag;
                             System.out.println("Next month" + flag);
+                            System.out.println("iconFlag" + j);
+
                             for (int i = 0; i < j; i++) {
                                 String uri = icon.get(i); //圖片路徑和名稱
                                 int imageResource = getContext().getResources().getIdentifier(uri, "drawable", getContext().getPackageName());
                                 //System.out.println("image+" + imageResource + "+" + uri);
                                 View temp_view = month_days[i];
-                                System.out.println("QQQQ"+i);
+                                System.out.println("QQQQ" + i);
                                 temp_view.findViewById(R.id.text_view).setBackgroundResource(imageResource);
                                 //j++;
                                 iconDay++;
@@ -555,18 +561,13 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     public Map<Integer, Object>[] onNavigationButtonClicked(int whichButton, Calendar Mcalendar) {
         Map<Integer, Object>[] arr = new Map[2];
         pickDate = 0;
-        int month = 0;
-        month = Mcalendar.get(Calendar.MONTH);
+        int month = Mcalendar.get(Calendar.MONTH);
         int year = Mcalendar.get(Calendar.YEAR);
-        System.out.println("month +" + month + whichButton);
         switch (month) {
             case Calendar.JANUARY:
                 arr[0] = new HashMap<>();
                 getRedPoint("01", Mcalendar.getWeekYear());
                 getWeatherIcon(1, year);
-//                if (today_month == 1) {
-//                    arr[0].put(today, "current");
-//                }
                 break;
             case Calendar.FEBRUARY:
                 arr[0] = new HashMap<>();
@@ -592,16 +593,14 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                 arr[0] = new HashMap<>();
                 getRedPoint("06", Mcalendar.getWeekYear());
                 getWeatherIcon(6, year);
-                System.out.println("88888");
                 break;
             case Calendar.JULY:
                 arr[0] = new HashMap<>();
                 getRedPoint("07", Mcalendar.getWeekYear());
-                System.out.println("BBBBBBBBBBBBBBBBB");
                 getWeatherIcon(7, year);
+                break;
             case Calendar.AUGUST:
                 arr[0] = new HashMap<>();
-                System.out.println("CCCCCCCCCCCCCCCCCCCCC");
                 getRedPoint("08", Mcalendar.getWeekYear());
                 getWeatherIcon(8, year);
                 break;
