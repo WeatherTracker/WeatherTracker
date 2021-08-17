@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.weathertracker.fragment.CopyrightFragment;
+import com.example.weathertracker.fragment.LogoutFragment;
 import com.example.weathertracker.fragment.MainFragment;
 import com.example.weathertracker.fragment.ProfileFragment;
 import com.example.weathertracker.fragment.RecommendFragment;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         menuItems.add(new MenuItem("Profile", R.drawable.profile));
         menuItems.add(new MenuItem("Recommendation", R.drawable.search));
         menuItems.add(new MenuItem("Copyright", R.drawable.giwawa));
+        menuItems.add(new MenuItem("Logout", R.drawable.giwawa));
         sNavigationDrawer.setMenuItemList(menuItems);
         sNavigationDrawer.setAppbarTitleTV("Weather Tracker");
 
@@ -74,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         break;
                     case 3:
                         aClass = CopyrightFragment.class;
+                        break;
+                    case 4:
+                        aClass = LogoutFragment.class;
                         break;
                 }
             }
