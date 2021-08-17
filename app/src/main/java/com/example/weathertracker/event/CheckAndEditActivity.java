@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -38,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weathertracker.MainActivity;
 import com.example.weathertracker.R;
+import com.example.weathertracker.fragment.calenderDayHostAdapter;
 import com.example.weathertracker.retrofit.Ack;
 import com.example.weathertracker.retrofit.Event;
 import com.example.weathertracker.retrofit.RetrofitManager;
@@ -235,8 +237,21 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
             @Override
             public void onClick(View v) {
                 //Todo: 彈出alert dialog顯示所有參加者
-                //Todo: 可點擊多位參加者送給後端後升級他們
                 //Todo: 後端API還沒建立，retrofit也是
+
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(CheckAndEditActivity.this);
+                View view = getLayoutInflater().inflate(R.layout.show_member, null);
+                alertDialog.setView(view);
+                RecyclerView member = view.findViewById(R.id.member);
+
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(v.getContext());
+                linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                member.setLayoutManager(linearLayoutManager);
+                member.setAdapter(new showMemberAdapter(CheckAndEditActivity.this));
+
+                AlertDialog dialog = alertDialog.create();
+                dialog.show();
+
             }
         });
         btnCalender.setOnClickListener(new View.OnClickListener() {
