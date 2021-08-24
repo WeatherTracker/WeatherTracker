@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.weathertracker.MainActivity;
 import com.example.weathertracker.R;
@@ -43,6 +44,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
+    private final int callbackId = 42;
     private GoogleSignInOptions gso;
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInAccount account;
@@ -82,14 +84,20 @@ public class LoginActivity extends AppCompatActivity {
         sharedPreferences.edit().putFloat("Longitude", (float) 25.03746).apply();
         sharedPreferences.edit().putFloat("Latitude", (float) 121.564558).apply();
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-        if (ActivityCompat.checkSelfPermission(LoginActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            getLocation();
-        } else {
-            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-        }
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+//
+//        if (ActivityCompat.checkSelfPermission(LoginActivity.this,
+//                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//
+//
+//        } else {
+//            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+//
+//        }
+        checkPermission(callbackId, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR, Manifest.permission.ACCESS_FINE_LOCATION);
+        getLocation();
+
     }
 
     private void getLocation() {
@@ -101,7 +109,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Location> task) {
                 Location location = task.getResult();
                 if (location != null) {
-                    System.out.println("123321" + location.getLongitude() + location.getLatitude());
                     SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
                     sharedPreferences.edit().putFloat("Longitude", (float) location.getLongitude()).apply();
                     sharedPreferences.edit().putFloat("Latitude", (float) location.getLatitude()).apply();
@@ -110,10 +117,23 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    private void checkPermission(int callbackId, String... permissionsId) {
+        boolean permissions = true;
+        for (String p : permissionsId) {
+            permissions = permissions && ContextCompat.checkSelfPermission(this, p) == PackageManager.PERMISSION_GRANTED;
+        }
+
+        if (!permissions) {
+            ActivityCompat.requestPermissions(this, permissionsId, callbackId);
+        }
+
+    }
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 44) {
+        if (requestCode == callbackId) {
             System.out.println("i am granted");
             getLocation();
         }

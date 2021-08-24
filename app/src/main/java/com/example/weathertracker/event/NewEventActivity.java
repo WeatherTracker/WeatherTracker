@@ -2,9 +2,13 @@ package com.example.weathertracker.event;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -82,7 +86,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
     private int year, month, day;
     private ToggleButton isOutDoor, isPublic;
     private SwitchCompat isAllDay;
-    private LinearLayout timeLayout,btnDone;
+    private LinearLayout timeLayout, btnDone;
     private ArrayList<String> xLabels = new ArrayList<>();
     private LineChart lineChart;
     private chartList data = null;
@@ -164,17 +168,20 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                         Date date = sdf.parse(tvEndDate.getText().toString());
                         Calendar c = Calendar.getInstance();
                         c.setTime(date);
-                        c.add(Calendar.DATE, 1);
                         date = c.getTime();
                         endDateString = sdf.format(date);
-                        e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " 00:00", endDateString + " 00:00", etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
+                        e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " 00:00", endDateString + " 23:59", etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
                     } catch (ParseException parseException) {
                         parseException.printStackTrace();
                     }
                 } else {
                     e = new Event(etEventName.getText().toString(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(), tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, Arrays.asList(userId), isPublic.isChecked(), isOutDoor.isChecked());
                 }
+                System.out.println(e);
                 if (checkValid(e)) {
+                    e.setLocDes(tvPlaceDescribe.getText().toString());
+                    e.setGCEventId(addEventToGoogle(e));
+                    System.out.println("eventID got");
                     RetrofitService retrofitService = RetrofitManager.getInstance().getService();
                     Call<Ack> call = retrofitService.newEvent(e);
                     call.enqueue(new Callback<Ack>() {
@@ -186,7 +193,7 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                                     Intent intent = new Intent(NewEventActivity.this, LoginActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivity(intent);
-                                }else{
+                                } else {
                                     Toast.makeText(NewEventActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                                 }
                             } else {
@@ -326,6 +333,39 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
                 }
             }
         });
+    }
+
+    private long addEventToGoogle(Event e) {
+        long calID = 3;
+        long startMillis = 0;
+        long endMillis = 0;
+        Calendar beginTime = Calendar.getInstance();
+        String[] sT = e.getStartTime().split(" |-|:");
+        String[] eT = e.getEndTime().split(" |-|:");
+
+        beginTime.set(Integer.parseInt(sT[0]), Integer.parseInt(sT[1]) - 1, Integer.parseInt(sT[2]), Integer.parseInt(sT[3]), Integer.parseInt(sT[4]));
+        startMillis = beginTime.getTimeInMillis();
+        Calendar endTime = Calendar.getInstance();
+        endTime.set(Integer.parseInt(eT[0]), Integer.parseInt(eT[1]) - 1, Integer.parseInt(eT[2]), Integer.parseInt(eT[3]), Integer.parseInt(eT[4]));
+        endMillis = endTime.getTimeInMillis();
+
+        ContentResolver cr = getContentResolver();
+        ContentValues values = new ContentValues();
+        values.put(CalendarContract.Events.DTSTART, startMillis);
+        values.put(CalendarContract.Events.DTEND, endMillis);
+        values.put(CalendarContract.Events.ALL_DAY, isAllDay.isChecked());
+        values.put(CalendarContract.Events.TITLE, e.getEventName());
+        values.put(CalendarContract.Events.EVENT_LOCATION, ""+e.getLocDes());
+        values.put(CalendarContract.Events.DESCRIPTION, e.getHostRemark());
+        values.put(CalendarContract.Events.CALENDAR_ID, calID);
+        values.put(CalendarContract.Events.EVENT_TIMEZONE, "Taiwan/Taipei");
+        Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+
+        long eventID = Long.parseLong(uri.getLastPathSegment());
+        System.out.println("GC " + eventID);
+        System.out.println("GC " + e.getLocDes());
+
+        return eventID;
     }
 
     private boolean checkValid(Event e) {
@@ -505,9 +545,9 @@ public class NewEventActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onResponse(Call<chartList> call, Response<chartList> response) {
                 if (!response.isSuccessful()) {
-                    if(response.code()==503){
+                    if (response.code() == 503) {
                         Toast.makeText(NewEventActivity.this, "抱歉，非7日內資料暫時不可用，日後即將更新", Toast.LENGTH_SHORT).show();
-                    }else{
+                    } else {
                         Toast.makeText(NewEventActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                     }
                 } else {

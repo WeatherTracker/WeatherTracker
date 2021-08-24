@@ -164,64 +164,64 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             float Latitude = sharedPreferences.getFloat("Latitude", 0);
             RetrofitService retrofitService = RetrofitManager.getInstance().getService();
             Call<List<String>> call = retrofitService.getWeatherIcon(Latitude, Longitude);
-//            call.enqueue(new Callback<List<String>>() {
-//                @Override
-//                public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-//                    if (!response.isSuccessful()) {
-//                        Toast.makeText(getActivity(), "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
-//                    } else {
-//                        int iconTime = 7, iconDay = today - 1;
+            call.enqueue(new Callback<List<String>>() {
+                @Override
+                public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                    if (!response.isSuccessful()) {
+                        Toast.makeText(getActivity(), "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                    } else {
+                        int iconTime = 7, iconDay = today - 1;
 //                        System.out.println("iconTime" + iconTime);
-//                        System.out.println("iconDay" + iconDay);
-//
-//                        View[] month_days = customCalendar.getAllViews();
-//                        if ((month_days.length - today) < 8) {
-//                            iconTime = (month_days.length - today) + 1;
-//                            iconFlag = 7 - iconTime;
-//                            System.out.println("iconFlag" + iconFlag);
-//                        } else {
-//                            iconFlag = 0;
-//                        }
-//                        icon = response.body();
-//                        if (flag == today_month) {
-//                            System.out.println("this month");
-//                            for (int i = 0; i < iconTime; i++) {
-//                                String uri = icon.get(i); //圖片路徑和名稱
-//
-//                                int imageResource = getContext().getResources().getIdentifier(uri, "drawable", getContext().getPackageName());
-//                                //System.out.println("image+" + imageResource + "+" + uri);
-//                                View temp_view = month_days[iconDay];
-////                            temp_view.findViewById(R.id.icon).setBackgroundResource(imageResource);
-//                                temp_view.findViewById(R.id.text_view).setBackgroundResource(imageResource);
-//                                temp_view.findViewById(R.id.cycle).bringToFront();
-//                                iconDay++;
-//                            }
-//                        } else if (flag == (today_month + 1)) {
-//                            int j = iconFlag;
+                        System.out.println("iconDay" + iconDay);
+
+                        View[] month_days = customCalendar.getAllViews();
+                        if ((month_days.length - today) < 7) {
+                            iconTime = (month_days.length - today) + 1;
+                            iconFlag = 7 - iconTime;
+                        } else {
+                            iconFlag = 0;
+                        }
+                        System.out.println("iconFlag" + iconFlag);
+                        icon = response.body();
+                        if (flag == today_month) {
+                            System.out.println("this month");
+                            for (int i = 0; i < iconTime; i++) {
+                                String uri = icon.get(i); //圖片路徑和名稱
+
+                                int imageResource = getContext().getResources().getIdentifier(uri, "drawable", getContext().getPackageName());
+                                //System.out.println("image+" + imageResource + "+" + uri);
+                                View temp_view = month_days[iconDay];
+//                            temp_view.findViewById(R.id.icon).setBackgroundResource(imageResource);
+                                temp_view.findViewById(R.id.text_view).setBackgroundResource(imageResource);
+                                temp_view.findViewById(R.id.cycle).bringToFront();
+                                iconDay++;
+                            }
+                        } else if (flag == (today_month + 1)) {
+                            int j = iconFlag;
 //                            System.out.println("Next month" + flag);
 //                            System.out.println("iconFlag" + j);
-//
-//                            for (int i = 0; i < j; i++) {
-//                                String uri = icon.get(i); //圖片路徑和名稱
-//                                int imageResource = getContext().getResources().getIdentifier(uri, "drawable", getContext().getPackageName());
-//                                //System.out.println("image+" + imageResource + "+" + uri);
-//                                View temp_view = month_days[i];
+
+                            for (int i = 0; i < j; i++) {
+                                String uri = icon.get(i); //圖片路徑和名稱
+                                int imageResource = getContext().getResources().getIdentifier(uri, "drawable", getContext().getPackageName());
+                                //System.out.println("image+" + imageResource + "+" + uri);
+                                View temp_view = month_days[i];
 //                                System.out.println("QQQQ" + i);
-//                                temp_view.findViewById(R.id.text_view).setBackgroundResource(imageResource);
-//                                //j++;
-//                                iconDay++;
-//                            }
-//                            iconFlag = 7;
-//
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Call<List<String>> call, Throwable t) {
-//                    Toast.makeText(getActivity(), "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
-//                }
-//            });
+                                temp_view.findViewById(R.id.text_view).setBackgroundResource(imageResource);
+                                //j++;
+                                iconDay++;
+                            }
+                            iconFlag = 7;
+
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<String>> call, Throwable t) {
+                    Toast.makeText(getActivity(), "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
@@ -728,6 +728,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     }
 
     private void getRedPoint(String month, int year) {
+        System.out.println("getRed "+month);
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
         Call<List<String>> call = retrofitService.getCalendarMonth(userId, year + "-" + month);
         call.enqueue(new Callback<List<String>>() {

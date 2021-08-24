@@ -4,6 +4,9 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -109,7 +112,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private SwitchCompat isAllDay;
     private RecyclerView eventToSight;
     private List<Sight> sights;
-    private LinearLayout timeLayout, btnEdit, btnDone, btnSchedule, btnTags, btnDelete, btnParticipateEvent, btnOutEvent, btnLink, btnCalender,levelUp;
+    private LinearLayout timeLayout, btnEdit, btnDone, btnSchedule, btnTags, btnDelete, btnParticipateEvent, btnOutEvent, btnLink, btnCalender, levelUp;
     private ArrayList<String> xLabels = new ArrayList<>();
     private LineChart lineChart;
     private chartList data = null;
@@ -396,6 +399,8 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                             e = new Event(etEventName.getText().toString(), event.getEventId(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " " + tvStartTime.getText().toString(), tvEndDate.getText().toString() + " " + tvEndTime.getText().toString(), etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, isPublic.isChecked(), isOutDoor.isChecked());
                         }
                         if (checkValid(e)) {
+                            e.setGCEventId(event.getGCEventId());
+                            updateEventToGoogle(e);
                             Call<Ack> call = retrofitService.editEvent(e);
                             call.enqueue(new Callback<Ack>() {
                                 @Override
@@ -606,6 +611,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                 pDialog.setConfirmButton("確定", new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        deleteEventToGoogle(event);
                         Call<Ack> call = retrofitService.deleteEvent(event.getEventId());
                         call.enqueue(new Callback<Ack>() {
                             @Override
@@ -783,6 +789,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         tvStartTime.setText(event.strSplit(event.getStartTime())[1]);
         tvEndDate.setText(event.strSplit(event.getEndTime())[0]);
         tvEndTime.setText(event.strSplit(event.getEndTime())[1]);
+        tvPlaceDescribe.setText(event.getLocDes());
         isOutDoor.setChecked(event.isOutDoor());
         isPublic.setChecked(event.isPublic());
         latitude = event.getLatitude();
@@ -799,7 +806,9 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         } catch (Exception e) {
             System.out.println("from recommend");
         }
-
+        if (tvStartTime.getText().toString().equals("00:00")&&tvEndTime.getText().toString().equals("23:59")){
+            isAllDay.setChecked(true);
+        }
     }
 
     private void setEditable() {
@@ -1090,5 +1099,43 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 //        }
     }
 
+    private void updateEventToGoogle(Event e) {
+        System.out.println("GCID" + " " + e.getGCEventId());
+
+        long startMillis = 0;
+        long endMillis = 0;
+        String[] sT = e.getStartTime().split(" |-|:");
+        String[] eT = e.getEndTime().split(" |-|:");
+        Calendar beginTime = Calendar.getInstance();
+        beginTime.set(Integer.parseInt(sT[0]), Integer.parseInt(sT[1]) - 1, Integer.parseInt(sT[2]), Integer.parseInt(sT[3]), Integer.parseInt(sT[4]));
+        startMillis = beginTime.getTimeInMillis();
+        Calendar endTime = Calendar.getInstance();
+        endTime.set(Integer.parseInt(eT[0]), Integer.parseInt(eT[1]) - 1, Integer.parseInt(eT[2]), Integer.parseInt(eT[3]), Integer.parseInt(eT[4]));
+        endMillis = endTime.getTimeInMillis();
+
+        ContentResolver cr = getContentResolver();
+        ContentValues values = new ContentValues();
+
+        Uri updateUri = null;
+// The new title for the event
+
+        values.put(CalendarContract.Events.DTSTART, startMillis);
+        values.put(CalendarContract.Events.DTEND, endMillis);
+        values.put(CalendarContract.Events.ALL_DAY, isAllDay.isChecked());
+        values.put(CalendarContract.Events.TITLE, e.getEventName());
+        values.put(CalendarContract.Events.EVENT_LOCATION, ""+e.getLocDes());
+        values.put(CalendarContract.Events.DESCRIPTION, e.getHostRemark());
+
+        updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, e.getGCEventId());
+        int rows = cr.update(updateUri, values, null, null);
+    }
+
+    private void deleteEventToGoogle(Event e) {
+        System.out.println("GCID" + " " + e.getGCEventId());
+        ContentResolver cr = getContentResolver();
+        Uri deleteUri = null;
+        deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, e.getGCEventId());
+        int rows = cr.delete(deleteUri, null, null);
+    }
 
 }

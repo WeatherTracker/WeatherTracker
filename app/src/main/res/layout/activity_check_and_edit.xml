@@ -82,6 +82,7 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:cursorVisible="false"
+            android:layout_margin="15dp"
             android:hint="活動名稱"
             android:inputType="text"
             android:textSize="32sp"
@@ -154,7 +155,7 @@
             android:textOff="私人"
             android:textOn="公開"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/eventLink" />
+            app:layout_constraintTop_toBottomOf="@+id/etEventName" />
 
         <ToggleButton
             android:id="@+id/isOutDoor"
