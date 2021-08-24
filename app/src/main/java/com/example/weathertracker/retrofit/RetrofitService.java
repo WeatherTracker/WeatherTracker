@@ -111,7 +111,7 @@ public interface RetrofitService {
 
 
     @FormUrlEncoded
-    @POST("logout")
+    @POST("logOut")
     Call<Ack> logout(@Field("userId") String userId);
   
     @GET("viewName")
