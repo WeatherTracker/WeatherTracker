@@ -113,6 +113,8 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private ArrayList<String> xLabels = new ArrayList<>();
     private LineChart lineChart;
     private chartList data = null;
+    private
+    List<String> people;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -238,19 +240,48 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
             public void onClick(View v) {
                 //Todo: 彈出alert dialog顯示所有參加者
                 //Todo: 後端API還沒建立，retrofit也是
+                System.out.println("eventIDDDDDDDDDDDDDDDDDDDDDDDDDDD"+event.getEventId());
+                RetrofitService retrofitService = RetrofitManager.getInstance().getService();
+                Call<List<String>> call = retrofitService.viewName(event.getEventId());
+                call.enqueue(new Callback<List<String>>() {
+                    @Override
+                    public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                        if (!response.isSuccessful()) {
+                            Toast.makeText(CheckAndEditActivity.this, "no view level", Toast.LENGTH_SHORT).show();
+                            System.out.println("GGGGGGGGGGGGGGGGGG");
+                        }
+                        else{
+                            people = response.body();
+                            if(people.size()==0){
+                                Toast.makeText(CheckAndEditActivity.this, "no people", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
 
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(CheckAndEditActivity.this);
-                View view = getLayoutInflater().inflate(R.layout.show_member, null);
-                alertDialog.setView(view);
-                RecyclerView member = view.findViewById(R.id.member);
+                                System.out.println(people.get(0) + " +++++++++++++" + people.size());
 
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(v.getContext());
-                linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                member.setLayoutManager(linearLayoutManager);
-                member.setAdapter(new showMemberAdapter(CheckAndEditActivity.this));
+                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(CheckAndEditActivity.this);
+                                View view = getLayoutInflater().inflate(R.layout.show_member, null);
+                                alertDialog.setView(view);
+                                RecyclerView member = view.findViewById(R.id.member);
 
-                AlertDialog dialog = alertDialog.create();
-                dialog.show();
+                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(v.getContext());
+                                linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                                member.setLayoutManager(linearLayoutManager);
+                                member.setAdapter(new showMemberAdapter(CheckAndEditActivity.this, people,event.getEventId()));
+
+                                AlertDialog dialog = alertDialog.create();
+                                dialog.show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<String>> call, Throwable t) {
+                        System.out.println("GGGGGG2222222222GGGGGGGGGGGG");
+                    }
+                });
+
+
 
             }
         });
