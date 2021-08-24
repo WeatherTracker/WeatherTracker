@@ -6,7 +6,17 @@ import java.util.List;
 
 public class Event {
     private Boolean isAuth;
-    private String eventName, eventId, hostRemark, startTime, endTime, staticHobbyClass, staticHobbyTag;
+    private long GCEventId;
+    private String eventName, eventId, hostRemark, startTime, endTime, staticHobbyClass, staticHobbyTag,locDes;
+
+    public void setLocDes(String locDes) {
+        this.locDes = locDes;
+    }
+
+    public String getLocDes() {
+        return locDes;
+    }
+
     private double latitude, longitude;
     private List<String> participants, hosts, dynamicTags;
     private Boolean isPublic, isOutDoor;
@@ -96,6 +106,9 @@ public class Event {
         return isAuth;
     }
 
+    public void setGCEventId(long GCEventId) {
+        this.GCEventId = GCEventId;
+    }
 //    public Boolean isHost(String user_id) {
 //        return hosts.contains(user_id);
 //    }
@@ -151,13 +164,10 @@ public class Event {
                 ", isOutDoor=" + isOutDoor +
                 '}';
     }
-//    public Date StrToISO(String ISOString){
-//
-//    }
-//
-//    public String ISOToStr(Date ISO){
-//
-//    }
+
+    public long getGCEventId() {
+        return GCEventId;
+    }
 
     public static Boolean isTimeValid(String startDate, String endDate) {
         try {

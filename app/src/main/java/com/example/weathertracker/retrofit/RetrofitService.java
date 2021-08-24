@@ -109,4 +109,7 @@ public interface RetrofitService {
     Call<List<Event>> FPRecommendEvent(@Query("longitude") double longitude,
                                        @Query("latitude") double latitude);
 
+    @FormUrlEncoded
+    @POST("logout")
+    Call<Ack> logout(@Field("userId") String userId);
 }

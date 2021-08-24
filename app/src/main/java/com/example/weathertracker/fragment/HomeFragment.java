@@ -171,17 +171,17 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                         Toast.makeText(getActivity(), "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                     } else {
                         int iconTime = 7, iconDay = today - 1;
-                        System.out.println("iconTime" + iconTime);
+//                        System.out.println("iconTime" + iconTime);
                         System.out.println("iconDay" + iconDay);
 
                         View[] month_days = customCalendar.getAllViews();
-                        if ((month_days.length - today) < 8) {
+                        if ((month_days.length - today) < 7) {
                             iconTime = (month_days.length - today) + 1;
                             iconFlag = 7 - iconTime;
-                            System.out.println("iconFlag" + iconFlag);
                         } else {
                             iconFlag = 0;
                         }
+                        System.out.println("iconFlag" + iconFlag);
                         icon = response.body();
                         if (flag == today_month) {
                             System.out.println("this month");
@@ -198,15 +198,15 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                             }
                         } else if (flag == (today_month + 1)) {
                             int j = iconFlag;
-                            System.out.println("Next month" + flag);
-                            System.out.println("iconFlag" + j);
+//                            System.out.println("Next month" + flag);
+//                            System.out.println("iconFlag" + j);
 
                             for (int i = 0; i < j; i++) {
                                 String uri = icon.get(i); //圖片路徑和名稱
                                 int imageResource = getContext().getResources().getIdentifier(uri, "drawable", getContext().getPackageName());
                                 //System.out.println("image+" + imageResource + "+" + uri);
                                 View temp_view = month_days[i];
-                                System.out.println("QQQQ" + i);
+//                                System.out.println("QQQQ" + i);
                                 temp_view.findViewById(R.id.text_view).setBackgroundResource(imageResource);
                                 //j++;
                                 iconDay++;
@@ -728,6 +728,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     }
 
     private void getRedPoint(String month, int year) {
+        System.out.println("getRed "+month);
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
         Call<List<String>> call = retrofitService.getCalendarMonth(userId, year + "-" + month);
         call.enqueue(new Callback<List<String>>() {
