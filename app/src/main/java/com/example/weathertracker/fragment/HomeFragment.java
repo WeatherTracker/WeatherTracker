@@ -54,9 +54,11 @@ import org.naishadhparmar.zcustomcalendar.Property;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,9 +176,14 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 //                        System.out.println("iconTime" + iconTime);
                         System.out.println("iconDay" + iconDay);
 
+                        Calendar calendar = Calendar.getInstance();
+                        Calendar monthStart = new GregorianCalendar(year, calendar.get(Calendar.MONTH), 1);
+                        int actualSize = monthStart.getActualMaximum(Calendar.DAY_OF_MONTH);
+                        System.out.println(actualSize);
+
                         View[] month_days = customCalendar.getAllViews();
-                        if ((month_days.length - today) < 7) {
-                            iconTime = (month_days.length - today) + 1;
+                        if ((actualSize - iconDay) < 7) {
+                            iconTime = actualSize - iconDay;
                             iconFlag = 7 - iconTime;
                         } else {
                             iconFlag = 0;
@@ -728,7 +735,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     }
 
     private void getRedPoint(String month, int year) {
-        System.out.println("getRed "+month);
+        System.out.println("getRed " + month);
         RetrofitService retrofitService = RetrofitManager.getInstance().getService();
         Call<List<String>> call = retrofitService.getCalendarMonth(userId, year + "-" + month);
         call.enqueue(new Callback<List<String>>() {
