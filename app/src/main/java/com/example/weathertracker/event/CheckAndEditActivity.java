@@ -243,7 +243,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
             public void onClick(View v) {
                 //Todo: 彈出alert dialog顯示所有參加者
                 //Todo: 後端API還沒建立，retrofit也是
-                System.out.println("eventIDDDDDDDDDDDDDDDDDDDDDDDDDDD"+event.getEventId());
+                System.out.println("eventIDDDDDDDDDDDDDDDDDDDDDDDDDDD" + event.getEventId());
                 RetrofitService retrofitService = RetrofitManager.getInstance().getService();
                 Call<List<String>> call = retrofitService.viewName(event.getEventId());
                 call.enqueue(new Callback<List<String>>() {
@@ -252,13 +252,11 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                         if (!response.isSuccessful()) {
                             Toast.makeText(CheckAndEditActivity.this, "no view level", Toast.LENGTH_SHORT).show();
                             System.out.println("GGGGGGGGGGGGGGGGGG");
-                        }
-                        else{
+                        } else {
                             people = response.body();
-                            if(people.size()==0){
+                            if (people.size() == 0) {
                                 Toast.makeText(CheckAndEditActivity.this, "no people", Toast.LENGTH_SHORT).show();
-                            }
-                            else {
+                            } else {
 
                                 System.out.println(people.get(0) + " +++++++++++++" + people.size());
 
@@ -270,7 +268,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(v.getContext());
                                 linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                                 member.setLayoutManager(linearLayoutManager);
-                                member.setAdapter(new showMemberAdapter(CheckAndEditActivity.this, people,event.getEventId()));
+                                member.setAdapter(new showMemberAdapter(CheckAndEditActivity.this, people, event.getEventId()));
 
                                 AlertDialog dialog = alertDialog.create();
                                 dialog.show();
@@ -283,7 +281,6 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                         System.out.println("GGGGGG2222222222GGGGGGGGGGGG");
                     }
                 });
-
 
 
             }
@@ -346,7 +343,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                             Toast.makeText(CheckAndEditActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                         } else {
                             Ack ack = response.body();
-                            Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();//成功新增事件
+                            Toast.makeText(CheckAndEditActivity.this, ack.getMsg(), Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(CheckAndEditActivity.this, MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
@@ -388,10 +385,9 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                                 Date date = sdf.parse(tvEndDate.getText().toString());
                                 Calendar c = Calendar.getInstance();
                                 c.setTime(date);
-                                c.add(Calendar.DATE, 1);
                                 date = c.getTime();
                                 endDateString = sdf.format(date);
-                                e = new Event(etEventName.getText().toString(), event.getEventId(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " 00:00", endDateString + " 00:00", etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, isPublic.isChecked(), isOutDoor.isChecked());
+                                e = new Event(etEventName.getText().toString(), event.getEventId(), etHostRemark.getText().toString(), tvStartDate.getText().toString() + " 00:00", endDateString + " 23:59", etHobbyClass.getText().toString(), etHobbies.getText().toString(), latitude, longitude, isPublic.isChecked(), isOutDoor.isChecked());
                             } catch (ParseException parseException) {
                                 parseException.printStackTrace();
                             }
@@ -801,12 +797,13 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         try {
             if (event.isAuth()) {
                 btnOutEvent.setVisibility(View.INVISIBLE);
+                levelUp.setVisibility(View.VISIBLE);
                 btnEdit.setVisibility(View.VISIBLE);
             }
         } catch (Exception e) {
             System.out.println("from recommend");
         }
-        if (tvStartTime.getText().toString().equals("00:00")&&tvEndTime.getText().toString().equals("23:59")){
+        if (tvStartTime.getText().toString().equals("00:00") && tvEndTime.getText().toString().equals("23:59")) {
             isAllDay.setChecked(true);
         }
     }
@@ -852,6 +849,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         btnSchedule.setVisibility(View.INVISIBLE);
         btnDelete.setVisibility(View.INVISIBLE);
         btnOutEvent.setVisibility(View.INVISIBLE);
+        levelUp.setVisibility(View.INVISIBLE);
 
         etEventName.setTextColor(getResources().getColor(R.color.white));
         etHobbyClass.setTextColor(getResources().getColor(R.color.white));
@@ -1123,7 +1121,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         values.put(CalendarContract.Events.DTEND, endMillis);
         values.put(CalendarContract.Events.ALL_DAY, isAllDay.isChecked());
         values.put(CalendarContract.Events.TITLE, e.getEventName());
-        values.put(CalendarContract.Events.EVENT_LOCATION, ""+e.getLocDes());
+        values.put(CalendarContract.Events.EVENT_LOCATION, "" + e.getLocDes());
         values.put(CalendarContract.Events.DESCRIPTION, e.getHostRemark());
 
         updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, e.getGCEventId());
