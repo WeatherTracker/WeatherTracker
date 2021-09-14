@@ -4,13 +4,13 @@
         <shape>
 
             <!-- 实心 -->
-            <solid android:color="#8EC2F6"/>
+            <solid android:color="#98CAD1"/>
 
             <!--邊框顏色、粗細-->
             <stroke
                 android:width="6dp"
-                android:color="#6a60a9"
-                android:dashWidth="10dp"
+                android:color="#332688"
+                android:dashWidth="8dp"
                 android:dashGap="6dp"/>
 
             <!--圓角-->

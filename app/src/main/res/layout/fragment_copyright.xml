@@ -4,13 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragment.CopyrightFragment"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/gww0">
     <LinearLayout
         android:id="@+id/one"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_margin="15dp">
+        android:layout_margin="15dp"
+        android:background="@drawable/copyrightitem"
+        android:alpha="0.7"
+        android:padding="5dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -21,7 +25,7 @@
             android:id="@+id/link1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#000000"
+            android:textColor="#4B0CBA"
             android:textSize="15dp"
             android:text="https://gis.taiwan.net.tw/XMLReleaseALL_public/scenic_spot_C_f.json"/>
     </LinearLayout>
@@ -32,7 +36,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_margin="15dp">
+        android:layout_margin="15dp"
+        android:background="@drawable/copyrightitem"
+        android:alpha="0.7"
+        android:padding="5dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -44,7 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15dp"
-            android:textColor="#000000"
+            android:textColor="#4B0CBA"
             android:text="https://data.epa.gov.tw/api/v1"/>
     </LinearLayout>
 
@@ -54,7 +61,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_margin="15dp">
+        android:layout_margin="15dp"
+        android:background="@drawable/copyrightitem"
+        android:alpha="0.7"
+        android:padding="5dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,7 +75,7 @@
             android:id="@+id/link3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#000000"
+            android:textColor="#4B0CBA"
             android:textSize="15dp"
             android:text="https://alerts.ncdr.nat.gov.tw/api_swagger/index.html"/>
     </LinearLayout>
@@ -76,7 +86,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_margin="15dp">
+        android:layout_margin="15dp"
+        android:background="@drawable/copyrightitem"
+        android:alpha="0.7"
+        android:padding="5dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -87,7 +100,7 @@
             android:id="@+id/link4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#000000"
+            android:textColor="#4B0CBA"
             android:textSize="15dp"
             android:text="https://e-service.cwb.gov.tw/HistoryDataQuery/index.jsp"/>
     </LinearLayout>
@@ -98,7 +111,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_margin="15dp">
+        android:layout_margin="15dp"
+        android:background="@drawable/copyrightitem"
+        android:alpha="0.7"
+        android:padding="5dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -109,7 +125,7 @@
             android:id="@+id/link5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#000000"
+            android:textColor="#4B0CBA"
             android:textSize="15dp"
             android:text="https://opendata.cwb.gov.tw/dist/opendata-swagger.html"/>
     </LinearLayout>
@@ -122,6 +138,10 @@
         android:layout_marginBottom="27dp"
         android:gravity="bottom"
         android:text="點擊網址進入網站"
-        android:textColor="#000000"
-        android:textSize="20dp" />
+        android:textColor="#C11E1E"
+        android:textSize="20dp"
+        android:background="#FFFFFF"
+        android:padding="5dp"
+        android:alpha="0.7"
+        android:textStyle="bold" />
 </RelativeLayout>

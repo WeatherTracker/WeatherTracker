@@ -6,7 +6,8 @@
     tools:context=".fragment.FavoriteFragment"
     android:orientation="vertical"
     android:id="@+id/favorFragment"
-    android:background="@drawable/favor_background">
+    android:padding="5dp"
+    android:background="#1D7BC6">
 
 
     <androidx.recyclerview.widget.RecyclerView
