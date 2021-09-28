@@ -416,11 +416,14 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         if (day >= 0 && day <= 3) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_2, android.R.layout.simple_spinner_item);
         }
-        if (day > 2 && day <= 7) {
+        else if (day > 2 && day <= 7) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_7, android.R.layout.simple_spinner_item);
         }
-        if (day < 0) {
+        else if (day < 0) {
             adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_history, android.R.layout.simple_spinner_item);
+        }
+        else{
+            adapter = ArrayAdapter.createFromResource(getActivity(), R.array.day_future, android.R.layout.simple_spinner_item);
         }
         etWeatherElement.setText("溫度", false);
         etWeatherElement.setAdapter(adapter);
@@ -434,7 +437,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             return dts.format(date);
         } catch (Exception e) {
             System.out.println("error format");
-            return "";
+            return x;
         }
     }
 

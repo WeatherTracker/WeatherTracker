@@ -181,5 +181,12 @@
         <item>紫外線</item>
     </string-array>
 
+    <string-array name="day_future">
+        <item>溫度</item>
+        <item>濕度</item>
+        <item>風速</item>
+        <item>紫外線</item>
+    </string-array>
+
 
 </resources>

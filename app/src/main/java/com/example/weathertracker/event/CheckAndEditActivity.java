@@ -8,7 +8,6 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -17,7 +16,6 @@ import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -42,7 +40,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weathertracker.MainActivity;
 import com.example.weathertracker.R;
-import com.example.weathertracker.fragment.calenderDayHostAdapter;
 import com.example.weathertracker.retrofit.Ack;
 import com.example.weathertracker.retrofit.Event;
 import com.example.weathertracker.retrofit.RetrofitManager;
@@ -94,7 +91,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private RetrofitService retrofitService;
     private Event event;
     private ImageButton btnBack, btnAddPlace;
-    private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime;
+    private TextView tvPlaceDescribe, tvStartDate, tvStartTime, tvEndDate, tvEndTime, marquee;
     private EditText etEventName, etHostRemark, etServerRemark;
     private SupportMapFragment mapFragment;
     private Double latitude, longitude;
@@ -233,8 +230,10 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         timeLayout = findViewById(R.id.timeLayout);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapView);
-        btnCalender = findViewById(R.id.goCalender);
+        btnCalender = findViewById(R.id.eventLink);
         levelUp = findViewById(R.id.levelUp);
+        marquee = findViewById(R.id.marquee);
+        marquee.setSelected(true);
     }
 
     private void setListener() {
@@ -806,6 +805,26 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         if (tvStartTime.getText().toString().equals("00:00") && tvEndTime.getText().toString().equals("23:59")) {
             isAllDay.setChecked(true);
         }
+        System.out.println(event.getLongitude());
+        System.out.println(event.getLatitude());
+        Call<String> call = retrofitService.getAlerts(Double.toString(23.8399268), Double.toString(121.456265));
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    marquee.setText(response.body());
+                    System.out.println(response.body());
+                }else{
+                    Toast.makeText(CheckAndEditActivity.this,"沒警示",Toast.LENGTH_SHORT).show();
+                    System.out.println("沒警示");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
     }
 
     private void setEditable() {

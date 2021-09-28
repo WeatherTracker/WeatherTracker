@@ -113,7 +113,7 @@ public interface RetrofitService {
     @FormUrlEncoded
     @POST("logOut")
     Call<Ack> logout(@Field("userId") String userId);
-  
+
     @GET("viewName")
     Call<List<String>> viewName(@Query(("eventId")) String eventId);
 
@@ -122,4 +122,7 @@ public interface RetrofitService {
     @POST("levelUp")
     Call<String> levelUp(@Field("eventId") String eventId);
 
+
+    @GET("getAlerts")
+    Call<String> getAlerts(@Query("latitude") String latitude, @Query("longitude") String longitude);
 }

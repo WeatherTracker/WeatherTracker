@@ -80,15 +80,15 @@
             android:id="@+id/etEventName"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:background="@null"
             android:cursorVisible="false"
-            android:layout_margin="15dp"
             android:hint="活動名稱"
             android:inputType="text"
             android:textSize="32sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/participateEvent" />
+            app:layout_constraintTop_toBottomOf="@+id/marquee" />
 
         <TextView
             android:id="@+id/tvStartDate"
@@ -480,15 +480,16 @@
 
         </LinearLayout>
 
+
         <LinearLayout
             android:id="@+id/eventLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_margin="5dp"
+            android:gravity="center"
             android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnEdit">
+            app:layout_constraintStart_toEndOf="@+id/participateEvent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageButton
                 android:layout_width="wrap_content"
@@ -506,37 +507,13 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/goCalender"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:gravity="center"
-            android:orientation="vertical"
-            app:layout_constraintStart_toEndOf="@+id/participateEvent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_baseline_import_export_24" />
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="匯出活動"
-                android:textSize="12sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/levelUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:gravity="center"
             android:orientation="vertical"
-            app:layout_constraintStart_toEndOf="@+id/goCalender"
+            app:layout_constraintStart_toEndOf="@+id/eventLink"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageButton
@@ -552,6 +529,20 @@
                 android:textSize="12sp" />
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/marquee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text=""
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/participateEvent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
