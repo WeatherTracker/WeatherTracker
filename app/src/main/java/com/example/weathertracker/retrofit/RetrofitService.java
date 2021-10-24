@@ -124,5 +124,8 @@ public interface RetrofitService {
 
 
     @GET("getAlerts")
-    Call<String> getAlerts(@Query("latitude") String latitude, @Query("longitude") String longitude);
+    Call<Ack> getAlerts(@Query("latitude") String latitude, @Query("longitude") String longitude);
+
+    @GET("getOneEvent")
+    Call<Event> getOneEvent(@Query("eventId") String eventId);
 }
