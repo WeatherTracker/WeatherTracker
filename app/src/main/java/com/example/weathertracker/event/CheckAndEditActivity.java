@@ -70,6 +70,7 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -113,8 +114,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
     private ArrayList<String> xLabels = new ArrayList<>();
     private LineChart lineChart;
     private chartList data = null;
-    private
-    List<String> people;
+    private List<String> people;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,21 +125,9 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         String json = intent.getStringExtra("json");
         String where = intent.getStringExtra("where");
 
-        System.out.println("Event:" + json);
-        if (json == null) {
-            Uri uri = getIntent().getData();
-            String query = uri.getQuery(); //type=url&from=web
-            System.out.println("eventId = " + query);
-            where = "recommend";
-        }
-
-        Gson gson = new Gson();
-        event = gson.fromJson(json, Event.class);
         userId = getSharedPreferences("sharedPreferences", MODE_PRIVATE).getString("userId", "");
         retrofitService = RetrofitManager.getInstance().getService();
 
-        System.out.println(event.getHosts().get(0));
-        //event = new Event(event0.getEventName(), event0.getHostRemark(), event0.getStartTime(),event0.getEndTime(), event0.getStaticHobbyClass(), event0.getStaticHobbyTag(), event0.getLatitude(), event0.getLongitude(), event0.getHosts(), event0.isPublic(), event0.isOutDoor());
 
         idMap.put("戶外活動類", R.array.hobbies_outdoor_events);
         idMap.put("運動類", R.array.hobbies_sports);
@@ -151,18 +139,47 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
         findId();
         setListener();
-        getEventToSight();
 
-        Places.initialize(getApplicationContext(), getString(R.string.maps_api_key));
-        mapFragment.getMapAsync(this);
-        mapFragment.getView().setVisibility(View.GONE);
+        if (json == null) {
+            Uri uri = getIntent().getData();
+            String query = uri.getQuery(); //type=url&from=web
+            System.out.println("eventId = " + query);
+            where = "recommend";
+            Call<Event> call = retrofitService.getOneEvent(query);
+            call.enqueue(new Callback<Event>() {
+                @Override
+                public void onResponse(Call<Event> call, Response<Event> response) {
+                    if (response.isSuccessful()) {
+                        event = response.body();
+                        getEventToSight();
+                        Places.initialize(getApplicationContext(), getString(R.string.maps_api_key));
+                        mapFragment.getMapAsync(CheckAndEditActivity.this);
+                        mapFragment.getView().setVisibility(View.GONE);
+                        initField();
+                        callChart();
+                    }
+                }
 
+                @Override
+                public void onFailure(Call<Event> call, Throwable t) {
 
-        initField();
-        callChart();
+                }
+            });
+        } else {
+            Gson gson = new Gson();
+            event = gson.fromJson(json, Event.class);
+            getEventToSight();
+            Places.initialize(getApplicationContext(), getString(R.string.maps_api_key));
+            mapFragment.getMapAsync(this);
+            mapFragment.getView().setVisibility(View.GONE);
+            initField();
+            callChart();
+        }
+
         if (where.equals("recommend")) {
             btnOutEvent.setVisibility(View.INVISIBLE);
             btnParticipateEvent.setVisibility(View.VISIBLE);
+            levelUp.setVisibility(View.INVISIBLE);
         } else {
             if (!event.isAuth()) {
                 btnOutEvent.setVisibility(View.VISIBLE);
@@ -183,7 +200,6 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
                     Toast.makeText(CheckAndEditActivity.this, "伺服器錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
                 } else {
                     sights = response.body();
-                    System.out.println(sights);
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(CheckAndEditActivity.this);
                     linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
                     eventToSight.setLayoutManager(linearLayoutManager);
@@ -807,21 +823,21 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         }
         System.out.println(event.getLongitude());
         System.out.println(event.getLatitude());
-        Call<String> call = retrofitService.getAlerts(Double.toString(23.8399268), Double.toString(121.456265));
-        call.enqueue(new Callback<String>() {
+        Call<Ack> call = retrofitService.getAlerts(Double.toString(24.1618051916409), Double.toString(120.654322553524));
+        call.enqueue(new Callback<Ack>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
+            public void onResponse(Call<Ack> call, Response<Ack> response) {
                 if (response.isSuccessful()) {
-                    marquee.setText(response.body());
+                    marquee.setText(response.body().getMsg());
                     System.out.println(response.body());
-                }else{
-                    Toast.makeText(CheckAndEditActivity.this,"沒警示",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(CheckAndEditActivity.this, "沒警示", Toast.LENGTH_SHORT).show();
                     System.out.println("沒警示");
                 }
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailure(Call<Ack> call, Throwable t) {
                 System.out.println(t.getMessage());
             }
         });
@@ -862,13 +878,13 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
         tvEndDate.setEnabled(false);
         tvEndTime.setEnabled(false);
         isAllDay.setEnabled(false);
-        btnLink.setVisibility(View.INVISIBLE);
+//        btnLink.setVisibility(View.INVISIBLE);
         btnDone.setVisibility(View.INVISIBLE);
         btnAddPlace.setVisibility(View.INVISIBLE);
         btnSchedule.setVisibility(View.INVISIBLE);
         btnDelete.setVisibility(View.INVISIBLE);
         btnOutEvent.setVisibility(View.INVISIBLE);
-        levelUp.setVisibility(View.INVISIBLE);
+//        levelUp.setVisibility(View.INVISIBLE);
 
         etEventName.setTextColor(getResources().getColor(R.color.white));
         etHobbyClass.setTextColor(getResources().getColor(R.color.white));
@@ -1057,7 +1073,7 @@ public class CheckAndEditActivity extends AppCompatActivity implements OnMapRead
 
             @Override
             public void onFailure(Call<chartList> call, Throwable t) {
-//                Toast.makeText(CheckAndEditActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CheckAndEditActivity.this, "連線錯誤，請稍後再試", Toast.LENGTH_SHORT).show();
             }
         });
     }
